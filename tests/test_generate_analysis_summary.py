@@ -66,6 +66,39 @@ def dcf_output() -> dict:
     }
 
 
+def fair_value_output() -> dict:
+    return {
+        "ticker": "NVDA",
+        "calculated": True,
+        "currency": "USD",
+        "assumptions": {
+            "dcf_output_unit": "USD millions",
+            "share_count_unit": "shares millions",
+            "share_count_period": "FY2025",
+            "share_count_metric_id": "nvda_diluted_weighted_average_shares_fy2025",
+        },
+        "warnings": ["Fair value per share is deterministic arithmetic from existing DCF output and sourced share count only."],
+        "source_references": [
+            {
+                "metric_id": "nvda_diluted_weighted_average_shares_fy2025",
+                "metric_name": "Diluted weighted average shares",
+                "source_url": "https://investor.nvidia.com/example",
+                "source_date": "2025-02-26",
+                "confidence": "high",
+            }
+        ],
+        "disclaimer": "calculated model output only, not investment advice.",
+        "scenarios": [
+            {
+                "scenario": "base",
+                "fair_value_per_share": 12.0,
+                "currency": "USD",
+                "share_count_metric_id": "nvda_diluted_weighted_average_shares_fy2025",
+            }
+        ],
+    }
+
+
 class GenerateAnalysisSummaryTests(unittest.TestCase):
     def test_summary_creation(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -132,6 +165,26 @@ class GenerateAnalysisSummaryTests(unittest.TestCase):
         self.assertIsNone(summary["assumptions"]["dcf_assumptions"])
         self.assertEqual(summary["calculated_outputs"]["dcf_scenarios"], {})
         self.assertEqual(summary["missing_data"]["dcf_status"], "not provided")
+
+    def test_fair_value_per_share_included_when_available(self) -> None:
+        summary = generate_analysis_summary.build_analysis_summary(
+            ticker="NVDA",
+            validation_status={"valid": True, "errors": []},
+            research_gaps=[],
+            ratio_outputs=[ratio_output()],
+            audit_log_reference="audit_log.jsonl:1",
+            dcf_output=dcf_output(),
+            fair_value_per_share_output=fair_value_output(),
+            generated_at="2026-05-23T12:00:00Z",
+        )
+
+        self.assertTrue(summary["assumptions"]["fair_value_per_share_available"])
+        self.assertEqual(summary["missing_data"]["fair_value_per_share_status"], "included")
+        self.assertEqual(
+            summary["calculated_outputs"]["fair_value_per_share_scenarios"][0]["share_count_metric_id"],
+            "nvda_diluted_weighted_average_shares_fy2025",
+        )
+        generate_analysis_summary.assert_no_prohibited_language(summary)
 
     def test_no_buy_sell_hold_recommendation_language(self) -> None:
         summary = generate_analysis_summary.build_analysis_summary(

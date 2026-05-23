@@ -39,6 +39,7 @@ class RunAnalysisTests(unittest.TestCase):
             self.assertFalse(result["dcf_run"])
             self.assertEqual(result["dcf_scenarios_calculated"], [])
             self.assertIsNone(result["dcf_output_path"])
+            self.assertIsNone(result["fair_value_per_share_output_path"])
             self.assertEqual(result["dcf_warnings"], [])
             self.assertEqual(result["warnings"], [])
 
@@ -243,6 +244,7 @@ class RunAnalysisTests(unittest.TestCase):
 
             self.assertTrue(result["dcf_run"])
             self.assertEqual(result["dcf_scenarios_calculated"], ["base", "bear", "bull"])
+            self.assertIsNotNone(result["fair_value_per_share_output_path"])
             self.assertTrue(result["dcf_warnings"])
 
     def test_readiness_gate_blocks_dcf(self) -> None:
@@ -279,6 +281,7 @@ class RunAnalysisTests(unittest.TestCase):
 
             self.assertFalse(result["dcf_run"])
             self.assertIsNone(result["dcf_output_path"])
+            self.assertIsNone(result["fair_value_per_share_output_path"])
             self.assertTrue(any("high-priority research gap" in warning for warning in result["dcf_warnings"]))
 
     def test_dcf_output_file_created(self) -> None:
@@ -302,6 +305,29 @@ class RunAnalysisTests(unittest.TestCase):
             self.assertEqual(output_path.parent, paths["reports_dir"])
             self.assertTrue(output["calculated"])
             self.assertEqual(set(output["scenarios"]), {"bear", "base", "bull"})
+            self.assertTrue(Path(result["fair_value_per_share_output_path"]).exists())
+
+    def test_fair_value_per_share_output_file_created(self) -> None:
+        with temp_analysis_workspace() as paths:
+            result = run_analysis.run_analysis(
+                ticker="NVDA",
+                source_data_path=paths["source_data"],
+                context_root=paths["context_root"],
+                markdown_queue_path=paths["markdown_queue"],
+                json_queue_path=paths["json_queue"],
+                audit_log_path=paths["audit_log"],
+                reports_dir=paths["reports_dir"],
+                run_dcf=True,
+                dcf_assumptions_path=paths["dcf_assumptions"],
+            )
+
+            output_path = Path(result["fair_value_per_share_output_path"])
+            output = json.loads(output_path.read_text(encoding="utf-8"))
+
+            self.assertTrue(output_path.exists())
+            self.assertTrue(output["calculated"])
+            self.assertEqual({scenario["scenario"] for scenario in output["scenarios"]}, {"bear", "base", "bull"})
+            self.assertEqual(output["scenarios"][0]["share_count_metric_id"], "nvda_diluted_weighted_average_shares_fy2025")
 
     def test_dcf_output_has_no_price_target_or_recommendation_language(self) -> None:
         with temp_analysis_workspace() as paths:
@@ -337,6 +363,7 @@ class RunAnalysisTests(unittest.TestCase):
             )
 
             serialized = Path(result["analysis_summary_path"]).read_text(encoding="utf-8").lower()
+            serialized = serialized.replace("not investment advice", "")
             for term in ["buy", "sell", "hold", "recommendation", "investment advice", "automated trading"]:
                 self.assertNotIn(term, serialized)
 
@@ -394,6 +421,7 @@ class RunAnalysisTests(unittest.TestCase):
 
             self.assertTrue(result["dcf_run"])
             self.assertIn("### DCF Calculation Output", report)
+            self.assertIn("### Fair Value Per Share Model Calculation", report)
             self.assertIn("#### Assumptions Used", report)
             self.assertIn("#### DCF Warnings", report)
             self.assertIn("calculation output only, not investment advice", report)

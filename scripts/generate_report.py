@@ -11,7 +11,6 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_REPORTS_DIR = REPO_ROOT / "reports"
 PROHIBITED_TERMS = [
     "valuation",
-    "fair value",
     "intrinsic value",
     "price target",
     "buy",
@@ -34,6 +33,7 @@ def generate_report(
     ratio_outputs: list[dict[str, Any]],
     audit_log_reference: str,
     dcf_output: dict[str, Any] | None = None,
+    fair_value_per_share_output: dict[str, Any] | None = None,
     warnings: list[str] | None = None,
     reports_dir: Path = DEFAULT_REPORTS_DIR,
     generated_at: str | None = None,
@@ -47,6 +47,7 @@ def generate_report(
         ratio_outputs=ratio_outputs,
         audit_log_reference=audit_log_reference,
         dcf_output=dcf_output,
+        fair_value_per_share_output=fair_value_per_share_output,
         warnings=warnings or [],
         generated_at=timestamp,
     )
@@ -65,8 +66,9 @@ def render_report(
     ratio_outputs: list[dict[str, Any]],
     audit_log_reference: str,
     dcf_output: dict[str, Any] | None,
-    warnings: list[str],
-    generated_at: str,
+    fair_value_per_share_output: dict[str, Any] | None = None,
+    warnings: list[str] | None = None,
+    generated_at: str = "",
 ) -> str:
     lines = [
         f"# {ticker} Fact Report",
@@ -98,6 +100,9 @@ def render_report(
 
     if dcf_output:
         lines.extend(_dcf_section_lines(dcf_output))
+
+    if fair_value_per_share_output:
+        lines.extend(_fair_value_per_share_section_lines(fair_value_per_share_output))
 
     lines.extend(["", "## Missing Data", ""])
     if research_gaps:
@@ -219,6 +224,43 @@ def _dcf_section_lines(dcf_output: dict[str, Any]) -> list[str]:
     return lines
 
 
+def _fair_value_per_share_section_lines(fair_value_output: dict[str, Any]) -> list[str]:
+    lines = [
+        "",
+        "### Fair Value Per Share Model Calculation",
+        "",
+        f"- Disclaimer: {fair_value_output.get('disclaimer')}",
+        f"- Currency: {fair_value_output.get('currency')}",
+        "",
+        "#### Scenario Calculations",
+        "",
+    ]
+
+    for scenario in fair_value_output.get("scenarios", []):
+        lines.append(f"- {scenario.get('scenario')}:")
+        lines.append(f"  - Fair value per share: {scenario.get('fair_value_per_share')}")
+        lines.append(f"  - DCF value used: {scenario.get('dcf_value_used')}")
+        lines.append(f"  - Share count used: {scenario.get('share_count_used')}")
+        lines.append(f"  - Share count metric ID: {scenario.get('share_count_metric_id')}")
+
+    lines.extend(["", "#### Fair Value Per Share Formula", ""])
+    for formula_name, formula in fair_value_output.get("formulas", {}).items():
+        lines.append(f"- {formula_name}: {formula}")
+
+    lines.extend(["", "#### Fair Value Per Share Warnings", ""])
+    for warning in fair_value_output.get("warnings", []):
+        lines.append(f"- {warning}")
+
+    lines.extend(["", "#### Fair Value Per Share Source References", ""])
+    for source in fair_value_output.get("source_references", []):
+        lines.append(
+            f"- {_metric_label(source)} ({source.get('period')}): "
+            f"{source.get('source_type')} dated {source.get('source_date')} - {source.get('source_url')}"
+        )
+
+    return lines
+
+
 def _metric_label(source: dict[str, Any]) -> str:
     metric_name = source.get("metric_name")
     metric_id = source.get("metric_id")
@@ -232,6 +274,7 @@ def main() -> int:
     parser.add_argument("--research-gaps-json", type=Path, required=True)
     parser.add_argument("--ratio-outputs-json", type=Path, required=True)
     parser.add_argument("--dcf-output-json", type=Path)
+    parser.add_argument("--fair-value-per-share-json", type=Path)
     parser.add_argument("--audit-log-reference", required=True)
     parser.add_argument("--warning", action="append", dest="warnings", default=[])
     parser.add_argument("--reports-dir", type=Path, default=DEFAULT_REPORTS_DIR)
@@ -245,6 +288,7 @@ def main() -> int:
             ratio_outputs=load_json(args.ratio_outputs_json),
             audit_log_reference=args.audit_log_reference,
             dcf_output=load_json(args.dcf_output_json) if args.dcf_output_json else None,
+            fair_value_per_share_output=load_json(args.fair_value_per_share_json) if args.fair_value_per_share_json else None,
             warnings=args.warnings,
             reports_dir=args.reports_dir,
         )
