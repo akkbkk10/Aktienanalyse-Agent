@@ -188,3 +188,15 @@ python scripts/write_audit_log.py --ticker NVDA --methodology-version 0.1.0 --da
 Each JSONL record includes timestamp, ticker, methodology version, data context path, source files used, validation status, ratio outputs, research gaps detected, and the current git commit hash when available.
 
 The audit log records what happened in a run. It does not calculate DCF, fair value, intrinsic value, price targets, recommendations, investment advice, or memo output.
+
+## Orchestrator Workflow
+
+Run the deterministic pre-valuation workflow for one ticker:
+
+```powershell
+python scripts/run_analysis.py NVDA --source-data-path data\nvda_sample_metrics.json
+```
+
+The orchestrator runs source validation, company context build/load, research gap detection, deterministic ratio calculation, and audit logging. It returns a structured JSON summary with ticker, validation status, research gap count, ratios calculated, audit log status, and warnings.
+
+The orchestrator does not calculate DCF, fair value, intrinsic value, price targets, recommendations, investment advice, or memo output.
