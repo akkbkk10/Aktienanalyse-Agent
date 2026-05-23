@@ -1,0 +1,22 @@
+{
+  "rule_version": "0.1.0",
+  "required_risk_fields": [
+    "risk_name",
+    "risk_category",
+    "description",
+    "source_url",
+    "source_date",
+    "confidence"
+  ],
+  "risk_categories": [
+    "market",
+    "financial",
+    "operational",
+    "regulatory",
+    "governance",
+    "technology",
+    "other"
+  ],
+  "confidence_levels": ["low", "medium", "high"]
+}
+

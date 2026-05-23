@@ -1,0 +1,67 @@
+{
+  "schema_version": "0.1.0",
+  "type": "object",
+  "required": [
+    "company",
+    "ticker",
+    "metric_name",
+    "value",
+    "unit",
+    "period",
+    "accounting_basis",
+    "statement_type",
+    "source_url",
+    "source_date",
+    "confidence"
+  ],
+  "properties": {
+    "company": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ticker": {
+      "type": "string",
+      "minLength": 1
+    },
+    "metric_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "value": {
+      "type": "number"
+    },
+    "unit": {
+      "type": "string",
+      "minLength": 1
+    },
+    "period": {
+      "type": "string",
+      "minLength": 1
+    },
+    "accounting_basis": {
+      "type": "string",
+      "enum": ["GAAP", "Non-GAAP", "IFRS", "Other"]
+    },
+    "statement_type": {
+      "type": "string",
+      "enum": ["fact", "assumption", "opinion"]
+    },
+    "source_url": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "confidence": {
+      "type": "string",
+      "enum": ["low", "medium", "high"]
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}
+
