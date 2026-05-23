@@ -278,6 +278,31 @@ class RunAnalysisTests(unittest.TestCase):
             for term in ["valuation", "fair value", "intrinsic value", "price target", "buy", "sell", "hold", "recommendation", "investment advice"]:
                 self.assertNotIn(term, report)
 
+    def test_report_with_dcf_contains_dcf_section(self) -> None:
+        with temp_analysis_workspace() as paths:
+            result = run_analysis.run_analysis(
+                ticker="NVDA",
+                source_data_path=paths["source_data"],
+                context_root=paths["context_root"],
+                markdown_queue_path=paths["markdown_queue"],
+                json_queue_path=paths["json_queue"],
+                audit_log_path=paths["audit_log"],
+                reports_dir=paths["reports_dir"],
+                generate_fact_report=True,
+                run_dcf=True,
+                dcf_assumptions_path=paths["dcf_assumptions"],
+            )
+
+            report = Path(result["report_path"]).read_text(encoding="utf-8")
+
+            self.assertTrue(result["dcf_run"])
+            self.assertIn("### DCF Calculation Output", report)
+            self.assertIn("#### Assumptions Used", report)
+            self.assertIn("#### DCF Warnings", report)
+            self.assertIn("calculation output only, not investment advice", report)
+            for term in ["price target", "buy", "sell", "hold", "recommendation"]:
+                self.assertNotIn(term, report.lower())
+
 
 class temp_analysis_workspace:
     def __enter__(self) -> dict[str, Path]:

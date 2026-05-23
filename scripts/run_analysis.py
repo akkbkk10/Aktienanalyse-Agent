@@ -100,34 +100,11 @@ def run_analysis(
         queue_missing=True,
     )
 
-    methodology = validate_methodology.load_json(methodology_path)
-    audit_record = write_audit_log.build_audit_record(
-        ticker=normalized_ticker,
-        methodology_version=methodology["methodology_version"],
-        data_context_path=str(context_path),
-        source_files_used=[str(source_data_path)],
-        validation_status=validation_status,
-        ratio_outputs=ratio_result["ratios"],
-        research_gaps_detected=gap_result["gaps"],
-    )
-    write_audit_log.append_audit_record(audit_record, audit_log_path)
     report_path = None
     dcf_output_path = None
+    dcf_result = None
     dcf_warnings: list[str] = []
     dcf_scenarios_calculated: list[str] = []
-
-    if generate_fact_report:
-        report_path = str(
-            generate_report.generate_report(
-                ticker=normalized_ticker,
-                validation_status=validation_status,
-                research_gaps=gap_result["gaps"],
-                ratio_outputs=ratio_result["ratios"],
-                audit_log_reference=str(audit_log_path),
-                warnings=warnings,
-                reports_dir=reports_dir,
-            )
-        )
 
     if run_dcf:
         readiness_result = check_valuation_readiness.check_readiness(
@@ -161,6 +138,32 @@ def run_analysis(
         else:
             warnings.append("Valuation readiness gate blocked DCF run.")
             dcf_warnings = readiness_result["blocking_reasons"]
+
+    if generate_fact_report:
+        report_path = str(
+            generate_report.generate_report(
+                ticker=normalized_ticker,
+                validation_status=validation_status,
+                research_gaps=gap_result["gaps"],
+                ratio_outputs=ratio_result["ratios"],
+                audit_log_reference=str(audit_log_path),
+                dcf_output=dcf_result if dcf_output_path else None,
+                warnings=warnings,
+                reports_dir=reports_dir,
+            )
+        )
+
+    methodology = validate_methodology.load_json(methodology_path)
+    audit_record = write_audit_log.build_audit_record(
+        ticker=normalized_ticker,
+        methodology_version=methodology["methodology_version"],
+        data_context_path=str(context_path),
+        source_files_used=[str(source_data_path)],
+        validation_status=validation_status,
+        ratio_outputs=ratio_result["ratios"],
+        research_gaps_detected=gap_result["gaps"],
+    )
+    write_audit_log.append_audit_record(audit_record, audit_log_path)
 
     return _summary(
         ticker=normalized_ticker,

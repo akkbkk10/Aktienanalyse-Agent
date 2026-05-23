@@ -215,6 +215,14 @@ python scripts/run_analysis.py NVDA --source-data-path data\nvda_sample_metrics.
 
 When `--run-dcf` is used, the orchestrator runs source validation, research gap detection, ratio calculation, and the valuation readiness gate before DCF. If readiness passes, it writes structured DCF JSON under `reports/` and includes `dcf_run`, `dcf_scenarios_calculated`, `dcf_output_path`, and `dcf_warnings` in the summary.
 
+Run the full workflow with DCF included in the fact-only report:
+
+```powershell
+python scripts/run_analysis.py NVDA --source-data-path data\nvda_sample_metrics.json --run-dcf --dcf-assumptions-path data\companies\NVDA\dcf_assumptions.json --generate-report
+```
+
+Full workflow order: validation -> context -> gaps -> ratios -> readiness -> DCF -> report -> audit log. When both flags are used, the report includes a DCF calculation section with assumptions used, bear/base/bull scenario outputs, formulas, warnings, and source references. The DCF section is calculation output only and not investment advice.
+
 The orchestrator does not create fair value, intrinsic value, price targets, buy/sell/hold recommendations, investment advice, or final investment memo output.
 
 ## Fact Report Workflow
@@ -228,6 +236,8 @@ python scripts/generate_report.py NVDA --validation-status-json path\to\validati
 Reports are written to `reports/` and separate facts, missing data, and warnings. They include validation status, research gaps, calculated ratios, source references, and an audit log reference.
 
 Fact reports must not include valuation, fair value, intrinsic value, price targets, buy/sell/hold recommendations, or investment advice.
+
+When a DCF output JSON is provided, the fact report can include a DCF calculation section with assumptions, scenario outputs, formulas, warnings, and source references. This section remains calculation output only and does not include price targets, buy/sell/hold recommendations, investment advice, or final investment memo content.
 
 ## Valuation Readiness Workflow
 

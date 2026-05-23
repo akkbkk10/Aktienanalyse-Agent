@@ -33,6 +33,7 @@ def generate_report(
     research_gaps: list[dict[str, Any]],
     ratio_outputs: list[dict[str, Any]],
     audit_log_reference: str,
+    dcf_output: dict[str, Any] | None = None,
     warnings: list[str] | None = None,
     reports_dir: Path = DEFAULT_REPORTS_DIR,
     generated_at: str | None = None,
@@ -45,6 +46,7 @@ def generate_report(
         research_gaps=research_gaps,
         ratio_outputs=ratio_outputs,
         audit_log_reference=audit_log_reference,
+        dcf_output=dcf_output,
         warnings=warnings or [],
         generated_at=timestamp,
     )
@@ -62,6 +64,7 @@ def render_report(
     research_gaps: list[dict[str, Any]],
     ratio_outputs: list[dict[str, Any]],
     audit_log_reference: str,
+    dcf_output: dict[str, Any] | None,
     warnings: list[str],
     generated_at: str,
 ) -> str:
@@ -93,6 +96,9 @@ def render_report(
     source_lines = _source_reference_lines(ratio_outputs)
     lines.extend(source_lines if source_lines else ["- No source references provided."])
 
+    if dcf_output:
+        lines.extend(_dcf_section_lines(dcf_output))
+
     lines.extend(["", "## Missing Data", ""])
     if research_gaps:
         for gap in research_gaps:
@@ -120,7 +126,7 @@ def render_report(
 
 
 def assert_no_prohibited_language(report: str) -> None:
-    normalized_report = report.lower()
+    normalized_report = report.lower().replace("not investment advice", "")
     found = [term for term in PROHIBITED_TERMS if term in normalized_report]
     if found:
         raise ValueError(f"Report contains prohibited language: {', '.join(found)}.")
@@ -154,12 +160,72 @@ def _source_reference_lines(ratio_outputs: list[dict[str, Any]]) -> list[str]:
     return references
 
 
+def _dcf_section_lines(dcf_output: dict[str, Any]) -> list[str]:
+    lines = [
+        "",
+        "### DCF Calculation Output",
+        "",
+        "- Disclaimer: calculation output only, not investment advice.",
+        "- Unit: " + str(dcf_output.get("unit")),
+        "",
+        "#### Assumptions Used",
+        "",
+    ]
+
+    assumptions = dcf_output.get("assumptions_used", {})
+    lines.append(f"- Label: {assumptions.get('assumption_label')}")
+    for scenario_name, scenario in assumptions.get("scenarios", {}).items():
+        lines.append(f"- {scenario_name}:")
+        lines.append(f"  - Discount rate: {scenario.get('discount_rate')}")
+        lines.append(f"  - Terminal growth rate: {scenario.get('terminal_growth_rate')}")
+        lines.append(f"  - Starting free cash flow: {scenario.get('starting_free_cash_flow')}")
+        forecast_years = scenario.get("forecast_years", [])
+        if forecast_years:
+            forecast_values = ", ".join(
+                f"year {forecast.get('year')} = {forecast.get('free_cash_flow')}" for forecast in forecast_years
+            )
+            lines.append(f"  - Forecast free cash flow: {forecast_values}")
+
+    lines.extend(["", "#### Scenario Outputs", ""])
+    for scenario_name, scenario in dcf_output.get("scenarios", {}).items():
+        lines.append(f"- {scenario_name}:")
+        lines.append(f"  - DCF value: {scenario.get('dcf_value')}")
+        lines.append(f"  - Terminal value: {scenario.get('terminal_value')}")
+        lines.append(f"  - Present value of terminal value: {scenario.get('present_value_terminal_value')}")
+
+    lines.extend(["", "#### DCF Formulas", ""])
+    for formula_name, formula in dcf_output.get("formulas", {}).items():
+        lines.append(f"- {formula_name}: {formula}")
+
+    lines.extend(["", "#### DCF Warnings", ""])
+    dcf_warnings = dcf_output.get("warnings", [])
+    if dcf_warnings:
+        for warning in dcf_warnings:
+            lines.append(f"- {warning}")
+    else:
+        lines.append("- No DCF warnings provided.")
+
+    lines.extend(["", "#### DCF Source References", ""])
+    source_references = dcf_output.get("source_references", [])
+    if source_references:
+        for source in source_references:
+            lines.append(
+                f"- {source.get('metric_name')} ({source.get('period')}): "
+                f"dated {source.get('source_date')} - {source.get('source_url')}"
+            )
+    else:
+        lines.append("- No DCF source references provided.")
+
+    return lines
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Generate a fact-only Markdown report for one ticker.")
     parser.add_argument("ticker")
     parser.add_argument("--validation-status-json", type=Path, required=True)
     parser.add_argument("--research-gaps-json", type=Path, required=True)
     parser.add_argument("--ratio-outputs-json", type=Path, required=True)
+    parser.add_argument("--dcf-output-json", type=Path)
     parser.add_argument("--audit-log-reference", required=True)
     parser.add_argument("--warning", action="append", dest="warnings", default=[])
     parser.add_argument("--reports-dir", type=Path, default=DEFAULT_REPORTS_DIR)
@@ -172,6 +238,7 @@ def main() -> int:
             research_gaps=load_json(args.research_gaps_json),
             ratio_outputs=load_json(args.ratio_outputs_json),
             audit_log_reference=args.audit_log_reference,
+            dcf_output=load_json(args.dcf_output_json) if args.dcf_output_json else None,
             warnings=args.warnings,
             reports_dir=args.reports_dir,
         )
