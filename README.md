@@ -239,6 +239,18 @@ Fact reports must not include valuation, fair value, intrinsic value, price targ
 
 When a DCF output JSON is provided, the fact report can include a DCF calculation section with assumptions, scenario outputs, formulas, warnings, and source references. This section remains calculation output only and does not include price targets, buy/sell/hold recommendations, investment advice, or final investment memo content.
 
+## Analysis Summary Workflow
+
+Generate a structured JSON analysis summary from validated run artifacts:
+
+```powershell
+python scripts/generate_analysis_summary.py NVDA --validation-status-json path\to\validation_status.json --research-gaps-json path\to\research_gaps.json --ratio-outputs-json path\to\ratio_outputs.json --dcf-output-json reports\NVDA_dcf_output.json --audit-log-reference audit_log.jsonl:1
+```
+
+The summary is written under `reports/` and separates facts, assumptions, calculated outputs, missing data, and risks/warnings. DCF scenario outputs are included only when a DCF JSON file is provided.
+
+This workflow does not create buy/sell/hold recommendations, price targets, investment advice, automated trading logic, or final investment memo content.
+
 ## Valuation Readiness Workflow
 
 Check whether one ticker has passed all pre-valuation controls:
