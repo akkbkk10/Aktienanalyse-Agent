@@ -6,6 +6,10 @@
     "ratios_calculated",
     "audit_log_written",
     "report_path",
+    "dcf_run",
+    "dcf_scenarios_calculated",
+    "dcf_output_path",
+    "dcf_warnings",
     "warnings"
   ],
   "ticker": "NVDA",

@@ -6,5 +6,6 @@ htmlcov/
 .venv/
 venv/
 reports/*.md
+reports/*.json
 reports/*.jsonl
 !reports/.gitkeep

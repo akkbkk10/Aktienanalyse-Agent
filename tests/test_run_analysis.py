@@ -35,6 +35,10 @@ class RunAnalysisTests(unittest.TestCase):
             self.assertIn("net_margin", result["ratios_calculated"])
             self.assertTrue(result["audit_log_written"])
             self.assertIsNone(result["report_path"])
+            self.assertFalse(result["dcf_run"])
+            self.assertEqual(result["dcf_scenarios_calculated"], [])
+            self.assertIsNone(result["dcf_output_path"])
+            self.assertEqual(result["dcf_warnings"], [])
             self.assertEqual(result["warnings"], [])
 
     def test_missing_context_warns_when_rebuild_disabled(self) -> None:
@@ -145,6 +149,117 @@ class RunAnalysisTests(unittest.TestCase):
             self.assertIsNone(result["report_path"])
             self.assertFalse((paths["reports_dir"] / "NVDA_fact_report.md").exists())
 
+    def test_orchestrator_without_dcf(self) -> None:
+        with temp_analysis_workspace() as paths:
+            result = run_analysis.run_analysis(
+                ticker="NVDA",
+                source_data_path=paths["source_data"],
+                context_root=paths["context_root"],
+                markdown_queue_path=paths["markdown_queue"],
+                json_queue_path=paths["json_queue"],
+                audit_log_path=paths["audit_log"],
+                reports_dir=paths["reports_dir"],
+                run_dcf=False,
+            )
+
+            self.assertFalse(result["dcf_run"])
+            self.assertEqual(result["dcf_scenarios_calculated"], [])
+            self.assertIsNone(result["dcf_output_path"])
+
+    def test_orchestrator_with_dcf(self) -> None:
+        with temp_analysis_workspace() as paths:
+            result = run_analysis.run_analysis(
+                ticker="NVDA",
+                source_data_path=paths["source_data"],
+                context_root=paths["context_root"],
+                markdown_queue_path=paths["markdown_queue"],
+                json_queue_path=paths["json_queue"],
+                audit_log_path=paths["audit_log"],
+                reports_dir=paths["reports_dir"],
+                run_dcf=True,
+                dcf_assumptions_path=paths["dcf_assumptions"],
+            )
+
+            self.assertTrue(result["dcf_run"])
+            self.assertEqual(result["dcf_scenarios_calculated"], ["base", "bear", "bull"])
+            self.assertTrue(result["dcf_warnings"])
+
+    def test_readiness_gate_blocks_dcf(self) -> None:
+        with temp_analysis_workspace() as paths:
+            watchlist_path = paths["root"] / "watchlist_with_gap.json"
+            watchlist_path.write_text(
+                json.dumps(
+                    {
+                        "tickers": {
+                            "NVDA": {
+                                "company_name": "NVIDIA Corporation",
+                                "required_metrics": ["Revenue", "Uncollected required metric"],
+                                "max_last_verified_age_days": 180,
+                                "minimum_confidence": "medium",
+                            }
+                        }
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = run_analysis.run_analysis(
+                ticker="NVDA",
+                source_data_path=paths["source_data"],
+                context_root=paths["context_root"],
+                markdown_queue_path=paths["markdown_queue"],
+                json_queue_path=paths["json_queue"],
+                audit_log_path=paths["audit_log"],
+                reports_dir=paths["reports_dir"],
+                watchlist_path=watchlist_path,
+                run_dcf=True,
+                dcf_assumptions_path=paths["dcf_assumptions"],
+            )
+
+            self.assertFalse(result["dcf_run"])
+            self.assertIsNone(result["dcf_output_path"])
+            self.assertTrue(any("high-priority research gap" in warning for warning in result["dcf_warnings"]))
+
+    def test_dcf_output_file_created(self) -> None:
+        with temp_analysis_workspace() as paths:
+            result = run_analysis.run_analysis(
+                ticker="NVDA",
+                source_data_path=paths["source_data"],
+                context_root=paths["context_root"],
+                markdown_queue_path=paths["markdown_queue"],
+                json_queue_path=paths["json_queue"],
+                audit_log_path=paths["audit_log"],
+                reports_dir=paths["reports_dir"],
+                run_dcf=True,
+                dcf_assumptions_path=paths["dcf_assumptions"],
+            )
+
+            output_path = Path(result["dcf_output_path"])
+            output = json.loads(output_path.read_text(encoding="utf-8"))
+
+            self.assertTrue(output_path.exists())
+            self.assertEqual(output_path.parent, paths["reports_dir"])
+            self.assertTrue(output["calculated"])
+            self.assertEqual(set(output["scenarios"]), {"bear", "base", "bull"})
+
+    def test_dcf_output_has_no_price_target_or_recommendation_language(self) -> None:
+        with temp_analysis_workspace() as paths:
+            result = run_analysis.run_analysis(
+                ticker="NVDA",
+                source_data_path=paths["source_data"],
+                context_root=paths["context_root"],
+                markdown_queue_path=paths["markdown_queue"],
+                json_queue_path=paths["json_queue"],
+                audit_log_path=paths["audit_log"],
+                reports_dir=paths["reports_dir"],
+                run_dcf=True,
+                dcf_assumptions_path=paths["dcf_assumptions"],
+            )
+
+            serialized = Path(result["dcf_output_path"]).read_text(encoding="utf-8").lower()
+            for term in ["price target", "buy", "sell", "hold", "recommendation", "investment advice"]:
+                self.assertNotIn(term, serialized)
+
     def test_generated_report_has_no_prohibited_valuation_language(self) -> None:
         with temp_analysis_workspace() as paths:
             result = run_analysis.run_analysis(
@@ -169,11 +284,14 @@ class temp_analysis_workspace:
         self.temp_dir = tempfile.TemporaryDirectory()
         root = Path(self.temp_dir.name)
         source_data = root / "nvda_sample_metrics.json"
+        dcf_assumptions = root / "dcf_assumptions.json"
         shutil.copy(REPO_ROOT / "data" / "nvda_sample_metrics.json", source_data)
+        shutil.copy(REPO_ROOT / "data" / "companies" / "NVDA" / "dcf_assumptions.json", dcf_assumptions)
 
         return {
             "root": root,
             "source_data": source_data,
+            "dcf_assumptions": dcf_assumptions,
             "context_root": root / "companies",
             "markdown_queue": root / "research_queue.md",
             "json_queue": root / "research_queue.json",
