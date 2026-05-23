@@ -220,3 +220,15 @@ python scripts/generate_report.py NVDA --validation-status-json path\to\validati
 Reports are written to `reports/` and separate facts, missing data, and warnings. They include validation status, research gaps, calculated ratios, source references, and an audit log reference.
 
 Fact reports must not include valuation, fair value, intrinsic value, price targets, buy/sell/hold recommendations, or investment advice.
+
+## Run full NVDA demo
+
+Run the complete deterministic NVDA workflow:
+
+```powershell
+python scripts/run_analysis.py NVDA --source-data-path data\nvda_sample_metrics.json --generate-report
+```
+
+This validates source data, rebuilds the company context, detects research gaps, calculates deterministic ratios, writes an audit log entry, and generates a fact-only report under `reports/`.
+
+The demo does not calculate DCF, fair value, intrinsic value, price targets, recommendations, buy/sell/hold output, or investment advice.

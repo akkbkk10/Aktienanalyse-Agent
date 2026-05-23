@@ -18,3 +18,19 @@ jobs:
 
       - name: Run unit tests
         run: python -m unittest discover -s tests
+
+      - name: Run end-to-end NVDA workflow
+        run: python scripts/run_analysis.py NVDA --source-data-path data/nvda_sample_metrics.json --generate-report --audit-log-path reports/ci_audit_log.jsonl --reports-dir reports/ci
+
+      - name: Validate JSON config and data files
+        shell: bash
+        run: |
+          python -m json.tool config/financial_metric_schema.json > /dev/null
+          python -m json.tool config/methodology_buffett_ai.json > /dev/null
+          python -m json.tool config/risk_rules.json > /dev/null
+          python -m json.tool config/source_rules.json > /dev/null
+          python -m json.tool config/watchlist.json > /dev/null
+          python -m json.tool data/nvda_sample_metrics.json > /dev/null
+          python -m json.tool data/companies/NVDA/context.json > /dev/null
+          python -m json.tool research_queue.json > /dev/null
+          python -m json.tool tests/fixtures/nvda_expected_summary_structure.json > /dev/null

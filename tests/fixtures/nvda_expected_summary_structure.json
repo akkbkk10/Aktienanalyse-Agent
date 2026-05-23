@@ -1,0 +1,35 @@
+{
+  "required_keys": [
+    "ticker",
+    "validation_status",
+    "research_gaps_count",
+    "ratios_calculated",
+    "audit_log_written",
+    "report_path",
+    "warnings"
+  ],
+  "ticker": "NVDA",
+  "validation_status_required_keys": [
+    "valid",
+    "errors"
+  ],
+  "expected_ratio_names": [
+    "gross_margin",
+    "operating_margin",
+    "net_margin",
+    "free_cash_flow_margin",
+    "revenue_growth"
+  ],
+  "prohibited_terms": [
+    "DCF",
+    "fair value",
+    "intrinsic value",
+    "price target",
+    "buy",
+    "sell",
+    "hold",
+    "recommendation",
+    "investment advice"
+  ]
+}
+
