@@ -1,0 +1,16 @@
+{
+  "schema_version": "0.1.0",
+  "tickers": {
+    "NVDA": {
+      "company_name": "NVIDIA Corporation",
+      "required_metrics": [
+        "Revenue",
+        "Net income",
+        "Data Center revenue"
+      ],
+      "max_last_verified_age_days": 180,
+      "minimum_confidence": "medium"
+    }
+  }
+}
+

@@ -15,6 +15,7 @@ Valuation, DCF, price target, and investment recommendation logic are intentiona
 
 - `AGENTS.md` - mandatory rules for agents and contributors.
 - `config/` - schemas and validation rules.
+- `config/watchlist.json` - required research coverage by ticker.
 - `agents/` - future agent definitions.
 - `scripts/` - executable helper scripts.
 - `tests/` - test suite.
@@ -93,3 +94,22 @@ The builder writes `data/companies/<TICKER>/context.json`. A company context con
 - per-metric `source_metadata`
 
 The builder validates source metadata before writing the context. Invalid or missing source metadata fails closed and does not create a valuation, DCF, ratio analysis, or memo.
+
+## Research Gap Workflow
+
+Detect research gaps from the watchlist and company contexts:
+
+```powershell
+python scripts/detect_research_gaps.py
+```
+
+The research gap agent compares `config/watchlist.json` with `data/companies/<TICKER>/context.json` and detects:
+
+- missing required metrics
+- stale metrics
+- missing source metadata
+- low-confidence data
+
+Detected gaps are automatically written to `research_queue.json` and mirrored to `research_queue.md` through the existing queue system. Duplicate queue entries are not appended twice.
+
+This workflow creates research follow-up tasks only. It does not create valuation, DCF, ratio analysis, price targets, recommendations, or memo output.
