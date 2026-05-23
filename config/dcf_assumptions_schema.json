@@ -1,0 +1,36 @@
+{
+  "schema_version": "0.1.0",
+  "required_fields": [
+    "schema_version",
+    "ticker",
+    "unit",
+    "scenarios",
+    "source_references"
+  ],
+  "required_scenarios": [
+    "bear",
+    "base",
+    "bull"
+  ],
+  "required_scenario_fields": [
+    "discount_rate",
+    "terminal_growth_rate",
+    "starting_free_cash_flow",
+    "forecast_years"
+  ],
+  "required_forecast_year_fields": [
+    "year",
+    "free_cash_flow"
+  ],
+  "rate_fields": [
+    "discount_rate",
+    "terminal_growth_rate"
+  ],
+  "source_reference_fields": [
+    "metric_name",
+    "period",
+    "source_url",
+    "source_date",
+    "confidence"
+  ]
+}

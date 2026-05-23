@@ -240,6 +240,20 @@ The readiness gate checks:
 
 The script returns structured JSON with ticker, readiness status, blocking reasons, warnings, and required next actions. A passing result only means the pre-valuation controls are ready for a future stage. It does not calculate DCF, fair value, intrinsic value, price targets, recommendations, buy/sell/hold output, or investment advice.
 
+## DCF Workflow
+
+Run deterministic DCF scenarios from explicit assumptions:
+
+```powershell
+python scripts/dcf_model.py NVDA --assumptions-path data\companies\NVDA\dcf_assumptions.json --source-data-path data\nvda_sample_metrics.json
+```
+
+The DCF module first calls the valuation readiness gate. If readiness does not pass, no DCF scenarios are calculated.
+
+DCF assumptions are stored separately from facts in `data/companies/<TICKER>/dcf_assumptions.json` and validated against `config/dcf_assumptions_schema.json`. The model requires discount rate, terminal growth rate, explicit forecast years, and starting free cash flow for each bear, base, and bull scenario. It never invents missing assumptions.
+
+The output is structured JSON with formulas, assumptions used, warnings, source references, and scenario calculations. It does not add price targets, buy/sell/hold recommendations, investment advice, or memo generation.
+
 ## Run full NVDA demo
 
 Run the complete deterministic NVDA workflow:
