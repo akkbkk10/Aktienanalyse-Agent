@@ -207,7 +207,15 @@ python scripts/run_analysis.py NVDA --source-data-path data\nvda_sample_metrics.
 
 When `--generate-report` is used, the JSON summary includes `report_path`.
 
-The orchestrator does not calculate DCF, fair value, intrinsic value, price targets, recommendations, investment advice, or memo output.
+Run the full workflow with deterministic DCF scenarios:
+
+```powershell
+python scripts/run_analysis.py NVDA --source-data-path data\nvda_sample_metrics.json --run-dcf --dcf-assumptions-path data\companies\NVDA\dcf_assumptions.json
+```
+
+When `--run-dcf` is used, the orchestrator runs source validation, research gap detection, ratio calculation, and the valuation readiness gate before DCF. If readiness passes, it writes structured DCF JSON under `reports/` and includes `dcf_run`, `dcf_scenarios_calculated`, `dcf_output_path`, and `dcf_warnings` in the summary.
+
+The orchestrator does not create fair value, intrinsic value, price targets, buy/sell/hold recommendations, investment advice, or final investment memo output.
 
 ## Fact Report Workflow
 
