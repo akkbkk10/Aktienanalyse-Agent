@@ -19,8 +19,20 @@ jobs:
       - name: Run unit tests
         run: python -m unittest discover -s tests
 
-      - name: Run end-to-end NVDA workflow
-        run: python scripts/run_analysis.py NVDA --source-data-path data/nvda_sample_metrics.json --generate-report --audit-log-path reports/ci_audit_log.jsonl --reports-dir reports/ci
+      - name: Validate NVDA source data
+        run: python scripts/validate_sources.py data/nvda_sample_metrics.json
+
+      - name: Validate AMD source data
+        run: python scripts/validate_sources.py data/amd_sample_metrics.json
+
+      - name: Validate methodology config
+        run: python scripts/validate_methodology.py
+
+      - name: Run AMD full workflow smoke test
+        run: python scripts/run_analysis.py AMD --generate-report --generate-summary --run-dcf --audit-log-path reports/ci/amd_audit_log.jsonl --reports-dir reports/ci/amd --context-root reports/ci/amd_context
+
+      - name: Run NVDA and AMD batch workflow smoke test
+        run: python scripts/run_batch_analysis.py NVDA AMD --generate-report --generate-summary --run-dcf --audit-log-path reports/ci/batch_audit_log.jsonl --reports-dir reports/ci/batch --context-root reports/ci/batch_context
 
       - name: Validate JSON config and data files
         shell: bash
@@ -30,7 +42,11 @@ jobs:
           python -m json.tool config/risk_rules.json > /dev/null
           python -m json.tool config/source_rules.json > /dev/null
           python -m json.tool config/watchlist.json > /dev/null
+          python -m json.tool data/amd_sample_metrics.json > /dev/null
           python -m json.tool data/nvda_sample_metrics.json > /dev/null
+          python -m json.tool data/companies/AMD/context.json > /dev/null
+          python -m json.tool data/companies/AMD/dcf_assumptions.json > /dev/null
           python -m json.tool data/companies/NVDA/context.json > /dev/null
+          python -m json.tool data/companies/NVDA/dcf_assumptions.json > /dev/null
           python -m json.tool research_queue.json > /dev/null
           python -m json.tool tests/fixtures/nvda_expected_summary_structure.json > /dev/null

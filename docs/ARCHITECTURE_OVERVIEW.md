@@ -25,3 +25,23 @@ validation -> context -> gaps -> ratios -> readiness -> DCF -> report -> summary
 
 The system does not produce buy/sell/hold recommendations, price targets,
 investment advice, automated trading logic, or final investment memos.
+
+## Data Separation
+
+Sample data lives under `data/` and `data/companies/<TICKER>/` for deterministic
+tests and demos. Future live data ingestion must remain separate from sample data
+so reproducible tests are not changed by current market or filing updates.
+
+## Ticker Independence
+
+Each ticker is processed independently. A missing context, stale source, research
+gap, or failed assumption file for one ticker must not block another ticker in the
+same batch run. Batch output records successes, failures, output paths, and
+warnings by ticker so NVDA and AMD cannot cross-block each other.
+
+## Output Safety
+
+Model-generated reports, summaries, DCF outputs, and batch outputs are analysis
+artifacts only. They are not personal investment advice and must not include model
+ratings, model confidence labels, model signals, fair value per share, price
+targets, buy/sell/hold recommendations, or automated trading instructions.

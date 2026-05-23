@@ -64,6 +64,8 @@ python scripts/run_batch_analysis.py NVDA AMD --generate-report --generate-summa
 
 NVDA and AMD are currently the fully working sample tickers. Other tickers fail cleanly unless their source data and assumptions are added.
 
+Sample data and any future live data ingestion must remain separate. Batch runs process each ticker independently, and a missing or invalid ticker must not block successful NVDA or AMD runs. Generated model outputs are analysis artifacts only and are not personal investment advice.
+
 ## Setup
 
 ```powershell
