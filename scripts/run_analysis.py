@@ -30,6 +30,9 @@ DEFAULT_JSON_QUEUE_PATH = REPO_ROOT / "research_queue.json"
 DEFAULT_AUDIT_LOG_PATH = REPO_ROOT / "audit_log.jsonl"
 DEFAULT_REPORTS_DIR = REPO_ROOT / "reports"
 DEFAULT_DCF_ASSUMPTIONS_PATH_TEMPLATE = REPO_ROOT / "data" / "companies" / "{ticker}" / "dcf_assumptions.json"
+DEFAULT_SOURCE_DATA_PATHS = {
+    "NVDA": REPO_ROOT / "data" / "nvda_sample_metrics.json",
+}
 
 
 def run_analysis(
@@ -240,10 +243,14 @@ def _write_dcf_output(ticker: str, dcf_result: dict[str, Any], reports_dir: Path
     return output_path
 
 
+def _default_source_data_path(ticker: str) -> Path:
+    return DEFAULT_SOURCE_DATA_PATHS.get(ticker.upper(), REPO_ROOT / "data" / f"{ticker.lower()}_sample_metrics.json")
+
+
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Run deterministic pre-valuation analysis workflow for one ticker.")
-    parser.add_argument("ticker")
-    parser.add_argument("--source-data-path", type=Path, required=True)
+    parser = argparse.ArgumentParser(description="Run deterministic pre-valuation analysis workflow for one or more tickers.")
+    parser.add_argument("tickers", nargs="+")
+    parser.add_argument("--source-data-path", type=Path)
     parser.add_argument("--context-root", type=Path, default=DEFAULT_CONTEXT_ROOT)
     parser.add_argument("--markdown-queue-path", type=Path, default=DEFAULT_MARKDOWN_QUEUE_PATH)
     parser.add_argument("--json-queue-path", type=Path, default=DEFAULT_JSON_QUEUE_PATH)
@@ -259,27 +266,45 @@ def main() -> int:
     args = parser.parse_args()
 
     try:
-        result = run_analysis(
-            ticker=args.ticker,
-            source_data_path=args.source_data_path,
-            context_root=args.context_root,
-            markdown_queue_path=args.markdown_queue_path,
-            json_queue_path=args.json_queue_path,
-            audit_log_path=args.audit_log_path,
-            reports_dir=args.reports_dir,
-            methodology_path=args.methodology_path,
-            watchlist_path=args.watchlist_path,
-            rebuild_context=not args.no_rebuild_context,
-            generate_fact_report=args.generate_report,
-            generate_summary=args.generate_summary,
-            run_dcf=args.run_dcf,
-            dcf_assumptions_path=args.dcf_assumptions_path,
-        )
+        if len(args.tickers) == 1:
+            result = run_analysis(
+                ticker=args.tickers[0],
+                source_data_path=args.source_data_path or _default_source_data_path(args.tickers[0]),
+                context_root=args.context_root,
+                markdown_queue_path=args.markdown_queue_path,
+                json_queue_path=args.json_queue_path,
+                audit_log_path=args.audit_log_path,
+                reports_dir=args.reports_dir,
+                methodology_path=args.methodology_path,
+                watchlist_path=args.watchlist_path,
+                rebuild_context=not args.no_rebuild_context,
+                generate_fact_report=args.generate_report,
+                generate_summary=args.generate_summary,
+                run_dcf=args.run_dcf,
+                dcf_assumptions_path=args.dcf_assumptions_path,
+            )
+        else:
+            import run_batch_analysis
+
+            result = run_batch_analysis.run_batch(
+                tickers=args.tickers,
+                source_data_paths={ticker.upper(): args.source_data_path for ticker in args.tickers} if args.source_data_path else None,
+                context_root=args.context_root,
+                markdown_queue_path=args.markdown_queue_path,
+                json_queue_path=args.json_queue_path,
+                audit_log_path=args.audit_log_path,
+                reports_dir=args.reports_dir,
+                generate_fact_report=args.generate_report,
+                generate_summary=args.generate_summary,
+                run_dcf=args.run_dcf,
+            )
     except (OSError, ValueError, json.JSONDecodeError) as exc:
-        print(json.dumps({"ticker": args.ticker.upper(), "error": str(exc)}, indent=2))
+        print(json.dumps({"tickers": [ticker.upper() for ticker in args.tickers], "error": str(exc)}, indent=2))
         return 1
 
     print(json.dumps(result, indent=2))
+    if "failed_runs" in result:
+        return 0 if not result["failed_runs"] else 1
     return 0 if result["validation_status"]["valid"] and result["audit_log_written"] else 1
 
 
