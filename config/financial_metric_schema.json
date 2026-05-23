@@ -36,7 +36,7 @@
     },
     "metric_category": {
       "type": "string",
-      "enum": ["financial_metric", "share_count"]
+      "enum": ["financial_metric", "share_count", "market_price"]
     },
     "value": {
       "type": "number"
@@ -63,7 +63,7 @@
     },
     "source_type": {
       "type": "string",
-      "enum": ["SEC filing", "investor relations", "earnings release", "annual report"]
+      "enum": ["SEC filing", "investor relations", "earnings release", "annual report", "market data"]
     },
     "source_date": {
       "type": "string",

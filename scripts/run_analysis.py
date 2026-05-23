@@ -19,6 +19,7 @@ import dcf_model
 import fair_value_per_share
 import generate_analysis_summary
 import generate_report
+import model_rating
 import validate_methodology
 import validate_sources
 import write_audit_log
@@ -72,6 +73,7 @@ def run_analysis(
             dcf_scenarios_calculated=[],
             dcf_output_path=None,
             fair_value_per_share_output_path=None,
+            model_rating_output_path=None,
             dcf_warnings=[],
             warnings=warnings,
         )
@@ -92,6 +94,7 @@ def run_analysis(
             dcf_scenarios_calculated=[],
             dcf_output_path=None,
             fair_value_per_share_output_path=None,
+            model_rating_output_path=None,
             dcf_warnings=[],
             warnings=warnings,
         )
@@ -117,6 +120,8 @@ def run_analysis(
     dcf_result = None
     fair_value_result = None
     fair_value_output_path = None
+    model_rating_result = None
+    model_rating_output_path = None
     readiness_result = None
     dcf_warnings: list[str] = []
     dcf_scenarios_calculated: list[str] = []
@@ -159,7 +164,17 @@ def run_analysis(
                     fair_value_output_path = str(
                         _write_fair_value_per_share_output(normalized_ticker, fair_value_result, reports_dir)
                     )
+                    model_rating_result = model_rating.calculate_model_rating(
+                        ticker=normalized_ticker,
+                        fair_value_per_share_output=fair_value_result,
+                        context_root=context_root,
+                    )
+                    model_rating_output_path = str(
+                        _write_model_rating_output(normalized_ticker, model_rating_result, reports_dir)
+                    )
                 except fair_value_per_share.FairValuePerShareError as exc:
+                    dcf_warnings.append(str(exc))
+                except model_rating.ModelRatingError as exc:
                     dcf_warnings.append(str(exc))
             else:
                 dcf_warnings = dcf_result.get("blocking_reasons", [])
@@ -177,6 +192,7 @@ def run_analysis(
                 audit_log_reference=str(audit_log_path),
                 dcf_output=dcf_result if dcf_output_path else None,
                 fair_value_per_share_output=fair_value_result if fair_value_output_path else None,
+                model_rating_output=model_rating_result if model_rating_output_path else None,
                 warnings=warnings,
                 reports_dir=reports_dir,
             )
@@ -192,6 +208,7 @@ def run_analysis(
                 audit_log_reference=str(audit_log_path),
                 dcf_output=dcf_result if dcf_output_path else None,
                 fair_value_per_share_output=fair_value_result if fair_value_output_path else None,
+                model_rating_output=model_rating_result if model_rating_output_path else None,
                 warnings=warnings + dcf_warnings,
                 reports_dir=reports_dir,
             )
@@ -221,6 +238,7 @@ def run_analysis(
         dcf_scenarios_calculated=dcf_scenarios_calculated,
         dcf_output_path=dcf_output_path,
         fair_value_per_share_output_path=fair_value_output_path,
+        model_rating_output_path=model_rating_output_path,
         dcf_warnings=dcf_warnings,
         warnings=warnings,
     )
@@ -238,6 +256,7 @@ def _summary(
     dcf_scenarios_calculated: list[str],
     dcf_output_path: str | None,
     fair_value_per_share_output_path: str | None,
+    model_rating_output_path: str | None,
     dcf_warnings: list[str],
     warnings: list[str],
 ) -> dict[str, Any]:
@@ -253,6 +272,7 @@ def _summary(
         "dcf_scenarios_calculated": dcf_scenarios_calculated,
         "dcf_output_path": dcf_output_path,
         "fair_value_per_share_output_path": fair_value_per_share_output_path,
+        "model_rating_output_path": model_rating_output_path,
         "dcf_warnings": dcf_warnings,
         "warnings": warnings,
     }
@@ -269,6 +289,13 @@ def _write_fair_value_per_share_output(ticker: str, fair_value_result: dict[str,
     reports_dir.mkdir(parents=True, exist_ok=True)
     output_path = reports_dir / f"{ticker}_fair_value_per_share_output.json"
     output_path.write_text(json.dumps(fair_value_result, indent=2, sort_keys=True), encoding="utf-8")
+    return output_path
+
+
+def _write_model_rating_output(ticker: str, model_rating_result: dict[str, Any], reports_dir: Path) -> Path:
+    reports_dir.mkdir(parents=True, exist_ok=True)
+    output_path = reports_dir / f"{ticker}_model_rating_output.json"
+    output_path.write_text(json.dumps(model_rating_result, indent=2, sort_keys=True), encoding="utf-8")
     return output_path
 
 

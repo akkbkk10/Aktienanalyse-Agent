@@ -11,6 +11,7 @@
     "dcf_scenarios_calculated",
     "dcf_output_path",
     "fair_value_per_share_output_path",
+    "model_rating_output_path",
     "dcf_warnings",
     "warnings"
   ],

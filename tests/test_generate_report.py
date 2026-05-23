@@ -123,6 +123,35 @@ def fair_value_output() -> dict:
     }
 
 
+def model_rating_output() -> dict:
+    return {
+        "ticker": "NVDA",
+        "model_rating": 3,
+        "rating_label": "fairly valued / neutral on model basis",
+        "fair_value_per_share_used": 12.0,
+        "market_price_used": 11.5,
+        "valuation_gap_percent": 4.3,
+        "rules_version": "0.1.0",
+        "assumptions": {
+            "scenario_used": "base",
+            "valuation_gap_formula": "(fair_value_per_share - current_market_price) / current_market_price",
+            "market_price_metric_id": "nvda_current_market_price_2026_05_23",
+        },
+        "warnings": ["Model rating is a deterministic rule-based classification from fair value per share and sourced market price only."],
+        "source_references": [
+            {
+                "metric_id": "nvda_current_market_price_2026_05_23",
+                "metric_name": "Current market price",
+                "period": "Latest trade timestamp 2026-05-23 00:15 UTC",
+                "source_type": "market data",
+                "source_date": "2026-05-23",
+                "source_url": "https://www.nasdaq.com/market-activity/stocks/nvda",
+            }
+        ],
+        "disclaimer": "non-personalized model output, not investment advice.",
+    }
+
+
 class GenerateReportTests(unittest.TestCase):
     def test_report_creation(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -251,6 +280,28 @@ class GenerateReportTests(unittest.TestCase):
 
         for term in ["price target", "buy", "sell", "hold", "recommendation"]:
             self.assertNotIn(term, normalized_report)
+
+        generate_report.assert_no_prohibited_language(report)
+
+    def test_report_includes_model_rating_only_as_model_output(self) -> None:
+        report = generate_report.render_report(
+            ticker="NVDA",
+            validation_status={"valid": True, "errors": []},
+            research_gaps=[],
+            ratio_outputs=[ratio_output()],
+            audit_log_reference="audit_log.jsonl:1",
+            dcf_output=dcf_output(),
+            fair_value_per_share_output=fair_value_output(),
+            model_rating_output=model_rating_output(),
+            warnings=[],
+            generated_at="2026-05-24T12:00:00Z",
+        )
+
+        self.assertIn("### Model Rating", report)
+        self.assertIn("non-personalized model output, not investment advice", report)
+        self.assertIn("fairly valued / neutral on model basis", report)
+        for term in ["price target", "buy", "sell", "hold", "recommendation"]:
+            self.assertNotIn(term, report.lower())
 
         generate_report.assert_no_prohibited_language(report)
 

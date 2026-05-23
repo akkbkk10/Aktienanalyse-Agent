@@ -99,6 +99,33 @@ def fair_value_output() -> dict:
     }
 
 
+def model_rating_output() -> dict:
+    return {
+        "ticker": "NVDA",
+        "model_rating": 3,
+        "rating_label": "fairly valued / neutral on model basis",
+        "fair_value_per_share_used": 12.0,
+        "market_price_used": 11.5,
+        "valuation_gap_percent": 4.3,
+        "rules_version": "0.1.0",
+        "assumptions": {
+            "scenario_used": "base",
+            "market_price_metric_id": "nvda_current_market_price_2026_05_23",
+        },
+        "warnings": ["Model rating is a deterministic rule-based classification from fair value per share and sourced market price only."],
+        "source_references": [
+            {
+                "metric_id": "nvda_current_market_price_2026_05_23",
+                "metric_name": "Current market price",
+                "source_url": "https://www.nasdaq.com/market-activity/stocks/nvda",
+                "source_date": "2026-05-23",
+                "confidence": "high",
+            }
+        ],
+        "disclaimer": "non-personalized model output, not investment advice.",
+    }
+
+
 class GenerateAnalysisSummaryTests(unittest.TestCase):
     def test_summary_creation(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -184,6 +211,24 @@ class GenerateAnalysisSummaryTests(unittest.TestCase):
             summary["calculated_outputs"]["fair_value_per_share_scenarios"][0]["share_count_metric_id"],
             "nvda_diluted_weighted_average_shares_fy2025",
         )
+        generate_analysis_summary.assert_no_prohibited_language(summary)
+
+    def test_model_rating_included_only_as_model_output(self) -> None:
+        summary = generate_analysis_summary.build_analysis_summary(
+            ticker="NVDA",
+            validation_status={"valid": True, "errors": []},
+            research_gaps=[],
+            ratio_outputs=[ratio_output()],
+            audit_log_reference="audit_log.jsonl:1",
+            dcf_output=dcf_output(),
+            fair_value_per_share_output=fair_value_output(),
+            model_rating_output=model_rating_output(),
+            generated_at="2026-05-24T12:00:00Z",
+        )
+
+        self.assertTrue(summary["assumptions"]["model_rating_available"])
+        self.assertEqual(summary["missing_data"]["model_rating_status"], "included")
+        self.assertEqual(summary["calculated_outputs"]["model_rating"]["model_rating"], 3)
         generate_analysis_summary.assert_no_prohibited_language(summary)
 
     def test_no_buy_sell_hold_recommendation_language(self) -> None:

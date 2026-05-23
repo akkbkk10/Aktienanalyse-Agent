@@ -1,0 +1,35 @@
+{
+  "rules_version": "0.1.0",
+  "scenario_used": "base",
+  "valuation_gap_formula": "(fair_value_per_share - current_market_price) / current_market_price",
+  "rating_buckets": [
+    {
+      "model_rating": 5,
+      "rating_label": "strongly undervalued on model basis",
+      "minimum_gap_percent": 50.0
+    },
+    {
+      "model_rating": 4,
+      "rating_label": "undervalued on model basis",
+      "minimum_gap_percent": 15.0,
+      "maximum_gap_percent": 49.999999
+    },
+    {
+      "model_rating": 3,
+      "rating_label": "fairly valued / neutral on model basis",
+      "minimum_gap_percent": -14.999999,
+      "maximum_gap_percent": 14.999999
+    },
+    {
+      "model_rating": 2,
+      "rating_label": "overvalued on model basis",
+      "minimum_gap_percent": -49.999999,
+      "maximum_gap_percent": -15.0
+    },
+    {
+      "model_rating": 1,
+      "rating_label": "strongly overvalued on model basis",
+      "maximum_gap_percent": -50.0
+    }
+  ]
+}
