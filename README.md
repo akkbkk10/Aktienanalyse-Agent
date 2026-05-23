@@ -36,6 +36,16 @@ python -m unittest discover -s tests
 
 GitHub Actions runs the same command on every pull request.
 
+## Run v0.1 Demo
+
+Run the complete v0.1 NVDA workflow with one command:
+
+```powershell
+python scripts/run_v0_1_demo.py
+```
+
+The demo runs validation, company context build/load, research gap detection, ratio calculation, valuation readiness, DCF, fact-only report generation, analysis summary generation, and audit logging. It prints generated file paths and writes runtime artifacts under `reports/v0_1_demo/`, which is ignored by git.
+
 ## Setup
 
 ```powershell
