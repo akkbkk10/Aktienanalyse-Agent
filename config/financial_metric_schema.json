@@ -12,6 +12,7 @@
     "statement_type",
     "source_url",
     "source_date",
+    "last_verified",
     "confidence"
   ],
   "properties": {
@@ -54,6 +55,10 @@
       "type": "string",
       "format": "date"
     },
+    "last_verified": {
+      "type": "string",
+      "format": "date"
+    },
     "confidence": {
       "type": "string",
       "enum": ["low", "medium", "high"]
@@ -64,4 +69,3 @@
   },
   "additionalProperties": false
 }
-
