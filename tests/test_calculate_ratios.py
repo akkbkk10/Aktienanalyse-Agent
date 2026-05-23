@@ -115,7 +115,38 @@ class CalculateRatiosTests(unittest.TestCase):
         self.assertNotIn("recommendation", serialized)
         self.assertNotIn("investment_advice", serialized)
 
+    def test_nvda_context_calculates_all_supported_ratios_with_traceability(self) -> None:
+        nvda_context = calculate_ratios.load_json(REPO_ROOT / "data" / "companies" / "NVDA" / "context.json")
+
+        result = calculate_ratios.calculate_ratios_from_context(nvda_context, queue_missing=False)
+        ratio_names = {ratio["ratio_name"] for ratio in result["ratios"]}
+
+        self.assertEqual(
+            {
+                "gross_margin",
+                "operating_margin",
+                "net_margin",
+                "free_cash_flow_margin",
+                "revenue_growth",
+            },
+            ratio_names,
+        )
+        self.assertEqual(result["missing_inputs"], [])
+        self.assertEqual(result["skipped"], [])
+
+        for ratio in result["ratios"]:
+            self.assertEqual(ratio["ticker"], "NVDA")
+            self.assertIn("formula", ratio)
+            self.assertTrue(ratio["input_metrics_used"])
+            self.assertTrue(ratio["source_metric_references"])
+            self.assertIn(ratio["confidence"], {"low", "medium", "high"})
+            for source_reference in ratio["source_metric_references"]:
+                self.assertEqual(
+                    source_reference["source_url"],
+                    "https://investor.nvidia.com/news/press-release-details/2025/NVIDIA-Announces-Financial-Results-for-Fourth-Quarter-and-Fiscal-2025/default.aspx",
+                )
+                self.assertIn(source_reference["source_type"], {"earnings release", "annual report", "investor relations", "SEC filing"})
+
 
 if __name__ == "__main__":
     unittest.main()
-

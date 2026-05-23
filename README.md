@@ -102,6 +102,8 @@ Validation-generated queue items are for missing or invalid evidence only. They 
 
 `data/nvda_sample_metrics.json` contains sourced FY2025 sample metrics for NVIDIA Corporation (`NVDA`). It exists only to exercise the evidence schema and validation flow. It must not be used for valuation, DCF, price targets, or investment recommendations.
 
+The NVDA sample also includes sourced FY2024 and FY2025 inputs needed for deterministic ratio coverage: revenue, gross profit, operating income, net income, and free cash flow. Free cash flow is labeled Non-GAAP because NVIDIA presents it as a non-GAAP financial measure.
+
 ## Company Context Workflow
 
 Build a persistent company context from validated metric records:
@@ -157,5 +159,7 @@ The ratio calculation agent can calculate only:
 - `revenue_growth` when prior-period revenue exists
 
 Each ratio output includes ticker, ratio name, value, formula, input metrics used, source metric references, period, and confidence. If required input metrics are missing, the script creates research queue entries in `research_queue.json` and mirrors them to `research_queue.md`.
+
+The bundled NVDA context contains enough sourced NVIDIA investor-relations data to calculate all supported ratios without creating missing-input queue entries.
 
 This workflow is deterministic arithmetic only. It does not create valuation, DCF, fair value, price targets, recommendations, investment advice, or memo output.
