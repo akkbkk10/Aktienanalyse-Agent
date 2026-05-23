@@ -51,6 +51,17 @@ the same source metadata fields as every other financial number. Model ratings
 use these sourced market prices together with fair value per share outputs and
 documented rules.
 
+## Market Price Snapshots
+
+Market prices are stored snapshots, not live trading data. Snapshot records must
+match `config/market_price_snapshot_schema.json` and pass source validation before
+they can reach company context or model rating.
+
+No valuation or reporting module may call a live market data API directly. A
+future Market Data Agent may retrieve live prices, but it must write validated
+snapshot records first. Tests use fixed snapshots so reproducible workflows are
+not affected by changing market data.
+
 ## Ticker Independence
 
 Each ticker is processed independently. A missing context, stale source, research

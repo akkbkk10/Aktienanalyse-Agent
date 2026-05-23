@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -9,6 +10,17 @@ from typing import Any
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONTEXT_ROOT = REPO_ROOT / "data" / "companies"
 DEFAULT_RULES_PATH = REPO_ROOT / "config" / "model_rating_rules.json"
+DEFAULT_SOURCE_RULES_PATH = REPO_ROOT / "config" / "source_rules.json"
+REQUIRED_MARKET_PRICE_SNAPSHOT_FIELDS = [
+    "metric_id",
+    "value",
+    "currency",
+    "exchange",
+    "price_type",
+    "as_of_datetime",
+    "provider",
+    "retrieval_method",
+]
 PROHIBITED_OUTPUT_TERMS = [
     "price target",
     "buy",
@@ -33,12 +45,19 @@ def calculate_model_rating(
     fair_value_per_share_output: dict[str, Any],
     context_root: Path = DEFAULT_CONTEXT_ROOT,
     rules_path: Path = DEFAULT_RULES_PATH,
+    source_rules_path: Path = DEFAULT_SOURCE_RULES_PATH,
+    today: date | None = None,
 ) -> dict[str, Any]:
     normalized_ticker = ticker.upper()
     rules = load_json(rules_path)
+    source_rules = load_json(source_rules_path)
     context = load_json(context_root / normalized_ticker / "context.json")
     market_price_metric = _find_market_price_metric(context)
-    _validate_market_price_metric(market_price_metric)
+    _validate_market_price_metric(
+        market_price_metric,
+        max_age_days=source_rules.get("market_price_snapshot_max_age_days"),
+        today=today or date.today(),
+    )
 
     scenario_name = rules["scenario_used"]
     fair_value_scenario = _find_fair_value_scenario(fair_value_per_share_output, scenario_name)
@@ -63,6 +82,9 @@ def calculate_model_rating(
             "market_price_metric_id": market_price_metric["metric_id"],
             "market_price_unit": market_price_metric["unit"],
             "market_price_period": market_price_metric["period"],
+            "market_price_as_of_datetime": market_price_metric["as_of_datetime"],
+            "market_price_provider": market_price_metric["provider"],
+            "market_price_retrieval_method": market_price_metric["retrieval_method"],
         },
         "warnings": [
             "Model rating is a deterministic rule-based classification from fair value per share and sourced market price only.",
@@ -84,10 +106,11 @@ def _find_market_price_metric(context: dict[str, Any]) -> dict[str, Any]:
     raise ModelRatingError("Missing externally sourced current_market_price metric.")
 
 
-def _validate_market_price_metric(metric: dict[str, Any]) -> None:
-    metric_id = metric.get("metric_id")
-    if not isinstance(metric_id, str) or not metric_id.strip():
-        raise ModelRatingError("Current market price metric must include metric_id.")
+def _validate_market_price_metric(metric: dict[str, Any], max_age_days: int | None, today: date) -> None:
+    for field in REQUIRED_MARKET_PRICE_SNAPSHOT_FIELDS:
+        if not metric.get(field):
+            raise ModelRatingError(f"Current market price snapshot missing {field}.")
+
     value = metric.get("value")
     if not _is_number(value) or value <= 0:
         raise ModelRatingError("Current market price metric value must be greater than zero.")
@@ -97,6 +120,12 @@ def _validate_market_price_metric(metric: dict[str, Any]) -> None:
     for field in ["source_url", "source_type", "source_date", "last_verified", "confidence"]:
         if not source_metadata.get(field):
             raise ModelRatingError(f"Current market price source metadata missing {field}.")
+
+    snapshot_datetime = _parse_iso_datetime(str(metric["as_of_datetime"]))
+    if snapshot_datetime is None:
+        raise ModelRatingError("Current market price snapshot as_of_datetime must be an ISO datetime.")
+    if max_age_days is not None and (today - snapshot_datetime.date()).days > max_age_days:
+        raise ModelRatingError(f"Current market price snapshot is stale; expected {max_age_days} days or newer.")
 
 
 def _find_fair_value_scenario(fair_value_per_share_output: dict[str, Any], scenario_name: str) -> dict[str, Any]:
@@ -128,6 +157,12 @@ def _source_reference(metric: dict[str, Any]) -> dict[str, Any]:
         "metric_category": metric.get("metric_category"),
         "period": metric.get("period"),
         "unit": metric.get("unit"),
+        "currency": metric.get("currency"),
+        "exchange": metric.get("exchange"),
+        "price_type": metric.get("price_type"),
+        "as_of_datetime": metric.get("as_of_datetime"),
+        "provider": metric.get("provider"),
+        "retrieval_method": metric.get("retrieval_method"),
         "source_url": source_metadata.get("source_url"),
         "source_type": source_metadata.get("source_type"),
         "source_date": source_metadata.get("source_date"),
@@ -147,12 +182,23 @@ def _is_number(value: Any) -> bool:
     return isinstance(value, (int, float)) and not isinstance(value, bool)
 
 
+def _parse_iso_datetime(value: str) -> datetime | None:
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Calculate rule-based model rating from fair value per share and sourced market price.")
     parser.add_argument("ticker")
     parser.add_argument("--fair-value-per-share-json", type=Path, required=True)
     parser.add_argument("--context-root", type=Path, default=DEFAULT_CONTEXT_ROOT)
     parser.add_argument("--rules-path", type=Path, default=DEFAULT_RULES_PATH)
+    parser.add_argument("--source-rules-path", type=Path, default=DEFAULT_SOURCE_RULES_PATH)
     args = parser.parse_args()
 
     try:
@@ -161,6 +207,7 @@ def main() -> int:
             fair_value_per_share_output=load_json(args.fair_value_per_share_json),
             context_root=args.context_root,
             rules_path=args.rules_path,
+            source_rules_path=args.source_rules_path,
         )
     except (OSError, json.JSONDecodeError, ModelRatingError) as exc:
         print(json.dumps({"calculated": False, "error": str(exc)}, indent=2))

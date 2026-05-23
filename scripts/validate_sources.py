@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from datetime import date
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
@@ -16,6 +16,7 @@ if str(SCRIPT_DIR) not in sys.path:
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_SCHEMA_PATH = REPO_ROOT / "config" / "financial_metric_schema.json"
 DEFAULT_SOURCE_RULES_PATH = REPO_ROOT / "config" / "source_rules.json"
+DEFAULT_MARKET_PRICE_SNAPSHOT_SCHEMA_PATH = REPO_ROOT / "config" / "market_price_snapshot_schema.json"
 DEFAULT_MARKDOWN_QUEUE_PATH = REPO_ROOT / "research_queue.md"
 DEFAULT_JSON_QUEUE_PATH = REPO_ROOT / "research_queue.json"
 
@@ -57,6 +58,8 @@ def validate_records(
     required_evidence = source_rules.get("required_evidence_fields", [])
     allowed_schemes = set(source_rules.get("allowed_url_schemes", []))
     max_last_verified_age_days = source_rules.get("max_last_verified_age_days")
+    market_price_schema = load_json(DEFAULT_MARKET_PRICE_SNAPSHOT_SCHEMA_PATH)
+    market_price_max_age_days = source_rules.get("market_price_snapshot_max_age_days")
 
     for index, record in enumerate(records):
         for field in required_fields:
@@ -85,7 +88,60 @@ def validate_records(
                 )
             )
 
+        if _is_market_price_record(record):
+            errors.extend(
+                _validate_market_price_snapshot(
+                    index=index,
+                    record=record,
+                    schema=market_price_schema,
+                    validation_date=validation_date,
+                    max_age_days=market_price_max_age_days,
+                )
+            )
+
     errors.extend(_detect_conflicting_values(records))
+    return errors
+
+
+def _is_market_price_record(record: dict[str, Any]) -> bool:
+    return record.get("metric_category") == "market_price" or record.get("metric_name") == "Current market price"
+
+
+def _validate_market_price_snapshot(
+    index: int,
+    record: dict[str, Any],
+    schema: dict[str, Any],
+    validation_date: date,
+    max_age_days: int | None,
+) -> list[ValidationErrorDetail]:
+    errors: list[ValidationErrorDetail] = []
+    required_fields = schema.get("required", [])
+    properties = schema.get("properties", {})
+
+    for field in required_fields:
+        if not record.get(field):
+            errors.append(ValidationErrorDetail(index, field, "Missing required market price snapshot field."))
+
+    for field, rule in properties.items():
+        if field in record:
+            errors.extend(_validate_field(index, field, record[field], rule, {"https"}))
+
+    as_of_datetime = record.get("as_of_datetime")
+    if isinstance(as_of_datetime, str):
+        snapshot_datetime = _parse_iso_datetime(as_of_datetime)
+        if snapshot_datetime is None:
+            errors.append(ValidationErrorDetail(index, "as_of_datetime", "Expected ISO datetime format."))
+        elif max_age_days is not None:
+            age_days = (validation_date - snapshot_datetime.date()).days
+            if age_days > max_age_days:
+                errors.append(
+                    ValidationErrorDetail(
+                        index,
+                        "as_of_datetime",
+                        f"Market price snapshot is stale; expected {max_age_days} days or newer.",
+                    )
+                )
+
     return errors
 
 
@@ -118,6 +174,9 @@ def _validate_field(
         except ValueError:
             errors.append(ValidationErrorDetail(index, field, "Expected ISO date format YYYY-MM-DD."))
 
+    if rule.get("format") == "date-time" and isinstance(value, str) and _parse_iso_datetime(value) is None:
+        errors.append(ValidationErrorDetail(index, field, "Expected ISO datetime format."))
+
     if field == "source_url" and isinstance(value, str):
         parsed = urlparse(value)
         if parsed.scheme not in allowed_schemes or not parsed.netloc:
@@ -128,6 +187,16 @@ def _validate_field(
 
 def _is_number(value: Any) -> bool:
     return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+
+def _parse_iso_datetime(value: str) -> datetime | None:
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed
 
 
 def _validate_last_verified_freshness(

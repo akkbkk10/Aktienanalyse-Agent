@@ -361,6 +361,22 @@ source date, confidence, last verified date, and unit. The rule file
 ratings 1-5. Output is rule-based model classification only, not investment
 advice.
 
+## Market Price Snapshot Governance
+
+Market price is stored as a validated snapshot, not live trading data. A
+`market_price` record must satisfy `config/market_price_snapshot_schema.json` and
+include ticker, metric ID, value, currency, exchange, price type, `as_of_datetime`,
+source URL, source date, provider, retrieval method, confidence, and
+`last_verified`.
+
+No valuation, fair value per share, model rating, report, summary, or orchestrator
+module may fetch live market data directly. Future live ingestion must be added
+through a separate Market Data Agent that writes validated snapshot records before
+downstream calculations run.
+
+Tests and demos use fixed sample snapshots only. Snapshot freshness is governed by
+`config/source_rules.json`.
+
 ## Run full NVDA demo
 
 Run the complete deterministic NVDA workflow:

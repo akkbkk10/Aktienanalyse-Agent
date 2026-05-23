@@ -4,6 +4,7 @@ import importlib.util
 import json
 import tempfile
 import unittest
+from datetime import date
 from pathlib import Path
 
 
@@ -37,6 +38,12 @@ def market_price_metric(value: float = 100.0) -> dict:
         "metric_category": "market_price",
         "value": value,
         "unit": "USD per share",
+        "currency": "USD",
+        "exchange": "NASDAQ",
+        "price_type": "latest_trade",
+        "as_of_datetime": "2026-05-23T00:15:00Z",
+        "provider": "Nasdaq",
+        "retrieval_method": "manual_snapshot",
         "period": "Latest trade timestamp 2026-05-23 00:15 UTC",
         "accounting_basis": "Other",
         "statement_type": "fact",
@@ -69,7 +76,7 @@ class ModelRatingTests(unittest.TestCase):
     def test_missing_market_price_blocks_rating(self) -> None:
         with temp_context([]) as context_root:
             with self.assertRaises(model_rating.ModelRatingError):
-                model_rating.calculate_model_rating("EXM", fair_value_output(100), context_root=context_root)
+                calculate_model_rating_for_test(context_root, 100)
 
     def test_missing_market_price_source_metadata_blocks_rating(self) -> None:
         metric = market_price_metric()
@@ -77,11 +84,25 @@ class ModelRatingTests(unittest.TestCase):
 
         with temp_context([metric]) as context_root:
             with self.assertRaises(model_rating.ModelRatingError):
-                model_rating.calculate_model_rating("EXM", fair_value_output(100), context_root=context_root)
+                calculate_model_rating_for_test(context_root, 100)
+
+    def test_stale_market_price_blocks_rating(self) -> None:
+        metric = market_price_metric()
+        metric["as_of_datetime"] = "2026-01-01T00:15:00Z"
+
+        with temp_context([metric]) as context_root:
+            with self.assertRaises(model_rating.ModelRatingError):
+                calculate_model_rating_for_test(context_root, 100)
+
+    def test_model_rating_does_not_call_external_apis(self) -> None:
+        source = SCRIPT_PATH.read_text(encoding="utf-8")
+
+        for forbidden in ["requests", "urlopen", "http.client", "urllib.request"]:
+            self.assertNotIn(forbidden, source)
 
     def test_no_buy_sell_hold_language(self) -> None:
         with temp_context([market_price_metric()]) as context_root:
-            result = model_rating.calculate_model_rating("EXM", fair_value_output(100), context_root=context_root)
+            result = calculate_model_rating_for_test(context_root, 100)
 
         serialized = json.dumps(result).lower()
         for term in ["buy", "sell", "hold", "recommendation", "price target"]:
@@ -89,7 +110,7 @@ class ModelRatingTests(unittest.TestCase):
 
     def test_no_investment_advice_language_except_required_disclaimer(self) -> None:
         with temp_context([market_price_metric()]) as context_root:
-            result = model_rating.calculate_model_rating("EXM", fair_value_output(100), context_root=context_root)
+            result = calculate_model_rating_for_test(context_root, 100)
 
         self.assertEqual(result["disclaimer"], "non-personalized model output, not investment advice.")
         serialized = json.dumps(result).lower().replace("not investment advice", "")
@@ -97,12 +118,21 @@ class ModelRatingTests(unittest.TestCase):
 
     def assert_rating(self, fair_value: float, expected_rating: int, expected_label: str) -> None:
         with temp_context([market_price_metric()]) as context_root:
-            result = model_rating.calculate_model_rating("EXM", fair_value_output(fair_value), context_root=context_root)
+            result = calculate_model_rating_for_test(context_root, fair_value)
 
         self.assertEqual(result["model_rating"], expected_rating)
         self.assertEqual(result["rating_label"], expected_label)
         self.assertEqual(result["market_price_used"], 100)
         self.assertEqual(result["rules_version"], "0.1.0")
+
+
+def calculate_model_rating_for_test(context_root: Path, fair_value: float) -> dict:
+    return model_rating.calculate_model_rating(
+        "EXM",
+        fair_value_output(fair_value),
+        context_root=context_root,
+        today=date(2026, 5, 24),
+    )
 
 
 class temp_context:

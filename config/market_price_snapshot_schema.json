@@ -1,0 +1,35 @@
+{
+  "schema_version": "0.1.0",
+  "type": "object",
+  "required": [
+    "ticker",
+    "metric_id",
+    "value",
+    "currency",
+    "exchange",
+    "price_type",
+    "as_of_datetime",
+    "source_url",
+    "source_date",
+    "provider",
+    "retrieval_method",
+    "confidence",
+    "last_verified"
+  ],
+  "properties": {
+    "ticker": {"type": "string", "minLength": 1},
+    "metric_id": {"type": "string", "minLength": 1},
+    "value": {"type": "number"},
+    "currency": {"type": "string", "minLength": 1},
+    "exchange": {"type": "string", "minLength": 1},
+    "price_type": {"type": "string", "enum": ["close", "latest_trade", "opening", "intraday_snapshot"]},
+    "as_of_datetime": {"type": "string", "format": "date-time"},
+    "source_url": {"type": "string", "minLength": 1},
+    "source_date": {"type": "string", "format": "date"},
+    "provider": {"type": "string", "minLength": 1},
+    "retrieval_method": {"type": "string", "enum": ["manual_snapshot", "file_import", "market_data_agent"]},
+    "confidence": {"type": "string", "enum": ["low", "medium", "high"]},
+    "last_verified": {"type": "string", "format": "date"}
+  },
+  "additionalProperties": false
+}

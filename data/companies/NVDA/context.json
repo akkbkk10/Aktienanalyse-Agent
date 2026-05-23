@@ -225,6 +225,12 @@
         "confidence": "high"
       },
       "metric_category": "market_price",
+      "currency": "USD",
+      "exchange": "NASDAQ",
+      "price_type": "latest_trade",
+      "as_of_datetime": "2026-05-23T00:15:00Z",
+      "provider": "Nasdaq",
+      "retrieval_method": "manual_snapshot",
       "notes": "Externally sourced market price input for model rating only."
     }
   ],

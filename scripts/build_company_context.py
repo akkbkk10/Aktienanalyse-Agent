@@ -19,6 +19,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT_ROOT = REPO_ROOT / "data" / "companies"
 CONTEXT_SCHEMA_VERSION = "0.1.0"
 SOURCE_METADATA_FIELDS = ["source_url", "source_type", "source_date", "last_verified", "confidence"]
+MARKET_PRICE_SNAPSHOT_FIELDS = ["currency", "exchange", "price_type", "as_of_datetime", "provider", "retrieval_method"]
 
 
 class ContextValidationError(ValueError):
@@ -126,6 +127,10 @@ def _metric_to_context_metric(record: dict[str, Any]) -> dict[str, Any]:
 
     if "metric_category" in record:
         metric["metric_category"] = record["metric_category"]
+
+    for field in MARKET_PRICE_SNAPSHOT_FIELDS:
+        if field in record:
+            metric[field] = record[field]
 
     if "notes" in record:
         metric["notes"] = record["notes"]
