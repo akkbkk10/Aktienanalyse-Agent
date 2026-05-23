@@ -163,3 +163,15 @@ Each ratio output includes ticker, ratio name, value, formula, input metrics use
 The bundled NVDA context contains enough sourced NVIDIA investor-relations data to calculate all supported ratios without creating missing-input queue entries.
 
 This workflow is deterministic arithmetic only. It does not create valuation, DCF, fair value, price targets, recommendations, investment advice, or memo output.
+
+## Methodology Configuration Workflow
+
+Validate the inert methodology configuration:
+
+```powershell
+python scripts/validate_methodology.py
+```
+
+`config/methodology_buffett_ai.json` defines allowed future methodology settings, required ratio inputs, scenario names, discount-rate rules, margin-of-safety rules, and outputs that remain prohibited before a valuation stage exists.
+
+This workflow validates configuration shape only. It does not calculate DCF, fair value, intrinsic value, price targets, recommendations, investment advice, or memo output.
