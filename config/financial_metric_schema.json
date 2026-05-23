@@ -34,6 +34,10 @@
       "type": "string",
       "minLength": 1
     },
+    "metric_category": {
+      "type": "string",
+      "enum": ["financial_metric", "share_count"]
+    },
     "value": {
       "type": "number"
     },

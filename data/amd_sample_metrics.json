@@ -202,5 +202,23 @@
     "last_verified": "2026-05-23",
     "confidence": "high",
     "notes": "Segment revenue sample data for deterministic workflows."
+  },
+  {
+    "company": "Advanced Micro Devices, Inc.",
+    "ticker": "AMD",
+    "metric_id": "amd_diluted_shares_used_in_per_share_calculation_fy2025",
+    "metric_name": "Diluted shares used in per share calculation",
+    "metric_category": "share_count",
+    "value": 1636,
+    "unit": "shares millions",
+    "period": "FY2025 ended 2025-12-27",
+    "accounting_basis": "GAAP",
+    "statement_type": "fact",
+    "source_url": "https://ir.amd.com/financial-information/sec-filings/content/0000002488-26-000014/q42025991.htm",
+    "source_type": "SEC filing",
+    "source_date": "2026-02-03",
+    "last_verified": "2026-05-23",
+    "confidence": "high",
+    "notes": "Share count input only. Do not use to calculate fair value per share yet."
   }
 ]

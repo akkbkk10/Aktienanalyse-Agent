@@ -190,10 +190,28 @@
         "confidence": "high"
       },
       "notes": "Sample data only. Do not use for valuation."
+    },
+    {
+      "metric_id": "nvda_diluted_weighted_average_shares_fy2025",
+      "metric_name": "Diluted weighted average shares",
+      "value": 24804,
+      "unit": "shares millions",
+      "period": "FY2025 ended 2025-01-26",
+      "accounting_basis": "GAAP",
+      "statement_type": "fact",
+      "source_metadata": {
+        "source_url": "https://investor.nvidia.com/files/doc_financials/2025/Q425/Q4FY25-CFO-Commentary.pdf",
+        "source_type": "investor relations",
+        "source_date": "2025-02-26",
+        "last_verified": "2026-05-23",
+        "confidence": "high"
+      },
+      "metric_category": "share_count",
+      "notes": "Share count input only. Do not use to calculate fair value per share yet."
     }
   ],
   "source_metadata": {
     "source_file": "data\\nvda_sample_metrics.json",
-    "metric_count": 11
+    "metric_count": 12
   }
 }

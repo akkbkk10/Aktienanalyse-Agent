@@ -154,7 +154,7 @@ def _source_reference_lines(ratio_outputs: list[dict[str, Any]]) -> list[str]:
                 continue
             seen.add(key)
             references.append(
-                f"- {source.get('metric_name')} ({source.get('period')}): "
+                f"- {_metric_label(source)} ({source.get('period')}): "
                 f"{source.get('source_type')} dated {source.get('source_date')} - {source.get('source_url')}"
             )
     return references
@@ -210,13 +210,19 @@ def _dcf_section_lines(dcf_output: dict[str, Any]) -> list[str]:
     if source_references:
         for source in source_references:
             lines.append(
-                f"- {source.get('metric_name')} ({source.get('period')}): "
+                f"- {_metric_label(source)} ({source.get('period')}): "
                 f"dated {source.get('source_date')} - {source.get('source_url')}"
             )
     else:
         lines.append("- No DCF source references provided.")
 
     return lines
+
+
+def _metric_label(source: dict[str, Any]) -> str:
+    metric_name = source.get("metric_name")
+    metric_id = source.get("metric_id")
+    return f"{metric_name} [{metric_id}]" if metric_id else str(metric_name)
 
 
 def main() -> int:
