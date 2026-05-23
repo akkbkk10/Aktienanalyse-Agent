@@ -98,6 +98,7 @@ def run_analysis(
         context_root=context_root,
         markdown_queue_path=markdown_queue_path,
         json_queue_path=json_queue_path,
+        tickers=[normalized_ticker],
     )
     ratio_result = calculate_ratios.calculate_ratios_for_ticker(
         ticker=normalized_ticker,

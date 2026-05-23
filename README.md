@@ -56,7 +56,13 @@ python scripts/run_batch_analysis.py NVDA MSFT --generate-report --generate-summ
 
 The batch runner executes the existing per-ticker workflow: validation, context, research gaps, ratios, readiness, optional DCF, optional report, optional summary, and audit log. It returns structured JSON with tickers processed, successful runs, failed runs, output paths by ticker, and warnings by ticker.
 
-NVDA is currently the only fully working sample ticker. Other tickers fail cleanly unless their source data and assumptions are added.
+Run the supported NVDA + AMD sample batch:
+
+```powershell
+python scripts/run_batch_analysis.py NVDA AMD --generate-report --generate-summary --run-dcf
+```
+
+NVDA and AMD are currently the fully working sample tickers. Other tickers fail cleanly unless their source data and assumptions are added.
 
 ## Setup
 
