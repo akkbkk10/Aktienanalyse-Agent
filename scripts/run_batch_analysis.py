@@ -73,6 +73,7 @@ def run_batch(
             "report_path": summary.get("report_path"),
             "analysis_summary_path": summary.get("analysis_summary_path"),
             "dcf_output_path": summary.get("dcf_output_path"),
+            "fair_value_per_share_output_path": summary.get("fair_value_per_share_output_path"),
             "audit_log_path": str(audit_log_path) if summary.get("audit_log_written") else None,
         }
         warnings_by_ticker[ticker] = summary.get("warnings", []) + summary.get("dcf_warnings", [])

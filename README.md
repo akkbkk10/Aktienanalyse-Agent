@@ -9,7 +9,7 @@ The first implementation slice focuses on evidence discipline:
 - Keep facts, assumptions, and opinions separate.
 - Keep GAAP and Non-GAAP metrics explicitly labeled.
 
-Valuation, DCF, price target, and investment recommendation logic are intentionally not implemented yet.
+Price target, recommendation, model rating, model confidence, model signal, and automated trading logic are intentionally not implemented.
 
 ## Repository Layout
 
@@ -141,8 +141,8 @@ trace calculations back to the exact sourced metric record without relying only 
 display names.
 
 Share count inputs are supported as sourced `share_count` metric records. These
-records are preserved in company context for future per-share calculations, but
-the current system does not calculate fair value per share.
+records are preserved in company context and can be used with DCF scenario output
+to calculate deterministic fair value per share.
 
 ## Company Context Workflow
 
@@ -274,9 +274,9 @@ Run the complete workflow with DCF, report, and structured summary:
 python scripts/run_analysis.py NVDA --source-data-path data\nvda_sample_metrics.json --run-dcf --dcf-assumptions-path data\companies\NVDA\dcf_assumptions.json --generate-report --generate-summary
 ```
 
-Full workflow order: validation -> context -> gaps -> ratios -> readiness -> optional DCF -> optional report -> analysis summary -> audit log. When DCF and report flags are used together, the report includes a DCF calculation section with assumptions used, bear/base/bull scenario outputs, formulas, warnings, and source references. When summary generation is enabled, the JSON summary includes `analysis_summary_path`.
+Full workflow order: validation -> context -> gaps -> ratios -> readiness -> optional DCF -> optional fair value per share -> optional report -> analysis summary -> audit log. When DCF and report flags are used together, the report includes DCF and fair value per share calculation sections with assumptions used, bear/base/bull scenario outputs, formulas, warnings, and source references. When summary generation is enabled, the JSON summary includes `analysis_summary_path`.
 
-The orchestrator does not create fair value, intrinsic value, price targets, buy/sell/hold recommendations, investment advice, or final investment memo output.
+The orchestrator does not create model ratings, model confidence labels, model signals, price targets, buy/sell/hold recommendations, investment advice, or final investment memo output.
 
 ## Fact Report Workflow
 
@@ -288,7 +288,7 @@ python scripts/generate_report.py NVDA --validation-status-json path\to\validati
 
 Reports are written to `reports/` and separate facts, missing data, and warnings. They include validation status, research gaps, calculated ratios, source references, and an audit log reference.
 
-Fact reports must not include valuation, fair value, intrinsic value, price targets, buy/sell/hold recommendations, or investment advice.
+Fact reports may include fair value per share only as a calculated model output when a DCF output and sourced share count are available.
 
 When a DCF output JSON is provided, the fact report can include a DCF calculation section with assumptions, scenario outputs, formulas, warnings, and source references. This section remains calculation output only and does not include price targets, buy/sell/hold recommendations, investment advice, or final investment memo content.
 
@@ -300,7 +300,7 @@ Generate a structured JSON analysis summary from validated run artifacts:
 python scripts/generate_analysis_summary.py NVDA --validation-status-json path\to\validation_status.json --research-gaps-json path\to\research_gaps.json --ratio-outputs-json path\to\ratio_outputs.json --dcf-output-json reports\NVDA_dcf_output.json --audit-log-reference audit_log.jsonl:1
 ```
 
-The summary is written under `reports/` and separates facts, assumptions, calculated outputs, missing data, and risks/warnings. DCF scenario outputs are included only when a DCF JSON file is provided.
+The summary is written under `reports/` and separates facts, assumptions, calculated outputs, missing data, and risks/warnings. DCF scenario outputs and fair value per share calculations are included only when their structured JSON outputs are available.
 
 This workflow does not create buy/sell/hold recommendations, price targets, investment advice, automated trading logic, or final investment memo content.
 
@@ -337,6 +337,16 @@ DCF assumptions are stored separately from facts in `data/companies/<TICKER>/dcf
 
 The output is structured JSON with formulas, assumptions used, warnings, source references, and scenario calculations. It does not add price targets, buy/sell/hold recommendations, investment advice, or memo generation.
 
+## Fair Value Per Share Workflow
+
+Calculate fair value per share from existing DCF output and sourced diluted share count metrics:
+
+```powershell
+python scripts/fair_value_per_share.py NVDA --dcf-output-path reports\NVDA_dcf_output.json
+```
+
+The calculation requires a `share_count` metric with a stable `metric_id` in the company context. It never invents share counts or assumptions. Output is structured JSON for bear/base/bull scenarios and remains calculated model output only, not investment advice.
+
 ## Run full NVDA demo
 
 Run the complete deterministic NVDA workflow:
@@ -347,4 +357,4 @@ python scripts/run_analysis.py NVDA --source-data-path data\nvda_sample_metrics.
 
 This validates source data, rebuilds the company context, detects research gaps, calculates deterministic ratios, writes an audit log entry, and generates a fact-only report under `reports/`.
 
-The demo does not calculate DCF, fair value, intrinsic value, price targets, recommendations, buy/sell/hold output, or investment advice.
+The demo does not create model ratings, model confidence labels, model signals, price targets, recommendations, buy/sell/hold output, or investment advice.

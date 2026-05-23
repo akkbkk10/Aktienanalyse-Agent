@@ -6,7 +6,7 @@ separates facts, assumptions, calculations, reports, summaries, and audit record
 ## Workflow
 
 ```text
-validation -> context -> gaps -> ratios -> readiness -> DCF -> report -> summary -> audit log
+validation -> context -> gaps -> ratios -> readiness -> DCF -> fair value per share -> report -> summary -> audit log
 ```
 
 ## Stages
@@ -17,9 +17,10 @@ validation -> context -> gaps -> ratios -> readiness -> DCF -> report -> summary
 4. Ratio calculation derives deterministic ratios from validated company context.
 5. Valuation readiness checks source validity, gaps, required ratios, methodology config, audit writability, and prohibited outputs.
 6. DCF calculation runs only after readiness passes and only from explicit assumptions.
-7. Fact-only report generation creates a Markdown report with facts, missing data, warnings, and optional DCF calculation output.
-8. Analysis summary generation creates structured JSON separating facts, assumptions, calculated outputs, missing data, and risks/warnings.
-9. Audit logging records the reproducible analysis run.
+7. Fair value per share calculation divides existing DCF scenario values by sourced diluted share count metrics with `metric_id` traceability.
+8. Fact-only report generation creates a Markdown report with facts, missing data, warnings, and optional DCF and fair value per share calculation output.
+9. Analysis summary generation creates structured JSON separating facts, assumptions, calculated outputs, missing data, and risks/warnings.
+10. Audit logging records the reproducible analysis run.
 
 ## Boundary
 
@@ -41,8 +42,8 @@ technical traceability stable even when metric display names or report formattin
 change.
 
 Share count inputs use the same evidence model with `metric_category:
-share_count`. They are loaded into company context as sourced facts for future
-per-share work, while fair value per share remains outside the current workflow.
+share_count`. They are loaded into company context as sourced facts and are used
+only to calculate fair value per share from existing DCF scenario outputs.
 
 ## Ticker Independence
 
@@ -55,5 +56,5 @@ warnings by ticker so NVDA and AMD cannot cross-block each other.
 
 Model-generated reports, summaries, DCF outputs, and batch outputs are analysis
 artifacts only. They are not personal investment advice and must not include model
-ratings, model confidence labels, model signals, fair value per share, price
-targets, buy/sell/hold recommendations, or automated trading instructions.
+ratings, model confidence labels, model signals, price targets, buy/sell/hold
+recommendations, or automated trading instructions.

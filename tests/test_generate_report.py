@@ -87,6 +87,42 @@ def dcf_output() -> dict:
     }
 
 
+def fair_value_output() -> dict:
+    return {
+        "ticker": "NVDA",
+        "calculated": True,
+        "currency": "USD",
+        "formulas": {"fair_value_per_share": "dcf_value_used / diluted_share_count_used"},
+        "assumptions": {
+            "dcf_output_unit": "USD millions",
+            "share_count_unit": "shares millions",
+            "share_count_period": "FY2025",
+            "share_count_metric_id": "nvda_diluted_weighted_average_shares_fy2025",
+        },
+        "warnings": ["Fair value per share is deterministic arithmetic from existing DCF output and sourced share count only."],
+        "source_references": [
+            {
+                "metric_id": "nvda_diluted_weighted_average_shares_fy2025",
+                "metric_name": "Diluted weighted average shares",
+                "period": "FY2025",
+                "source_type": "investor relations",
+                "source_date": "2025-02-26",
+                "source_url": "https://investor.nvidia.com/example",
+            }
+        ],
+        "disclaimer": "calculated model output only, not investment advice.",
+        "scenarios": [
+            {
+                "scenario": "base",
+                "fair_value_per_share": 12.0,
+                "dcf_value_used": 1200,
+                "share_count_used": 100,
+                "share_count_metric_id": "nvda_diluted_weighted_average_shares_fy2025",
+            }
+        ],
+    }
+
+
 class GenerateReportTests(unittest.TestCase):
     def test_report_creation(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -215,6 +251,27 @@ class GenerateReportTests(unittest.TestCase):
 
         for term in ["price target", "buy", "sell", "hold", "recommendation"]:
             self.assertNotIn(term, normalized_report)
+
+        generate_report.assert_no_prohibited_language(report)
+
+    def test_report_includes_fair_value_only_as_model_calculation(self) -> None:
+        report = generate_report.render_report(
+            ticker="NVDA",
+            validation_status={"valid": True, "errors": []},
+            research_gaps=[],
+            ratio_outputs=[ratio_output()],
+            audit_log_reference="audit_log.jsonl:1",
+            dcf_output=dcf_output(),
+            fair_value_per_share_output=fair_value_output(),
+            warnings=[],
+            generated_at="2026-05-23T12:00:00Z",
+        )
+
+        self.assertIn("### Fair Value Per Share Model Calculation", report)
+        self.assertIn("Share count metric ID: nvda_diluted_weighted_average_shares_fy2025", report)
+        self.assertIn("calculated model output only, not investment advice", report)
+        for term in ["price target", "buy", "sell", "hold", "recommendation"]:
+            self.assertNotIn(term, report.lower())
 
         generate_report.assert_no_prohibited_language(report)
 
