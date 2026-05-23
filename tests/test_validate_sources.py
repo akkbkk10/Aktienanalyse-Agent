@@ -20,6 +20,7 @@ def valid_record() -> dict:
     return {
         "company": "Example AG",
         "ticker": "EXM",
+        "metric_id": "exm_revenue_fy2025",
         "metric_name": "Revenue",
         "value": 1.0,
         "unit": "EUR",
@@ -83,6 +84,22 @@ class ValidateSourcesTests(unittest.TestCase):
         errors = validate_sources.validate_records([record], self.schema, self.rules)
 
         self.assertTrue(any(error.field == "unit" for error in errors))
+
+    def test_missing_metric_id_fails_validation(self) -> None:
+        record = valid_record()
+        del record["metric_id"]
+
+        errors = validate_sources.validate_records([record], self.schema, self.rules)
+
+        self.assertTrue(any(error.field == "metric_id" for error in errors))
+
+    def test_empty_metric_id_fails_validation(self) -> None:
+        record = valid_record()
+        record["metric_id"] = ""
+
+        errors = validate_sources.validate_records([record], self.schema, self.rules)
+
+        self.assertTrue(any(error.field == "metric_id" for error in errors))
 
     def test_invalid_accounting_basis_fails(self) -> None:
         record = valid_record()
@@ -160,6 +177,16 @@ class ValidateSourcesTests(unittest.TestCase):
 
             self.assertGreaterEqual(result["created_count"], 1)
             self.assertEqual(queue["items"][0]["source"], "source_validation_agent")
+
+    def test_nvda_sample_data_passes_validation(self) -> None:
+        errors = validate_sources.validate_file(REPO_ROOT / "data" / "nvda_sample_metrics.json")
+
+        self.assertEqual(errors, [])
+
+    def test_amd_sample_data_passes_validation(self) -> None:
+        errors = validate_sources.validate_file(REPO_ROOT / "data" / "amd_sample_metrics.json")
+
+        self.assertEqual(errors, [])
 
 
 if __name__ == "__main__":

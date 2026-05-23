@@ -114,6 +114,7 @@ def _single_required_value(records: list[dict[str, Any]], field: str) -> str:
 def _metric_to_context_metric(record: dict[str, Any]) -> dict[str, Any]:
     source_metadata = {field: record[field] for field in SOURCE_METADATA_FIELDS}
     metric = {
+        "metric_id": record["metric_id"],
         "metric_name": record["metric_name"],
         "value": record["value"],
         "unit": record["unit"],
@@ -134,7 +135,7 @@ def _validate_context_metric(index: int, metric: Any) -> list[str]:
         return [f"Metric {index} must be an object."]
 
     errors = []
-    for field in ["metric_name", "value", "unit", "period", "accounting_basis", "statement_type"]:
+    for field in ["metric_id", "metric_name", "value", "unit", "period", "accounting_basis", "statement_type"]:
         if field not in metric or metric[field] in (None, ""):
             errors.append(f"Metric {index} missing {field}.")
 

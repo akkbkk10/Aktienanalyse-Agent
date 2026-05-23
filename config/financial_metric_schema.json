@@ -4,6 +4,7 @@
   "required": [
     "company",
     "ticker",
+    "metric_id",
     "metric_name",
     "value",
     "unit",
@@ -22,6 +23,10 @@
       "minLength": 1
     },
     "ticker": {
+      "type": "string",
+      "minLength": 1
+    },
+    "metric_id": {
       "type": "string",
       "minLength": 1
     },

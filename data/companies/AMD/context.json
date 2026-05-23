@@ -5,6 +5,7 @@
   "last_updated": "2026-05-23",
   "metrics": [
     {
+      "metric_id": "amd_revenue_fy2024",
       "metric_name": "Revenue",
       "value": 25785,
       "unit": "USD millions",
@@ -21,6 +22,7 @@
       "notes": "Prior-period sample data for deterministic workflows."
     },
     {
+      "metric_id": "amd_gross_profit_fy2024",
       "metric_name": "Gross profit",
       "value": 12725,
       "unit": "USD millions",
@@ -37,6 +39,7 @@
       "notes": "Prior-period sample data for deterministic workflows."
     },
     {
+      "metric_id": "amd_operating_income_fy2024",
       "metric_name": "Operating income",
       "value": 1900,
       "unit": "USD millions",
@@ -53,6 +56,7 @@
       "notes": "Prior-period sample data for deterministic workflows."
     },
     {
+      "metric_id": "amd_net_income_fy2024",
       "metric_name": "Net income",
       "value": 1641,
       "unit": "USD millions",
@@ -69,6 +73,7 @@
       "notes": "Prior-period sample data for deterministic workflows."
     },
     {
+      "metric_id": "amd_free_cash_flow_fy2024",
       "metric_name": "Free cash flow",
       "value": 2405,
       "unit": "USD millions",
@@ -85,6 +90,7 @@
       "notes": "AMD presents free cash flow as a supplemental non-GAAP measure."
     },
     {
+      "metric_id": "amd_data_center_revenue_fy2024",
       "metric_name": "Data Center revenue",
       "value": 12579,
       "unit": "USD millions",
@@ -101,6 +107,7 @@
       "notes": "Prior-period segment revenue sample data for deterministic workflows."
     },
     {
+      "metric_id": "amd_revenue_fy2025",
       "metric_name": "Revenue",
       "value": 34639,
       "unit": "USD millions",
@@ -117,6 +124,7 @@
       "notes": "Sample data for deterministic workflows."
     },
     {
+      "metric_id": "amd_gross_profit_fy2025",
       "metric_name": "Gross profit",
       "value": 17152,
       "unit": "USD millions",
@@ -133,6 +141,7 @@
       "notes": "Sample data for deterministic workflows."
     },
     {
+      "metric_id": "amd_operating_income_fy2025",
       "metric_name": "Operating income",
       "value": 3694,
       "unit": "USD millions",
@@ -149,6 +158,7 @@
       "notes": "Sample data for deterministic workflows."
     },
     {
+      "metric_id": "amd_net_income_fy2025",
       "metric_name": "Net income",
       "value": 4335,
       "unit": "USD millions",
@@ -165,6 +175,7 @@
       "notes": "Sample data for deterministic workflows."
     },
     {
+      "metric_id": "amd_free_cash_flow_fy2025",
       "metric_name": "Free cash flow",
       "value": 5519,
       "unit": "USD millions",
@@ -181,6 +192,7 @@
       "notes": "AMD presents free cash flow as a supplemental non-GAAP measure."
     },
     {
+      "metric_id": "amd_data_center_revenue_fy2025",
       "metric_name": "Data Center revenue",
       "value": 16635,
       "unit": "USD millions",

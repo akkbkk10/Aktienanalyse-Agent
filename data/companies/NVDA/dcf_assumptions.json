@@ -14,7 +14,8 @@
       "period": "FY2025 ended 2025-01-26",
       "source_url": "https://investor.nvidia.com/news/press-release-details/2025/NVIDIA-Announces-Financial-Results-for-Fourth-Quarter-and-Fiscal-2025/default.aspx",
       "source_date": "2025-02-26",
-      "confidence": "high"
+      "confidence": "high",
+      "metric_id": "nvda_free_cash_flow_fy2025"
     }
   ],
   "scenarios": {
@@ -35,10 +36,11 @@
           "year": 3,
           "free_cash_flow": 67000
         }
-      ]
+      ],
+      "starting_free_cash_flow_metric_id": "nvda_free_cash_flow_fy2025"
     },
     "base": {
-      "discount_rate": 0.10,
+      "discount_rate": 0.1,
       "terminal_growth_rate": 0.03,
       "starting_free_cash_flow": 60724,
       "forecast_years": [
@@ -54,7 +56,8 @@
           "year": 3,
           "free_cash_flow": 78500
         }
-      ]
+      ],
+      "starting_free_cash_flow_metric_id": "nvda_free_cash_flow_fy2025"
     },
     "bull": {
       "discount_rate": 0.09,
@@ -73,7 +76,8 @@
           "year": 3,
           "free_cash_flow": 92500
         }
-      ]
+      ],
+      "starting_free_cash_flow_metric_id": "nvda_free_cash_flow_fy2025"
     }
   }
 }

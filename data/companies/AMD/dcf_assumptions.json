@@ -14,7 +14,8 @@
       "period": "FY2025 ended 2025-12-27",
       "source_url": "https://ir.amd.com/news-events/press-releases/detail/1276/amd-reports-fourth-quarter-and-full-year-2025-financial-results",
       "source_date": "2026-02-03",
-      "confidence": "high"
+      "confidence": "high",
+      "metric_id": "amd_free_cash_flow_fy2025"
     }
   ],
   "scenarios": {
@@ -35,7 +36,8 @@
           "year": 3,
           "free_cash_flow": 6100
         }
-      ]
+      ],
+      "starting_free_cash_flow_metric_id": "amd_free_cash_flow_fy2025"
     },
     "base": {
       "discount_rate": 0.1,
@@ -54,7 +56,8 @@
           "year": 3,
           "free_cash_flow": 7600
         }
-      ]
+      ],
+      "starting_free_cash_flow_metric_id": "amd_free_cash_flow_fy2025"
     },
     "bull": {
       "discount_rate": 0.09,
@@ -73,7 +76,8 @@
           "year": 3,
           "free_cash_flow": 9100
         }
-      ]
+      ],
+      "starting_free_cash_flow_metric_id": "amd_free_cash_flow_fy2025"
     }
   }
 }

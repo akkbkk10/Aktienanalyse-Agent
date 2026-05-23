@@ -5,6 +5,7 @@
   "last_updated": "2026-05-23",
   "metrics": [
     {
+      "metric_id": "nvda_revenue_fy2024",
       "metric_name": "Revenue",
       "value": 60922,
       "unit": "USD millions",
@@ -21,6 +22,7 @@
       "notes": "Prior-period sample data for deterministic revenue growth. Do not use for valuation."
     },
     {
+      "metric_id": "nvda_gross_profit_fy2024",
       "metric_name": "Gross profit",
       "value": 44301,
       "unit": "USD millions",
@@ -37,6 +39,7 @@
       "notes": "Prior-period sample data for deterministic margin calculations. Do not use for valuation."
     },
     {
+      "metric_id": "nvda_operating_income_fy2024",
       "metric_name": "Operating income",
       "value": 32972,
       "unit": "USD millions",
@@ -53,6 +56,7 @@
       "notes": "Prior-period sample data for deterministic margin calculations. Do not use for valuation."
     },
     {
+      "metric_id": "nvda_net_income_fy2024",
       "metric_name": "Net income",
       "value": 29760,
       "unit": "USD millions",
@@ -69,6 +73,7 @@
       "notes": "Prior-period sample data for deterministic margin calculations. Do not use for valuation."
     },
     {
+      "metric_id": "nvda_free_cash_flow_fy2024",
       "metric_name": "Free cash flow",
       "value": 26947,
       "unit": "USD millions",
@@ -85,6 +90,7 @@
       "notes": "Free cash flow is presented by NVIDIA as a non-GAAP financial measure. Do not use for valuation."
     },
     {
+      "metric_id": "nvda_revenue_fy2025",
       "metric_name": "Revenue",
       "value": 130497,
       "unit": "USD millions",
@@ -101,6 +107,7 @@
       "notes": "Sample data only. Do not use for valuation."
     },
     {
+      "metric_id": "nvda_gross_profit_fy2025",
       "metric_name": "Gross profit",
       "value": 97858,
       "unit": "USD millions",
@@ -117,6 +124,7 @@
       "notes": "Sample data only. Do not use for valuation."
     },
     {
+      "metric_id": "nvda_operating_income_fy2025",
       "metric_name": "Operating income",
       "value": 81453,
       "unit": "USD millions",
@@ -133,6 +141,7 @@
       "notes": "Sample data only. Do not use for valuation."
     },
     {
+      "metric_id": "nvda_net_income_fy2025",
       "metric_name": "Net income",
       "value": 72880,
       "unit": "USD millions",
@@ -149,6 +158,7 @@
       "notes": "Sample data only. Do not use for valuation."
     },
     {
+      "metric_id": "nvda_free_cash_flow_fy2025",
       "metric_name": "Free cash flow",
       "value": 60724,
       "unit": "USD millions",
@@ -165,6 +175,7 @@
       "notes": "Free cash flow is presented by NVIDIA as a non-GAAP financial measure. Do not use for valuation."
     },
     {
+      "metric_id": "nvda_data_center_revenue_fy2025",
       "metric_name": "Data Center revenue",
       "value": 115200,
       "unit": "USD millions",
