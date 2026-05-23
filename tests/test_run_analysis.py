@@ -26,6 +26,7 @@ class RunAnalysisTests(unittest.TestCase):
                 markdown_queue_path=paths["markdown_queue"],
                 json_queue_path=paths["json_queue"],
                 audit_log_path=paths["audit_log"],
+                reports_dir=paths["reports_dir"],
             )
 
             self.assertEqual(result["ticker"], "NVDA")
@@ -33,6 +34,7 @@ class RunAnalysisTests(unittest.TestCase):
             self.assertEqual(result["research_gaps_count"], 0)
             self.assertIn("net_margin", result["ratios_calculated"])
             self.assertTrue(result["audit_log_written"])
+            self.assertIsNone(result["report_path"])
             self.assertEqual(result["warnings"], [])
 
     def test_missing_context_warns_when_rebuild_disabled(self) -> None:
@@ -44,6 +46,7 @@ class RunAnalysisTests(unittest.TestCase):
                 markdown_queue_path=paths["markdown_queue"],
                 json_queue_path=paths["json_queue"],
                 audit_log_path=paths["audit_log"],
+                reports_dir=paths["reports_dir"],
                 rebuild_context=False,
             )
 
@@ -65,6 +68,7 @@ class RunAnalysisTests(unittest.TestCase):
                 markdown_queue_path=paths["markdown_queue"],
                 json_queue_path=paths["json_queue"],
                 audit_log_path=paths["audit_log"],
+                reports_dir=paths["reports_dir"],
             )
 
             self.assertFalse(result["validation_status"]["valid"])
@@ -80,6 +84,7 @@ class RunAnalysisTests(unittest.TestCase):
                 markdown_queue_path=paths["markdown_queue"],
                 json_queue_path=paths["json_queue"],
                 audit_log_path=paths["audit_log"],
+                reports_dir=paths["reports_dir"],
             )
 
             lines = paths["audit_log"].read_text(encoding="utf-8").splitlines()
@@ -87,6 +92,76 @@ class RunAnalysisTests(unittest.TestCase):
             record = json.loads(lines[0])
             self.assertEqual(record["ticker"], "NVDA")
             self.assertTrue(record["ratio_outputs"])
+
+    def test_orchestrator_report_generation(self) -> None:
+        with temp_analysis_workspace() as paths:
+            result = run_analysis.run_analysis(
+                ticker="NVDA",
+                source_data_path=paths["source_data"],
+                context_root=paths["context_root"],
+                markdown_queue_path=paths["markdown_queue"],
+                json_queue_path=paths["json_queue"],
+                audit_log_path=paths["audit_log"],
+                reports_dir=paths["reports_dir"],
+                generate_fact_report=True,
+            )
+
+            report_path = Path(result["report_path"])
+            report = report_path.read_text(encoding="utf-8")
+
+            self.assertTrue(report_path.exists())
+            self.assertIn("# NVDA Fact Report", report)
+            self.assertIn("## Facts", report)
+
+    def test_report_path_output_when_report_created(self) -> None:
+        with temp_analysis_workspace() as paths:
+            result = run_analysis.run_analysis(
+                ticker="NVDA",
+                source_data_path=paths["source_data"],
+                context_root=paths["context_root"],
+                markdown_queue_path=paths["markdown_queue"],
+                json_queue_path=paths["json_queue"],
+                audit_log_path=paths["audit_log"],
+                reports_dir=paths["reports_dir"],
+                generate_fact_report=True,
+            )
+
+            self.assertIsNotNone(result["report_path"])
+            self.assertTrue(result["report_path"].endswith("NVDA_fact_report.md"))
+
+    def test_no_report_mode(self) -> None:
+        with temp_analysis_workspace() as paths:
+            result = run_analysis.run_analysis(
+                ticker="NVDA",
+                source_data_path=paths["source_data"],
+                context_root=paths["context_root"],
+                markdown_queue_path=paths["markdown_queue"],
+                json_queue_path=paths["json_queue"],
+                audit_log_path=paths["audit_log"],
+                reports_dir=paths["reports_dir"],
+                generate_fact_report=False,
+            )
+
+            self.assertIsNone(result["report_path"])
+            self.assertFalse((paths["reports_dir"] / "NVDA_fact_report.md").exists())
+
+    def test_generated_report_has_no_prohibited_valuation_language(self) -> None:
+        with temp_analysis_workspace() as paths:
+            result = run_analysis.run_analysis(
+                ticker="NVDA",
+                source_data_path=paths["source_data"],
+                context_root=paths["context_root"],
+                markdown_queue_path=paths["markdown_queue"],
+                json_queue_path=paths["json_queue"],
+                audit_log_path=paths["audit_log"],
+                reports_dir=paths["reports_dir"],
+                generate_fact_report=True,
+            )
+
+            report = Path(result["report_path"]).read_text(encoding="utf-8").lower()
+
+            for term in ["valuation", "fair value", "intrinsic value", "price target", "buy", "sell", "hold", "recommendation", "investment advice"]:
+                self.assertNotIn(term, report)
 
 
 class temp_analysis_workspace:
@@ -103,6 +178,7 @@ class temp_analysis_workspace:
             "markdown_queue": root / "research_queue.md",
             "json_queue": root / "research_queue.json",
             "audit_log": root / "audit_log.jsonl",
+            "reports_dir": root / "reports",
         }
 
     def __exit__(self, exc_type: object, exc: object, traceback: object) -> None:
