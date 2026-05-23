@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import unittest
+from datetime import date
 from pathlib import Path
 
 
@@ -25,6 +26,7 @@ def valid_record() -> dict:
         "statement_type": "fact",
         "source_url": "https://example.com/report",
         "source_date": "2026-01-15",
+        "last_verified": date.today().isoformat(),
         "confidence": "high",
     }
 
@@ -47,6 +49,22 @@ class ValidateSourcesTests(unittest.TestCase):
 
         self.assertTrue(any(error.field == "source_url" for error in errors))
 
+    def test_missing_source_url_fails(self) -> None:
+        record = valid_record()
+        record["source_url"] = ""
+
+        errors = validate_sources.validate_records([record], self.schema, self.rules)
+
+        self.assertTrue(any(error.field == "source_url" for error in errors))
+
+    def test_missing_unit_fails(self) -> None:
+        record = valid_record()
+        record["unit"] = ""
+
+        errors = validate_sources.validate_records([record], self.schema, self.rules)
+
+        self.assertTrue(any(error.field == "unit" for error in errors))
+
     def test_invalid_accounting_basis_fails(self) -> None:
         record = valid_record()
         record["accounting_basis"] = "Adjusted"
@@ -62,6 +80,27 @@ class ValidateSourcesTests(unittest.TestCase):
         errors = validate_sources.validate_records([record], self.schema, self.rules)
 
         self.assertTrue(any(error.field == "source_url" for error in errors))
+
+    def test_stale_last_verified_fails(self) -> None:
+        record = valid_record()
+        record["last_verified"] = "2025-01-01"
+
+        errors = validate_sources.validate_records(
+            [record],
+            self.schema,
+            self.rules,
+            today=date(2026, 5, 23),
+        )
+
+        self.assertTrue(any(error.field == "last_verified" for error in errors))
+
+    def test_invalid_confidence_fails(self) -> None:
+        record = valid_record()
+        record["confidence"] = "certain"
+
+        errors = validate_sources.validate_records([record], self.schema, self.rules)
+
+        self.assertTrue(any(error.field == "confidence" for error in errors))
 
 
 if __name__ == "__main__":

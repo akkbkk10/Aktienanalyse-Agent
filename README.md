@@ -24,9 +24,24 @@ Valuation, DCF, price target, and investment recommendation logic are intentiona
 
 ## Run Tests
 
+The project currently uses only the Python standard library.
+
 ```powershell
 python -m unittest discover -s tests
 ```
+
+GitHub Actions runs the same command on every pull request.
+
+## Setup
+
+```powershell
+git clone <repo-url>
+cd Aktienanalyse-Agent
+python --version
+python -m unittest discover -s tests
+```
+
+Use Python 3.12 or newer for local development.
 
 ## Validate A Metrics File
 
@@ -35,3 +50,7 @@ python scripts/validate_sources.py path\to\metrics.json
 ```
 
 The input file may contain either a single JSON object or a list of objects.
+
+## Sample Data
+
+`data/nvda_sample_metrics.json` contains sourced FY2025 sample metrics for NVIDIA Corporation (`NVDA`). It exists only to exercise the evidence schema and validation flow. It must not be used for valuation, DCF, price targets, or investment recommendations.

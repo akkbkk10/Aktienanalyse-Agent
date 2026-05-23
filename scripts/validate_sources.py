@@ -40,13 +40,16 @@ def validate_records(
     records: list[dict[str, Any]],
     schema: dict[str, Any],
     source_rules: dict[str, Any],
+    today: date | None = None,
 ) -> list[ValidationErrorDetail]:
     errors: list[ValidationErrorDetail] = []
+    validation_date = today or date.today()
     required_fields = schema.get("required", [])
     properties = schema.get("properties", {})
     allowed_fields = set(properties)
     required_evidence = source_rules.get("required_evidence_fields", [])
     allowed_schemes = set(source_rules.get("allowed_url_schemes", []))
+    max_last_verified_age_days = source_rules.get("max_last_verified_age_days")
 
     for index, record in enumerate(records):
         for field in required_fields:
@@ -64,6 +67,16 @@ def validate_records(
         for field, rule in properties.items():
             if field in record:
                 errors.extend(_validate_field(index, field, record[field], rule, allowed_schemes))
+
+        if "last_verified" in record and max_last_verified_age_days is not None:
+            errors.extend(
+                _validate_last_verified_freshness(
+                    index=index,
+                    value=record["last_verified"],
+                    validation_date=validation_date,
+                    max_age_days=max_last_verified_age_days,
+                )
+            )
 
     return errors
 
@@ -109,6 +122,33 @@ def _is_number(value: Any) -> bool:
     return isinstance(value, (int, float)) and not isinstance(value, bool)
 
 
+def _validate_last_verified_freshness(
+    index: int,
+    value: Any,
+    validation_date: date,
+    max_age_days: int,
+) -> list[ValidationErrorDetail]:
+    if not isinstance(value, str):
+        return []
+
+    try:
+        last_verified = date.fromisoformat(value)
+    except ValueError:
+        return []
+
+    age_days = (validation_date - last_verified).days
+    if age_days > max_age_days:
+        return [
+            ValidationErrorDetail(
+                index,
+                "last_verified",
+                f"Source verification is stale; expected {max_age_days} days or newer.",
+            )
+        ]
+
+    return []
+
+
 def validate_file(
     input_path: Path,
     schema_path: Path = DEFAULT_SCHEMA_PATH,
@@ -139,4 +179,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

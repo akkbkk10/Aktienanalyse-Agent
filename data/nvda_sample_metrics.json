@@ -1,0 +1,47 @@
+[
+  {
+    "company": "NVIDIA Corporation",
+    "ticker": "NVDA",
+    "metric_name": "Revenue",
+    "value": 130497,
+    "unit": "USD millions",
+    "period": "FY2025 ended 2025-01-26",
+    "accounting_basis": "GAAP",
+    "statement_type": "fact",
+    "source_url": "https://investor.nvidia.com/news/press-release-details/2025/NVIDIA-Announces-Financial-Results-for-Fourth-Quarter-and-Fiscal-2025/default.aspx",
+    "source_date": "2025-02-26",
+    "last_verified": "2026-05-23",
+    "confidence": "high",
+    "notes": "Sample data only. Do not use for valuation without full source and schema validation."
+  },
+  {
+    "company": "NVIDIA Corporation",
+    "ticker": "NVDA",
+    "metric_name": "Net income",
+    "value": 72880,
+    "unit": "USD millions",
+    "period": "FY2025 ended 2025-01-26",
+    "accounting_basis": "GAAP",
+    "statement_type": "fact",
+    "source_url": "https://investor.nvidia.com/news/press-release-details/2025/NVIDIA-Announces-Financial-Results-for-Fourth-Quarter-and-Fiscal-2025/default.aspx",
+    "source_date": "2025-02-26",
+    "last_verified": "2026-05-23",
+    "confidence": "high",
+    "notes": "Sample data only. Do not use for valuation without full source and schema validation."
+  },
+  {
+    "company": "NVIDIA Corporation",
+    "ticker": "NVDA",
+    "metric_name": "Data Center revenue",
+    "value": 115200,
+    "unit": "USD millions",
+    "period": "FY2025 ended 2025-01-26",
+    "accounting_basis": "GAAP",
+    "statement_type": "fact",
+    "source_url": "https://investor.nvidia.com/news/press-release-details/2025/NVIDIA-Announces-Financial-Results-for-Fourth-Quarter-and-Fiscal-2025/default.aspx",
+    "source_date": "2025-02-26",
+    "last_verified": "2026-05-23",
+    "confidence": "high",
+    "notes": "Sample data only. Do not use for valuation without full source and schema validation."
+  }
+]
