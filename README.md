@@ -140,6 +140,10 @@ ratio outputs, DCF source references, reports, and summaries use `metric_id` to
 trace calculations back to the exact sourced metric record without relying only on
 display names.
 
+Share count inputs are supported as sourced `share_count` metric records. These
+records are preserved in company context for future per-share calculations, but
+the current system does not calculate fair value per share.
+
 ## Company Context Workflow
 
 Build a persistent company context from validated metric records:

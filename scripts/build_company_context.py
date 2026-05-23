@@ -124,6 +124,9 @@ def _metric_to_context_metric(record: dict[str, Any]) -> dict[str, Any]:
         "source_metadata": source_metadata,
     }
 
+    if "metric_category" in record:
+        metric["metric_category"] = record["metric_category"]
+
     if "notes" in record:
         metric["notes"] = record["notes"]
 

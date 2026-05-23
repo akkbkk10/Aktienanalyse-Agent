@@ -35,6 +35,20 @@ def valid_record() -> dict:
     }
 
 
+def valid_share_count_record() -> dict:
+    record = valid_record()
+    record.update(
+        {
+            "metric_id": "exm_diluted_weighted_average_shares_fy2025",
+            "metric_name": "Diluted weighted average shares",
+            "metric_category": "share_count",
+            "value": 100.0,
+            "unit": "shares millions",
+        }
+    )
+    return record
+
+
 class ValidateSourcesTests(unittest.TestCase):
     def setUp(self) -> None:
         self.schema = validate_sources.load_json(REPO_ROOT / "config" / "financial_metric_schema.json")
@@ -92,6 +106,27 @@ class ValidateSourcesTests(unittest.TestCase):
         errors = validate_sources.validate_records([record], self.schema, self.rules)
 
         self.assertTrue(any(error.field == "metric_id" for error in errors))
+
+    def test_valid_share_count_record_has_no_errors(self) -> None:
+        errors = validate_sources.validate_records([valid_share_count_record()], self.schema, self.rules)
+
+        self.assertEqual(errors, [])
+
+    def test_share_count_missing_metric_id_fails_validation(self) -> None:
+        record = valid_share_count_record()
+        del record["metric_id"]
+
+        errors = validate_sources.validate_records([record], self.schema, self.rules)
+
+        self.assertTrue(any(error.field == "metric_id" for error in errors))
+
+    def test_share_count_missing_source_metadata_fails_validation(self) -> None:
+        record = valid_share_count_record()
+        del record["source_date"]
+
+        errors = validate_sources.validate_records([record], self.schema, self.rules)
+
+        self.assertTrue(any(error.field == "source_date" for error in errors))
 
     def test_empty_metric_id_fails_validation(self) -> None:
         record = valid_record()

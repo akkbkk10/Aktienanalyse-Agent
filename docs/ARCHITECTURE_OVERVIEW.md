@@ -40,6 +40,10 @@ outputs include source-linked `metric_id` references where applicable. This keep
 technical traceability stable even when metric display names or report formatting
 change.
 
+Share count inputs use the same evidence model with `metric_category:
+share_count`. They are loaded into company context as sourced facts for future
+per-share work, while fair value per share remains outside the current workflow.
+
 ## Ticker Independence
 
 Each ticker is processed independently. A missing context, stale source, research

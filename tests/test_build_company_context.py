@@ -34,6 +34,20 @@ def valid_record() -> dict:
     }
 
 
+def valid_share_count_record() -> dict:
+    record = valid_record()
+    record.update(
+        {
+            "metric_id": "nvda_diluted_weighted_average_shares_fy2025",
+            "metric_name": "Diluted weighted average shares",
+            "metric_category": "share_count",
+            "value": 24804,
+            "unit": "shares millions",
+        }
+    )
+    return record
+
+
 class BuildCompanyContextTests(unittest.TestCase):
     def test_context_creation_writes_persistent_context(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -63,6 +77,13 @@ class BuildCompanyContextTests(unittest.TestCase):
         context = build_company_context.build_context_from_records([valid_record()])
 
         self.assertEqual(context["metrics"][0]["metric_id"], "nvda_revenue_fy2025")
+
+    def test_company_context_preserves_share_count_metadata(self) -> None:
+        context = build_company_context.build_context_from_records([valid_share_count_record()])
+
+        self.assertEqual(context["metrics"][0]["metric_id"], "nvda_diluted_weighted_average_shares_fy2025")
+        self.assertEqual(context["metrics"][0]["metric_category"], "share_count")
+        self.assertEqual(context["metrics"][0]["unit"], "shares millions")
 
     def test_missing_ticker_fails(self) -> None:
         record = valid_record()
