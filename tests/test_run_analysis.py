@@ -35,6 +35,7 @@ class RunAnalysisTests(unittest.TestCase):
             self.assertIn("net_margin", result["ratios_calculated"])
             self.assertTrue(result["audit_log_written"])
             self.assertIsNone(result["report_path"])
+            self.assertIsNone(result["analysis_summary_path"])
             self.assertFalse(result["dcf_run"])
             self.assertEqual(result["dcf_scenarios_calculated"], [])
             self.assertIsNone(result["dcf_output_path"])
@@ -147,7 +148,67 @@ class RunAnalysisTests(unittest.TestCase):
             )
 
             self.assertIsNone(result["report_path"])
+            self.assertIsNone(result["analysis_summary_path"])
             self.assertFalse((paths["reports_dir"] / "NVDA_fact_report.md").exists())
+
+    def test_summary_generation_without_dcf(self) -> None:
+        with temp_analysis_workspace() as paths:
+            result = run_analysis.run_analysis(
+                ticker="NVDA",
+                source_data_path=paths["source_data"],
+                context_root=paths["context_root"],
+                markdown_queue_path=paths["markdown_queue"],
+                json_queue_path=paths["json_queue"],
+                audit_log_path=paths["audit_log"],
+                reports_dir=paths["reports_dir"],
+                generate_summary=True,
+            )
+
+            summary_path = Path(result["analysis_summary_path"])
+            summary = json.loads(summary_path.read_text(encoding="utf-8"))
+
+            self.assertTrue(summary_path.exists())
+            self.assertFalse(summary["assumptions"]["dcf_available"])
+            self.assertEqual(summary["missing_data"]["dcf_status"], "not provided")
+            self.assertIsNone(result["dcf_output_path"])
+            self.assertTrue((paths["reports_dir"] / "NVDA_valuation_readiness_audit_probe.jsonl").exists())
+
+    def test_summary_generation_with_dcf(self) -> None:
+        with temp_analysis_workspace() as paths:
+            result = run_analysis.run_analysis(
+                ticker="NVDA",
+                source_data_path=paths["source_data"],
+                context_root=paths["context_root"],
+                markdown_queue_path=paths["markdown_queue"],
+                json_queue_path=paths["json_queue"],
+                audit_log_path=paths["audit_log"],
+                reports_dir=paths["reports_dir"],
+                generate_summary=True,
+                run_dcf=True,
+                dcf_assumptions_path=paths["dcf_assumptions"],
+            )
+
+            summary = json.loads(Path(result["analysis_summary_path"]).read_text(encoding="utf-8"))
+
+            self.assertTrue(result["dcf_run"])
+            self.assertTrue(summary["assumptions"]["dcf_available"])
+            self.assertEqual(set(summary["calculated_outputs"]["dcf_scenarios"]), {"bear", "base", "bull"})
+
+    def test_summary_path_in_orchestrator_output(self) -> None:
+        with temp_analysis_workspace() as paths:
+            result = run_analysis.run_analysis(
+                ticker="NVDA",
+                source_data_path=paths["source_data"],
+                context_root=paths["context_root"],
+                markdown_queue_path=paths["markdown_queue"],
+                json_queue_path=paths["json_queue"],
+                audit_log_path=paths["audit_log"],
+                reports_dir=paths["reports_dir"],
+                generate_summary=True,
+            )
+
+            self.assertIsNotNone(result["analysis_summary_path"])
+            self.assertTrue(result["analysis_summary_path"].endswith("NVDA_analysis_summary.json"))
 
     def test_orchestrator_without_dcf(self) -> None:
         with temp_analysis_workspace() as paths:
@@ -259,6 +320,42 @@ class RunAnalysisTests(unittest.TestCase):
             serialized = Path(result["dcf_output_path"]).read_text(encoding="utf-8").lower()
             for term in ["price target", "buy", "sell", "hold", "recommendation", "investment advice"]:
                 self.assertNotIn(term, serialized)
+
+    def test_analysis_summary_has_no_recommendation_language(self) -> None:
+        with temp_analysis_workspace() as paths:
+            result = run_analysis.run_analysis(
+                ticker="NVDA",
+                source_data_path=paths["source_data"],
+                context_root=paths["context_root"],
+                markdown_queue_path=paths["markdown_queue"],
+                json_queue_path=paths["json_queue"],
+                audit_log_path=paths["audit_log"],
+                reports_dir=paths["reports_dir"],
+                generate_summary=True,
+                run_dcf=True,
+                dcf_assumptions_path=paths["dcf_assumptions"],
+            )
+
+            serialized = Path(result["analysis_summary_path"]).read_text(encoding="utf-8").lower()
+            for term in ["buy", "sell", "hold", "recommendation", "investment advice", "automated trading"]:
+                self.assertNotIn(term, serialized)
+
+    def test_analysis_summary_has_no_price_target_language(self) -> None:
+        with temp_analysis_workspace() as paths:
+            result = run_analysis.run_analysis(
+                ticker="NVDA",
+                source_data_path=paths["source_data"],
+                context_root=paths["context_root"],
+                markdown_queue_path=paths["markdown_queue"],
+                json_queue_path=paths["json_queue"],
+                audit_log_path=paths["audit_log"],
+                reports_dir=paths["reports_dir"],
+                generate_summary=True,
+                run_dcf=True,
+                dcf_assumptions_path=paths["dcf_assumptions"],
+            )
+
+            self.assertNotIn("price target", Path(result["analysis_summary_path"]).read_text(encoding="utf-8").lower())
 
     def test_generated_report_has_no_prohibited_valuation_language(self) -> None:
         with temp_analysis_workspace() as paths:

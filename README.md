@@ -197,7 +197,7 @@ Run the deterministic pre-valuation workflow for one ticker:
 python scripts/run_analysis.py NVDA --source-data-path data\nvda_sample_metrics.json
 ```
 
-The orchestrator runs source validation, company context build/load, research gap detection, deterministic ratio calculation, and audit logging. It returns a structured JSON summary with ticker, validation status, research gap count, ratios calculated, audit log status, and warnings.
+The orchestrator runs source validation, company context build/load, research gap detection, deterministic ratio calculation, optional valuation readiness and DCF, optional fact-only reporting, optional analysis summary generation, and audit logging. It returns a structured JSON summary with ticker, validation status, research gap count, ratios calculated, artifact paths, audit log status, and warnings.
 
 Run the full workflow and generate a fact-only report:
 
@@ -206,6 +206,14 @@ python scripts/run_analysis.py NVDA --source-data-path data\nvda_sample_metrics.
 ```
 
 When `--generate-report` is used, the JSON summary includes `report_path`.
+
+Run the workflow and generate a structured analysis summary:
+
+```powershell
+python scripts/run_analysis.py NVDA --source-data-path data\nvda_sample_metrics.json --generate-summary
+```
+
+When `--generate-summary` is used, the JSON summary includes `analysis_summary_path`.
 
 Run the full workflow with deterministic DCF scenarios:
 
@@ -221,7 +229,13 @@ Run the full workflow with DCF included in the fact-only report:
 python scripts/run_analysis.py NVDA --source-data-path data\nvda_sample_metrics.json --run-dcf --dcf-assumptions-path data\companies\NVDA\dcf_assumptions.json --generate-report
 ```
 
-Full workflow order: validation -> context -> gaps -> ratios -> readiness -> DCF -> report -> audit log. When both flags are used, the report includes a DCF calculation section with assumptions used, bear/base/bull scenario outputs, formulas, warnings, and source references. The DCF section is calculation output only and not investment advice.
+Run the complete workflow with DCF, report, and structured summary:
+
+```powershell
+python scripts/run_analysis.py NVDA --source-data-path data\nvda_sample_metrics.json --run-dcf --dcf-assumptions-path data\companies\NVDA\dcf_assumptions.json --generate-report --generate-summary
+```
+
+Full workflow order: validation -> context -> gaps -> ratios -> readiness -> optional DCF -> optional report -> analysis summary -> audit log. When DCF and report flags are used together, the report includes a DCF calculation section with assumptions used, bear/base/bull scenario outputs, formulas, warnings, and source references. When summary generation is enabled, the JSON summary includes `analysis_summary_path`.
 
 The orchestrator does not create fair value, intrinsic value, price targets, buy/sell/hold recommendations, investment advice, or final investment memo output.
 
