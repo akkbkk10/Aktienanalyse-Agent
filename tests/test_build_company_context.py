@@ -26,6 +26,7 @@ def valid_record() -> dict:
         "accounting_basis": "GAAP",
         "statement_type": "fact",
         "source_url": "https://example.com/report",
+        "source_type": "earnings release",
         "source_date": "2025-02-26",
         "last_verified": "2026-05-23",
         "confidence": "high",

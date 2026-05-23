@@ -35,7 +35,7 @@ class CreateResearchRequestTests(unittest.TestCase):
             self.assertTrue(result["created"])
             self.assertEqual(len(queue["items"]), 1)
             self.assertEqual(queue["items"][0]["ticker"], "EXM")
-            self.assertIn("Required evidence: source_url, source_date, unit, period, confidence", markdown)
+            self.assertIn("Required evidence: source_url, source_type, source_date, unit, period, confidence", markdown)
 
     def test_duplicate_request_is_not_added_twice(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -82,6 +82,7 @@ class CreateResearchRequestTests(unittest.TestCase):
                         "period": "FY2025",
                         "accounting_basis": "GAAP",
                         "statement_type": "fact",
+                        "source_type": "earnings release",
                         "source_date": "2026-01-15",
                         "last_verified": "2026-01-16",
                         "confidence": "high",
@@ -120,6 +121,7 @@ class CreateResearchRequestTests(unittest.TestCase):
                     "accounting_basis": "GAAP",
                     "statement_type": "fact",
                     "source_url": "https://example.com/report",
+                    "source_type": "earnings release",
                     "source_date": "2026-01-15",
                     "last_verified": "2026-01-16",
                     "confidence": "high",

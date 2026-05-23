@@ -2,6 +2,7 @@
   "rule_version": "0.1.0",
   "required_evidence_fields": [
     "source_url",
+    "source_type",
     "source_date",
     "last_verified",
     "unit",
@@ -10,6 +11,7 @@
   ],
   "max_last_verified_age_days": 180,
   "allowed_url_schemes": ["https"],
+  "allowed_source_types": ["SEC filing", "investor relations", "earnings release", "annual report"],
   "required_statement_types": ["fact", "assumption", "opinion"],
   "required_accounting_basis_labels": ["GAAP", "Non-GAAP", "IFRS", "Other"],
   "confidence_levels": ["low", "medium", "high"]

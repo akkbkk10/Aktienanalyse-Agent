@@ -20,7 +20,7 @@ DEFAULT_WATCHLIST_PATH = REPO_ROOT / "config" / "watchlist.json"
 DEFAULT_CONTEXT_ROOT = REPO_ROOT / "data" / "companies"
 DEFAULT_MARKDOWN_QUEUE_PATH = REPO_ROOT / "research_queue.md"
 DEFAULT_JSON_QUEUE_PATH = REPO_ROOT / "research_queue.json"
-REQUIRED_SOURCE_METADATA_FIELDS = ["source_url", "source_date", "last_verified", "confidence"]
+REQUIRED_SOURCE_METADATA_FIELDS = ["source_url", "source_type", "source_date", "last_verified", "confidence"]
 CONFIDENCE_RANK = {"low": 0, "medium": 1, "high": 2}
 
 
