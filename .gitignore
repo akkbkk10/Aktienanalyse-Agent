@@ -8,4 +8,5 @@ venv/
 reports/*.md
 reports/*.json
 reports/*.jsonl
+reports/**
 !reports/.gitkeep
