@@ -200,3 +200,15 @@ python scripts/run_analysis.py NVDA --source-data-path data\nvda_sample_metrics.
 The orchestrator runs source validation, company context build/load, research gap detection, deterministic ratio calculation, and audit logging. It returns a structured JSON summary with ticker, validation status, research gap count, ratios calculated, audit log status, and warnings.
 
 The orchestrator does not calculate DCF, fair value, intrinsic value, price targets, recommendations, investment advice, or memo output.
+
+## Fact Report Workflow
+
+Generate a fact-only Markdown report:
+
+```powershell
+python scripts/generate_report.py NVDA --validation-status-json path\to\validation_status.json --research-gaps-json path\to\research_gaps.json --ratio-outputs-json path\to\ratio_outputs.json --audit-log-reference audit_log.jsonl:1
+```
+
+Reports are written to `reports/` and separate facts, missing data, and warnings. They include validation status, research gaps, calculated ratios, source references, and an audit log reference.
+
+Fact reports must not include valuation, fair value, intrinsic value, price targets, buy/sell/hold recommendations, or investment advice.
