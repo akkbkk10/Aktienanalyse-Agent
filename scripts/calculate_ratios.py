@@ -125,6 +125,7 @@ def _ratio_record(
         "value": numerator["value"] / denominator["value"],
         "formula": formula,
         "input_metrics_used": [numerator["metric_name"], denominator["metric_name"]],
+        "input_metric_ids_used": [numerator["metric_id"], denominator["metric_id"]],
         "source_metric_references": [_source_reference(numerator), _source_reference(denominator)],
         "period": period,
         "confidence": _combined_confidence([numerator, denominator]),
@@ -151,6 +152,7 @@ def _calculate_revenue_growth(ticker: str, metrics_by_period: dict[str, dict[str
                 "value": (current["value"] - prior["value"]) / prior["value"],
                 "formula": "(Current period Revenue - Prior period Revenue) / Prior period Revenue",
                 "input_metrics_used": ["Revenue", "Revenue"],
+                "input_metric_ids_used": [current["metric_id"], prior["metric_id"]],
                 "source_metric_references": [_source_reference(current), _source_reference(prior)],
                 "period": current["period"],
                 "confidence": _combined_confidence([current, prior]),
@@ -163,6 +165,7 @@ def _calculate_revenue_growth(ticker: str, metrics_by_period: dict[str, dict[str
 def _source_reference(metric: dict[str, Any]) -> dict[str, Any]:
     source_metadata = metric.get("source_metadata", {})
     return {
+        "metric_id": metric.get("metric_id"),
         "metric_name": metric.get("metric_name"),
         "period": metric.get("period"),
         "accounting_basis": metric.get("accounting_basis"),

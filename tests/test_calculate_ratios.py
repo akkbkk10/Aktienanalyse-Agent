@@ -16,7 +16,9 @@ spec.loader.exec_module(calculate_ratios)
 
 
 def metric(name: str, value: float, period: str = "FY2025", confidence: str = "high") -> dict:
+    metric_id = f"exm_{name.lower().replace(' ', '_')}_{period.lower().replace(' ', '_')}"
     return {
+        "metric_id": metric_id,
         "metric_name": name,
         "value": value,
         "unit": "USD millions",
@@ -98,9 +100,21 @@ class CalculateRatiosTests(unittest.TestCase):
         net_margin = next(ratio for ratio in result["ratios"] if ratio["ratio_name"] == "net_margin")
 
         self.assertEqual(net_margin["input_metrics_used"], ["Net income", "Revenue"])
+        self.assertEqual(net_margin["input_metric_ids_used"], ["exm_net_income_fy2025", "exm_revenue_fy2025"])
         self.assertEqual(len(net_margin["source_metric_references"]), 2)
+        self.assertEqual(net_margin["source_metric_references"][0]["metric_id"], "exm_net_income_fy2025")
         self.assertEqual(net_margin["source_metric_references"][0]["source_url"], "https://example.com/report")
         self.assertEqual(net_margin["confidence"], "medium")
+
+    def test_ratio_outputs_preserve_input_metric_ids(self) -> None:
+        result = calculate_ratios.calculate_ratios_from_context(
+            context([metric("Revenue", 100.0), metric("Net income", 25.0)]),
+            queue_missing=False,
+        )
+
+        net_margin = next(ratio for ratio in result["ratios"] if ratio["ratio_name"] == "net_margin")
+
+        self.assertEqual(net_margin["input_metric_ids_used"], ["exm_net_income_fy2025", "exm_revenue_fy2025"])
 
     def test_no_valuation_output(self) -> None:
         result = calculate_ratios.calculate_ratios_from_context(
@@ -138,6 +152,7 @@ class CalculateRatiosTests(unittest.TestCase):
             self.assertEqual(ratio["ticker"], "NVDA")
             self.assertIn("formula", ratio)
             self.assertTrue(ratio["input_metrics_used"])
+            self.assertTrue(ratio["input_metric_ids_used"])
             self.assertTrue(ratio["source_metric_references"])
             self.assertIn(ratio["confidence"], {"low", "medium", "high"})
             for source_reference in ratio["source_metric_references"]:
@@ -145,6 +160,7 @@ class CalculateRatiosTests(unittest.TestCase):
                     source_reference["source_url"],
                     "https://investor.nvidia.com/news/press-release-details/2025/NVIDIA-Announces-Financial-Results-for-Fourth-Quarter-and-Fiscal-2025/default.aspx",
                 )
+                self.assertTrue(source_reference["metric_id"].startswith("nvda_"))
                 self.assertIn(source_reference["source_type"], {"earnings release", "annual report", "investor relations", "SEC filing"})
 
 

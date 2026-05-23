@@ -32,6 +32,14 @@ Sample data lives under `data/` and `data/companies/<TICKER>/` for deterministic
 tests and demos. Future live data ingestion must remain separate from sample data
 so reproducible tests are not changed by current market or filing updates.
 
+## Metric Traceability
+
+Every sourced financial metric has a stable `metric_id`. Company contexts preserve
+that identifier, ratio outputs list the input `metric_id` values used, and DCF
+outputs include source-linked `metric_id` references where applicable. This keeps
+technical traceability stable even when metric display names or report formatting
+change.
+
 ## Ticker Independence
 
 Each ticker is processed independently. A missing context, stale source, research

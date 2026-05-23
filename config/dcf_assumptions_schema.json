@@ -27,6 +27,7 @@
     "terminal_growth_rate"
   ],
   "source_reference_fields": [
+    "metric_id",
     "metric_name",
     "period",
     "source_url",

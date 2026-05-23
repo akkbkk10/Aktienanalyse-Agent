@@ -87,6 +87,7 @@ def run_dcf(
         "formulas": FORMULAS,
         "assumptions_used": _assumptions_used(assumptions),
         "source_references": assumptions["source_references"],
+        "source_metric_ids": _source_metric_ids(assumptions["source_references"]),
         "warnings": _warnings(assumptions),
         "scenarios": scenarios,
     }
@@ -217,6 +218,7 @@ def _calculate_scenario(scenario_name: str, scenario: dict[str, Any]) -> dict[st
 
     return {
         "scenario": scenario_name,
+        "starting_free_cash_flow_metric_id": scenario.get("starting_free_cash_flow_metric_id"),
         "discounted_cash_flows": discounted_cash_flows,
         "terminal_value": terminal_value,
         "present_value_terminal_value": present_value_terminal_value,
@@ -241,6 +243,15 @@ def _warnings(assumptions: dict[str, Any]) -> list[str]:
     if isinstance(notes, list):
         warnings.extend(str(note) for note in notes)
     return warnings
+
+
+def _source_metric_ids(source_references: list[dict[str, Any]]) -> list[str]:
+    metric_ids = []
+    for source in source_references:
+        metric_id = source.get("metric_id")
+        if metric_id and metric_id not in metric_ids:
+            metric_ids.append(metric_id)
+    return metric_ids
 
 
 def _assert_no_prohibited_language(result: dict[str, Any]) -> None:

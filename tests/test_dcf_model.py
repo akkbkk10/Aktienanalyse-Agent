@@ -31,6 +31,7 @@ class DCFModelTests(unittest.TestCase):
             self.assertEqual(set(result["scenarios"]), {"bear", "base", "bull"})
             self.assertIn("formulas", result)
             self.assertIn("source_references", result)
+            self.assertIn("source_metric_ids", result)
             self.assertGreater(result["scenarios"]["base"]["dcf_value"], 0)
 
     def test_missing_assumptions_fail(self) -> None:
@@ -121,6 +122,20 @@ class DCFModelTests(unittest.TestCase):
 
             for term in ["price target", "buy", "sell", "hold", "recommendation", "investment advice"]:
                 self.assertNotIn(term, serialized)
+
+    def test_dcf_output_references_source_metric_ids(self) -> None:
+        with dcf_workspace() as paths:
+            result = dcf_model.run_dcf(
+                ticker="NVDA",
+                assumptions_path=paths["assumptions"],
+                source_data_path=paths["source_data"],
+                context_root=paths["context_root"],
+                readiness_result=ready_result(),
+            )
+
+            self.assertIn("nvda_free_cash_flow_fy2025", result["source_metric_ids"])
+            self.assertEqual(result["source_references"][0]["metric_id"], "nvda_free_cash_flow_fy2025")
+            self.assertEqual(result["scenarios"]["base"]["starting_free_cash_flow_metric_id"], "nvda_free_cash_flow_fy2025")
 
 
 def ready_result() -> dict:

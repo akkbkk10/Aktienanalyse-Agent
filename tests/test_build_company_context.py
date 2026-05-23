@@ -19,6 +19,7 @@ def valid_record() -> dict:
     return {
         "company": "NVIDIA Corporation",
         "ticker": "NVDA",
+        "metric_id": "nvda_revenue_fy2025",
         "metric_name": "Revenue",
         "value": 130497,
         "unit": "USD millions",
@@ -55,7 +56,13 @@ class BuildCompanyContextTests(unittest.TestCase):
             self.assertEqual(context["schema_version"], "0.1.0")
             self.assertEqual(context["last_updated"], "2026-05-23")
             self.assertEqual(len(saved_context["metrics"]), 1)
+            self.assertEqual(saved_context["metrics"][0]["metric_id"], "nvda_revenue_fy2025")
             self.assertIn("source_metadata", saved_context["metrics"][0])
+
+    def test_company_context_preserves_metric_id(self) -> None:
+        context = build_company_context.build_context_from_records([valid_record()])
+
+        self.assertEqual(context["metrics"][0]["metric_id"], "nvda_revenue_fy2025")
 
     def test_missing_ticker_fails(self) -> None:
         record = valid_record()

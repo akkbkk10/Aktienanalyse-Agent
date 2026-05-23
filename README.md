@@ -135,6 +135,11 @@ Validation-generated queue items are for missing or invalid evidence only. They 
 
 The NVDA sample also includes sourced FY2024 and FY2025 inputs needed for deterministic ratio coverage: revenue, gross profit, operating income, net income, and free cash flow. Free cash flow is labeled Non-GAAP because NVIDIA presents it as a non-GAAP financial measure.
 
+Every financial metric includes a stable `metric_id` technical identifier. Contexts,
+ratio outputs, DCF source references, reports, and summaries use `metric_id` to
+trace calculations back to the exact sourced metric record without relying only on
+display names.
+
 ## Company Context Workflow
 
 Build a persistent company context from validated metric records:
