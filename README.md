@@ -46,6 +46,18 @@ python scripts/run_v0_1_demo.py
 
 The demo runs validation, company context build/load, research gap detection, ratio calculation, valuation readiness, DCF, fact-only report generation, analysis summary generation, and audit logging. It prints generated file paths and writes runtime artifacts under `reports/v0_1_demo/`, which is ignored by git.
 
+## v0.2 Batch Workflow
+
+Run the deterministic workflow for one or more tickers:
+
+```powershell
+python scripts/run_batch_analysis.py NVDA MSFT --generate-report --generate-summary --run-dcf
+```
+
+The batch runner executes the existing per-ticker workflow: validation, context, research gaps, ratios, readiness, optional DCF, optional report, optional summary, and audit log. It returns structured JSON with tickers processed, successful runs, failed runs, output paths by ticker, and warnings by ticker.
+
+NVDA is currently the only fully working sample ticker. Other tickers fail cleanly unless their source data and assumptions are added.
+
 ## Setup
 
 ```powershell
