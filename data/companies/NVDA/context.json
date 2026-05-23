@@ -6,6 +6,86 @@
   "metrics": [
     {
       "metric_name": "Revenue",
+      "value": 60922,
+      "unit": "USD millions",
+      "period": "FY2024 ended 2024-01-28",
+      "accounting_basis": "GAAP",
+      "statement_type": "fact",
+      "source_metadata": {
+        "source_url": "https://investor.nvidia.com/news/press-release-details/2025/NVIDIA-Announces-Financial-Results-for-Fourth-Quarter-and-Fiscal-2025/default.aspx",
+        "source_type": "earnings release",
+        "source_date": "2025-02-26",
+        "last_verified": "2026-05-23",
+        "confidence": "high"
+      },
+      "notes": "Prior-period sample data for deterministic revenue growth. Do not use for valuation."
+    },
+    {
+      "metric_name": "Gross profit",
+      "value": 44301,
+      "unit": "USD millions",
+      "period": "FY2024 ended 2024-01-28",
+      "accounting_basis": "GAAP",
+      "statement_type": "fact",
+      "source_metadata": {
+        "source_url": "https://investor.nvidia.com/news/press-release-details/2025/NVIDIA-Announces-Financial-Results-for-Fourth-Quarter-and-Fiscal-2025/default.aspx",
+        "source_type": "earnings release",
+        "source_date": "2025-02-26",
+        "last_verified": "2026-05-23",
+        "confidence": "high"
+      },
+      "notes": "Prior-period sample data for deterministic margin calculations. Do not use for valuation."
+    },
+    {
+      "metric_name": "Operating income",
+      "value": 32972,
+      "unit": "USD millions",
+      "period": "FY2024 ended 2024-01-28",
+      "accounting_basis": "GAAP",
+      "statement_type": "fact",
+      "source_metadata": {
+        "source_url": "https://investor.nvidia.com/news/press-release-details/2025/NVIDIA-Announces-Financial-Results-for-Fourth-Quarter-and-Fiscal-2025/default.aspx",
+        "source_type": "earnings release",
+        "source_date": "2025-02-26",
+        "last_verified": "2026-05-23",
+        "confidence": "high"
+      },
+      "notes": "Prior-period sample data for deterministic margin calculations. Do not use for valuation."
+    },
+    {
+      "metric_name": "Net income",
+      "value": 29760,
+      "unit": "USD millions",
+      "period": "FY2024 ended 2024-01-28",
+      "accounting_basis": "GAAP",
+      "statement_type": "fact",
+      "source_metadata": {
+        "source_url": "https://investor.nvidia.com/news/press-release-details/2025/NVIDIA-Announces-Financial-Results-for-Fourth-Quarter-and-Fiscal-2025/default.aspx",
+        "source_type": "earnings release",
+        "source_date": "2025-02-26",
+        "last_verified": "2026-05-23",
+        "confidence": "high"
+      },
+      "notes": "Prior-period sample data for deterministic margin calculations. Do not use for valuation."
+    },
+    {
+      "metric_name": "Free cash flow",
+      "value": 26947,
+      "unit": "USD millions",
+      "period": "FY2024 ended 2024-01-28",
+      "accounting_basis": "Non-GAAP",
+      "statement_type": "fact",
+      "source_metadata": {
+        "source_url": "https://investor.nvidia.com/news/press-release-details/2025/NVIDIA-Announces-Financial-Results-for-Fourth-Quarter-and-Fiscal-2025/default.aspx",
+        "source_type": "earnings release",
+        "source_date": "2025-02-26",
+        "last_verified": "2026-05-23",
+        "confidence": "high"
+      },
+      "notes": "Free cash flow is presented by NVIDIA as a non-GAAP financial measure. Do not use for valuation."
+    },
+    {
+      "metric_name": "Revenue",
       "value": 130497,
       "unit": "USD millions",
       "period": "FY2025 ended 2025-01-26",
@@ -18,7 +98,39 @@
         "last_verified": "2026-05-23",
         "confidence": "high"
       },
-      "notes": "Sample data only. Do not use for valuation without full source and schema validation."
+      "notes": "Sample data only. Do not use for valuation."
+    },
+    {
+      "metric_name": "Gross profit",
+      "value": 97858,
+      "unit": "USD millions",
+      "period": "FY2025 ended 2025-01-26",
+      "accounting_basis": "GAAP",
+      "statement_type": "fact",
+      "source_metadata": {
+        "source_url": "https://investor.nvidia.com/news/press-release-details/2025/NVIDIA-Announces-Financial-Results-for-Fourth-Quarter-and-Fiscal-2025/default.aspx",
+        "source_type": "earnings release",
+        "source_date": "2025-02-26",
+        "last_verified": "2026-05-23",
+        "confidence": "high"
+      },
+      "notes": "Sample data only. Do not use for valuation."
+    },
+    {
+      "metric_name": "Operating income",
+      "value": 81453,
+      "unit": "USD millions",
+      "period": "FY2025 ended 2025-01-26",
+      "accounting_basis": "GAAP",
+      "statement_type": "fact",
+      "source_metadata": {
+        "source_url": "https://investor.nvidia.com/news/press-release-details/2025/NVIDIA-Announces-Financial-Results-for-Fourth-Quarter-and-Fiscal-2025/default.aspx",
+        "source_type": "earnings release",
+        "source_date": "2025-02-26",
+        "last_verified": "2026-05-23",
+        "confidence": "high"
+      },
+      "notes": "Sample data only. Do not use for valuation."
     },
     {
       "metric_name": "Net income",
@@ -34,7 +146,23 @@
         "last_verified": "2026-05-23",
         "confidence": "high"
       },
-      "notes": "Sample data only. Do not use for valuation without full source and schema validation."
+      "notes": "Sample data only. Do not use for valuation."
+    },
+    {
+      "metric_name": "Free cash flow",
+      "value": 60724,
+      "unit": "USD millions",
+      "period": "FY2025 ended 2025-01-26",
+      "accounting_basis": "Non-GAAP",
+      "statement_type": "fact",
+      "source_metadata": {
+        "source_url": "https://investor.nvidia.com/news/press-release-details/2025/NVIDIA-Announces-Financial-Results-for-Fourth-Quarter-and-Fiscal-2025/default.aspx",
+        "source_type": "earnings release",
+        "source_date": "2025-02-26",
+        "last_verified": "2026-05-23",
+        "confidence": "high"
+      },
+      "notes": "Free cash flow is presented by NVIDIA as a non-GAAP financial measure. Do not use for valuation."
     },
     {
       "metric_name": "Data Center revenue",
@@ -50,11 +178,11 @@
         "last_verified": "2026-05-23",
         "confidence": "high"
       },
-      "notes": "Sample data only. Do not use for valuation without full source and schema validation."
+      "notes": "Sample data only. Do not use for valuation."
     }
   ],
   "source_metadata": {
     "source_file": "data\\nvda_sample_metrics.json",
-    "metric_count": 3
+    "metric_count": 11
   }
 }
