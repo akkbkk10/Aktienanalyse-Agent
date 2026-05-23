@@ -21,6 +21,7 @@ Valuation, DCF, price target, and investment recommendation logic are intentiona
 - `data/` - raw and intermediate input data.
 - `reports/` - generated reports.
 - `research_queue.md` - queue of research requests.
+- `research_queue.json` - structured queue used for duplicate detection and automation.
 
 ## Run Tests
 
@@ -50,6 +51,24 @@ python scripts/validate_sources.py path\to\metrics.json
 ```
 
 The input file may contain either a single JSON object or a list of objects.
+
+## Research Queue Workflow
+
+Create a manual research request:
+
+```powershell
+python scripts/create_research_request.py --company "NVIDIA Corporation" --ticker NVDA --question "Find the latest annual report source URL."
+```
+
+Create research requests from validation errors:
+
+```powershell
+python scripts/create_research_request.py --from-validation-errors path\to\metrics.json
+```
+
+The script writes to both `research_queue.json` and `research_queue.md`. The JSON queue is the structured source for duplicate detection; the markdown queue is a readable log for review. Duplicate requests are detected by a stable request ID and are not appended twice.
+
+Validation-generated queue items are for missing or invalid evidence only. They must not trigger valuation, DCF, ratio analysis, or memo generation.
 
 ## Sample Data
 
