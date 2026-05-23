@@ -221,6 +221,25 @@ Reports are written to `reports/` and separate facts, missing data, and warnings
 
 Fact reports must not include valuation, fair value, intrinsic value, price targets, buy/sell/hold recommendations, or investment advice.
 
+## Valuation Readiness Workflow
+
+Check whether one ticker has passed all pre-valuation controls:
+
+```powershell
+python scripts/check_valuation_readiness.py NVDA --source-data-path data\nvda_sample_metrics.json
+```
+
+The readiness gate checks:
+
+- source validation is valid
+- no high-priority research gaps exist
+- required ratios are available
+- methodology config is valid
+- an audit log probe can be written
+- prohibited valuation-stage outputs are absent
+
+The script returns structured JSON with ticker, readiness status, blocking reasons, warnings, and required next actions. A passing result only means the pre-valuation controls are ready for a future stage. It does not calculate DCF, fair value, intrinsic value, price targets, recommendations, buy/sell/hold output, or investment advice.
+
 ## Run full NVDA demo
 
 Run the complete deterministic NVDA workflow:
