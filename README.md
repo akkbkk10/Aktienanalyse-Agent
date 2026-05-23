@@ -19,6 +19,7 @@ Valuation, DCF, price target, and investment recommendation logic are intentiona
 - `scripts/` - executable helper scripts.
 - `tests/` - test suite.
 - `data/` - raw and intermediate input data.
+- `data/companies/<TICKER>/context.json` - persistent company context files.
 - `reports/` - generated reports.
 - `research_queue.md` - queue of research requests.
 
@@ -54,3 +55,22 @@ The input file may contain either a single JSON object or a list of objects.
 ## Sample Data
 
 `data/nvda_sample_metrics.json` contains sourced FY2025 sample metrics for NVIDIA Corporation (`NVDA`). It exists only to exercise the evidence schema and validation flow. It must not be used for valuation, DCF, price targets, or investment recommendations.
+
+## Company Context Workflow
+
+Build a persistent company context from validated metric records:
+
+```powershell
+python scripts/build_company_context.py data\nvda_sample_metrics.json
+```
+
+The builder writes `data/companies/<TICKER>/context.json`. A company context contains:
+
+- `schema_version`
+- `ticker`
+- `company_name`
+- `last_updated`
+- `metrics`
+- per-metric `source_metadata`
+
+The builder validates source metadata before writing the context. Invalid or missing source metadata fails closed and does not create a valuation, DCF, ratio analysis, or memo.
