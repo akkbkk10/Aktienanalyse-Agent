@@ -1,0 +1,42 @@
+{
+  "methodology_version": "0.1.0",
+  "allowed_valuation_methods": [
+    "owner_earnings_dcf",
+    "earnings_power_value",
+    "margin_of_safety_scenario_analysis"
+  ],
+  "required_ratio_inputs": [
+    "gross_margin",
+    "operating_margin",
+    "net_margin",
+    "free_cash_flow_margin",
+    "revenue_growth"
+  ],
+  "scenario_names": [
+    "conservative",
+    "base",
+    "optimistic"
+  ],
+  "discount_rate_rules": {
+    "type": "bounded_range",
+    "min_percent": 6.0,
+    "max_percent": 15.0,
+    "default_percent": 10.0,
+    "requires_source_or_assumption": true
+  },
+  "margin_of_safety_rules": {
+    "type": "minimum_threshold",
+    "minimum_percent": 25.0,
+    "requires_explicit_scenario": true
+  },
+  "prohibited_outputs_before_valuation_stage": [
+    "DCF",
+    "fair value",
+    "intrinsic value",
+    "price target",
+    "recommendation",
+    "memo generation",
+    "investment advice"
+  ]
+}
+
