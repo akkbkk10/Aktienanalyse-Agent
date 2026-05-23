@@ -30,6 +30,17 @@ python scripts/run_v0_1_demo.py
 - No investment advice.
 - No automated trading logic.
 - No final investment memo.
+- No fair value per share.
+- No model rating.
+- No model confidence label.
+- No model signal.
+
+## Data And Batch Safety
+
+- Sample data must remain separate from future live data.
+- Each ticker must be processed independently.
+- Batch runs must report ticker-specific failures without blocking successful tickers.
+- Model outputs are analysis artifacts, not personal investment advice.
 
 ## Demo Artifacts
 
