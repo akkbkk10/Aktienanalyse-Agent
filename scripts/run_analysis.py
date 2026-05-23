@@ -14,6 +14,7 @@ if str(SCRIPT_DIR) not in sys.path:
 import build_company_context
 import calculate_ratios
 import detect_research_gaps
+import generate_report
 import validate_methodology
 import validate_sources
 import write_audit_log
@@ -24,6 +25,7 @@ DEFAULT_CONTEXT_ROOT = REPO_ROOT / "data" / "companies"
 DEFAULT_MARKDOWN_QUEUE_PATH = REPO_ROOT / "research_queue.md"
 DEFAULT_JSON_QUEUE_PATH = REPO_ROOT / "research_queue.json"
 DEFAULT_AUDIT_LOG_PATH = REPO_ROOT / "audit_log.jsonl"
+DEFAULT_REPORTS_DIR = REPO_ROOT / "reports"
 
 
 def run_analysis(
@@ -33,8 +35,10 @@ def run_analysis(
     markdown_queue_path: Path = DEFAULT_MARKDOWN_QUEUE_PATH,
     json_queue_path: Path = DEFAULT_JSON_QUEUE_PATH,
     audit_log_path: Path = DEFAULT_AUDIT_LOG_PATH,
+    reports_dir: Path = DEFAULT_REPORTS_DIR,
     methodology_path: Path = validate_methodology.DEFAULT_METHODOLOGY_PATH,
     rebuild_context: bool = True,
+    generate_fact_report: bool = False,
 ) -> dict[str, Any]:
     normalized_ticker = ticker.upper()
     warnings: list[str] = []
@@ -50,6 +54,7 @@ def run_analysis(
             research_gaps_count=0,
             ratios_calculated=[],
             audit_log_written=False,
+            report_path=None,
             warnings=warnings,
         )
 
@@ -63,6 +68,7 @@ def run_analysis(
             research_gaps_count=0,
             ratios_calculated=[],
             audit_log_written=False,
+            report_path=None,
             warnings=warnings,
         )
 
@@ -90,6 +96,20 @@ def run_analysis(
         research_gaps_detected=gap_result["gaps"],
     )
     write_audit_log.append_audit_record(audit_record, audit_log_path)
+    report_path = None
+
+    if generate_fact_report:
+        report_path = str(
+            generate_report.generate_report(
+                ticker=normalized_ticker,
+                validation_status=validation_status,
+                research_gaps=gap_result["gaps"],
+                ratio_outputs=ratio_result["ratios"],
+                audit_log_reference=str(audit_log_path),
+                warnings=warnings,
+                reports_dir=reports_dir,
+            )
+        )
 
     return _summary(
         ticker=normalized_ticker,
@@ -97,6 +117,7 @@ def run_analysis(
         research_gaps_count=len(gap_result["gaps"]),
         ratios_calculated=[ratio["ratio_name"] for ratio in ratio_result["ratios"]],
         audit_log_written=True,
+        report_path=report_path,
         warnings=warnings,
     )
 
@@ -107,6 +128,7 @@ def _summary(
     research_gaps_count: int,
     ratios_calculated: list[str],
     audit_log_written: bool,
+    report_path: str | None,
     warnings: list[str],
 ) -> dict[str, Any]:
     return {
@@ -115,6 +137,7 @@ def _summary(
         "research_gaps_count": research_gaps_count,
         "ratios_calculated": ratios_calculated,
         "audit_log_written": audit_log_written,
+        "report_path": report_path,
         "warnings": warnings,
     }
 
@@ -127,8 +150,10 @@ def main() -> int:
     parser.add_argument("--markdown-queue-path", type=Path, default=DEFAULT_MARKDOWN_QUEUE_PATH)
     parser.add_argument("--json-queue-path", type=Path, default=DEFAULT_JSON_QUEUE_PATH)
     parser.add_argument("--audit-log-path", type=Path, default=DEFAULT_AUDIT_LOG_PATH)
+    parser.add_argument("--reports-dir", type=Path, default=DEFAULT_REPORTS_DIR)
     parser.add_argument("--methodology-path", type=Path, default=validate_methodology.DEFAULT_METHODOLOGY_PATH)
     parser.add_argument("--no-rebuild-context", action="store_true")
+    parser.add_argument("--generate-report", action="store_true")
     args = parser.parse_args()
 
     try:
@@ -139,8 +164,10 @@ def main() -> int:
             markdown_queue_path=args.markdown_queue_path,
             json_queue_path=args.json_queue_path,
             audit_log_path=args.audit_log_path,
+            reports_dir=args.reports_dir,
             methodology_path=args.methodology_path,
             rebuild_context=not args.no_rebuild_context,
+            generate_fact_report=args.generate_report,
         )
     except (OSError, ValueError, json.JSONDecodeError) as exc:
         print(json.dumps({"ticker": args.ticker.upper(), "error": str(exc)}, indent=2))
