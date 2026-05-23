@@ -10,6 +10,16 @@
       ],
       "max_last_verified_age_days": 180,
       "minimum_confidence": "medium"
+    },
+    "AMD": {
+      "company_name": "Advanced Micro Devices, Inc.",
+      "required_metrics": [
+        "Revenue",
+        "Net income",
+        "Data Center revenue"
+      ],
+      "max_last_verified_age_days": 180,
+      "minimum_confidence": "medium"
     }
   }
 }

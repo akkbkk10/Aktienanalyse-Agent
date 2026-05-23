@@ -33,12 +33,16 @@ def detect_gaps(
     watchlist_path: Path = DEFAULT_WATCHLIST_PATH,
     context_root: Path = DEFAULT_CONTEXT_ROOT,
     today: date | None = None,
+    tickers: list[str] | None = None,
 ) -> list[dict[str, Any]]:
     watchlist = load_json(watchlist_path)
     validation_date = today or date.today()
     gaps: list[dict[str, Any]] = []
+    selected_tickers = {ticker.upper() for ticker in tickers} if tickers else None
 
     for ticker, rules in watchlist.get("tickers", {}).items():
+        if selected_tickers is not None and ticker.upper() not in selected_tickers:
+            continue
         context_path = context_root / ticker / "context.json"
         if not context_path.exists():
             gaps.append(_gap(ticker, rules, "missing_context", None, "Company context file is missing."))
@@ -92,8 +96,9 @@ def detect_and_queue_gaps(
     markdown_queue_path: Path = DEFAULT_MARKDOWN_QUEUE_PATH,
     json_queue_path: Path = DEFAULT_JSON_QUEUE_PATH,
     today: date | None = None,
+    tickers: list[str] | None = None,
 ) -> dict[str, Any]:
-    gaps = detect_gaps(watchlist_path=watchlist_path, context_root=context_root, today=today)
+    gaps = detect_gaps(watchlist_path=watchlist_path, context_root=context_root, today=today, tickers=tickers)
     queue_result = create_queue_entries_for_gaps(
         gaps=gaps,
         markdown_queue_path=markdown_queue_path,

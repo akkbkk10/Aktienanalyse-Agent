@@ -49,6 +49,26 @@ class RunBatchAnalysisTests(unittest.TestCase):
             self.assertIn("MSFT", result["failed_runs"])
             self.assertIn("MSFT", result["warnings_by_ticker"])
 
+    def test_nvda_and_amd_successful_batch_runs(self) -> None:
+        with batch_workspace() as paths:
+            result = run_batch_analysis.run_batch(
+                tickers=["NVDA", "AMD"],
+                context_root=paths["context_root"],
+                reports_dir=paths["reports_dir"],
+                audit_log_path=paths["audit_log"],
+                generate_fact_report=True,
+                generate_summary=True,
+                run_dcf=True,
+            )
+
+            self.assertEqual(result["tickers_processed"], ["NVDA", "AMD"])
+            self.assertEqual(result["successful_runs"], ["NVDA", "AMD"])
+            self.assertEqual(result["failed_runs"], {})
+            for ticker in ["NVDA", "AMD"]:
+                self.assertTrue(Path(result["output_paths_by_ticker"][ticker]["report_path"]).exists())
+                self.assertTrue(Path(result["output_paths_by_ticker"][ticker]["analysis_summary_path"]).exists())
+                self.assertTrue(Path(result["output_paths_by_ticker"][ticker]["dcf_output_path"]).exists())
+
     def test_partial_failure_handling(self) -> None:
         with batch_workspace() as paths:
             result = run_batch_analysis.run_batch(

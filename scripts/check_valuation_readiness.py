@@ -65,6 +65,7 @@ def check_readiness(
         research_gaps = detect_research_gaps.detect_gaps(
             watchlist_path=watchlist_path,
             context_root=context_root,
+            tickers=[normalized_ticker],
         )
     high_priority_gaps = _high_priority_gaps(research_gaps)
     if high_priority_gaps:
