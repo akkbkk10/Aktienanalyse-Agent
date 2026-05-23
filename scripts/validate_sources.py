@@ -2,15 +2,22 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from datetime import date
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
 
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_SCHEMA_PATH = REPO_ROOT / "config" / "financial_metric_schema.json"
 DEFAULT_SOURCE_RULES_PATH = REPO_ROOT / "config" / "source_rules.json"
+DEFAULT_MARKDOWN_QUEUE_PATH = REPO_ROOT / "research_queue.md"
+DEFAULT_JSON_QUEUE_PATH = REPO_ROOT / "research_queue.json"
 
 
 class ValidationErrorDetail:
@@ -78,6 +85,7 @@ def validate_records(
                 )
             )
 
+    errors.extend(_detect_conflicting_values(records))
     return errors
 
 
@@ -149,6 +157,41 @@ def _validate_last_verified_freshness(
     return []
 
 
+def _detect_conflicting_values(records: list[dict[str, Any]]) -> list[ValidationErrorDetail]:
+    errors: list[ValidationErrorDetail] = []
+    seen: dict[tuple[str, str, str, str], tuple[int, Any]] = {}
+
+    for index, record in enumerate(records):
+        if not _has_conflict_key(record):
+            continue
+
+        key = (
+            str(record["ticker"]).strip().upper(),
+            str(record["metric_name"]).strip().lower(),
+            str(record["period"]).strip().lower(),
+            str(record["accounting_basis"]).strip(),
+        )
+        value = record.get("value")
+
+        if key in seen and seen[key][1] != value:
+            first_index = seen[key][0]
+            errors.append(
+                ValidationErrorDetail(
+                    index,
+                    "value",
+                    f"Conflicting value for same ticker, metric, period, and accounting basis as record {first_index}.",
+                )
+            )
+        else:
+            seen[key] = (index, value)
+
+    return errors
+
+
+def _has_conflict_key(record: dict[str, Any]) -> bool:
+    return all(record.get(field) not in (None, "") for field in ["ticker", "metric_name", "period", "accounting_basis"])
+
+
 def validate_file(
     input_path: Path,
     schema_path: Path = DEFAULT_SCHEMA_PATH,
@@ -161,9 +204,61 @@ def validate_file(
     return validate_records(records, schema, source_rules)
 
 
+def create_queue_entries_for_validation_errors(
+    input_path: Path,
+    markdown_queue_path: Path = DEFAULT_MARKDOWN_QUEUE_PATH,
+    json_queue_path: Path = DEFAULT_JSON_QUEUE_PATH,
+) -> dict[str, Any]:
+    payload = load_json(input_path)
+    records = normalize_records(payload)
+    errors = validate_file(input_path)
+    results = []
+
+    if not errors:
+        return {"validation_error_count": 0, "created_count": 0, "duplicate_count": 0, "items": []}
+
+    import create_research_request
+
+    for error in errors:
+        record = records[error.index] if error.index < len(records) else {}
+        company = str(record.get("company") or "Unknown company")
+        ticker = str(record.get("ticker") or "UNKNOWN")
+        metric_name = str(record.get("metric_name") or "unknown metric")
+        context = {
+            "record_index": error.index,
+            "field": error.field,
+            "message": error.message,
+            "metric_name": metric_name,
+            "period": record.get("period"),
+            "accounting_basis": record.get("accounting_basis"),
+            "input_path": str(input_path),
+        }
+        results.append(
+            create_research_request.append_request(
+                company=company,
+                ticker=ticker,
+                question=f"Resolve source validation issue for {metric_name}: {error.field} - {error.message}",
+                markdown_queue_path=markdown_queue_path,
+                json_queue_path=json_queue_path,
+                source="source_validation_agent",
+                context=context,
+            )
+        )
+
+    return {
+        "validation_error_count": len(errors),
+        "created_count": sum(1 for result in results if result["created"]),
+        "duplicate_count": sum(1 for result in results if not result["created"]),
+        "items": results,
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Validate sourced financial metric records.")
     parser.add_argument("input_path", type=Path, help="JSON file containing one metric record or a list of records.")
+    parser.add_argument("--queue-errors", action="store_true", help="Create research queue entries for validation errors.")
+    parser.add_argument("--markdown-queue-path", type=Path, default=DEFAULT_MARKDOWN_QUEUE_PATH)
+    parser.add_argument("--json-queue-path", type=Path, default=DEFAULT_JSON_QUEUE_PATH)
     args = parser.parse_args()
 
     try:
@@ -173,6 +268,12 @@ def main() -> int:
         return 2
 
     result = {"valid": not errors, "errors": [error.to_dict() for error in errors]}
+    if args.queue_errors and errors:
+        result["queue"] = create_queue_entries_for_validation_errors(
+            input_path=args.input_path,
+            markdown_queue_path=args.markdown_queue_path,
+            json_queue_path=args.json_queue_path,
+        )
     print(json.dumps(result, indent=2))
     return 0 if not errors else 1
 

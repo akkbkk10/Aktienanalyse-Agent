@@ -18,7 +18,7 @@ import validate_sources
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT_ROOT = REPO_ROOT / "data" / "companies"
 CONTEXT_SCHEMA_VERSION = "0.1.0"
-SOURCE_METADATA_FIELDS = ["source_url", "source_date", "last_verified", "confidence"]
+SOURCE_METADATA_FIELDS = ["source_url", "source_type", "source_date", "last_verified", "confidence"]
 
 
 class ContextValidationError(ValueError):

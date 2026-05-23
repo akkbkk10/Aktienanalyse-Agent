@@ -13,6 +13,7 @@
       "statement_type": "fact",
       "source_metadata": {
         "source_url": "https://investor.nvidia.com/news/press-release-details/2025/NVIDIA-Announces-Financial-Results-for-Fourth-Quarter-and-Fiscal-2025/default.aspx",
+        "source_type": "earnings release",
         "source_date": "2025-02-26",
         "last_verified": "2026-05-23",
         "confidence": "high"
@@ -28,6 +29,7 @@
       "statement_type": "fact",
       "source_metadata": {
         "source_url": "https://investor.nvidia.com/news/press-release-details/2025/NVIDIA-Announces-Financial-Results-for-Fourth-Quarter-and-Fiscal-2025/default.aspx",
+        "source_type": "earnings release",
         "source_date": "2025-02-26",
         "last_verified": "2026-05-23",
         "confidence": "high"
@@ -43,6 +45,7 @@
       "statement_type": "fact",
       "source_metadata": {
         "source_url": "https://investor.nvidia.com/news/press-release-details/2025/NVIDIA-Announces-Financial-Results-for-Fourth-Quarter-and-Fiscal-2025/default.aspx",
+        "source_type": "earnings release",
         "source_date": "2025-02-26",
         "last_verified": "2026-05-23",
         "confidence": "high"

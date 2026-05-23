@@ -19,7 +19,7 @@ import validate_sources
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_MARKDOWN_QUEUE_PATH = REPO_ROOT / "research_queue.md"
 DEFAULT_JSON_QUEUE_PATH = REPO_ROOT / "research_queue.json"
-REQUIRED_EVIDENCE = ["source_url", "source_date", "unit", "period", "confidence"]
+REQUIRED_EVIDENCE = ["source_url", "source_type", "source_date", "unit", "period", "confidence"]
 
 
 def build_request_entry(

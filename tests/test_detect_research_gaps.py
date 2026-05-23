@@ -26,6 +26,7 @@ def metric(name: str, last_verified: str = "2026-05-23", confidence: str = "high
         "statement_type": "fact",
         "source_metadata": {
             "source_url": "https://example.com/report",
+            "source_type": "earnings release",
             "source_date": "2026-01-15",
             "last_verified": last_verified,
             "confidence": confidence,

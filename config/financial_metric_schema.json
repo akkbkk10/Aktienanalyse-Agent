@@ -11,6 +11,7 @@
     "accounting_basis",
     "statement_type",
     "source_url",
+    "source_type",
     "source_date",
     "last_verified",
     "confidence"
@@ -50,6 +51,10 @@
     "source_url": {
       "type": "string",
       "minLength": 1
+    },
+    "source_type": {
+      "type": "string",
+      "enum": ["SEC filing", "investor relations", "earnings release", "annual report"]
     },
     "source_date": {
       "type": "string",

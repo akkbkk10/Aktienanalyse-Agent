@@ -54,6 +54,32 @@ python scripts/validate_sources.py path\to\metrics.json
 
 The input file may contain either a single JSON object or a list of objects.
 
+## Source Validation Workflow
+
+Validate sourced financial metrics before using them in company contexts:
+
+```powershell
+python scripts/validate_sources.py path\to\metrics.json
+```
+
+Create research queue entries for invalid, stale, missing, or conflicting source evidence:
+
+```powershell
+python scripts/validate_sources.py path\to\metrics.json --queue-errors
+```
+
+The source validation agent checks:
+
+- allowed source types: SEC filing, investor relations, earnings release, annual report
+- absolute HTTPS source URLs
+- ISO `source_date` and `last_verified` values
+- required confidence levels
+- explicit GAAP and Non-GAAP labeling
+- stale source verification
+- conflicting values for the same ticker, metric, period, and accounting basis
+
+Validation queue entries are written to `research_queue.json` and mirrored to `research_queue.md`. This workflow creates source research tasks only; it does not create valuation, DCF, ratio analysis, price targets, recommendations, investment advice, or memo output.
+
 ## Research Queue Workflow
 
 Create a manual research request:
