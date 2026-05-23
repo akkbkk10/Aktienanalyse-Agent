@@ -33,6 +33,7 @@ def generate_analysis_summary(
     audit_log_reference: str,
     dcf_output: dict[str, Any] | None = None,
     fair_value_per_share_output: dict[str, Any] | None = None,
+    model_rating_output: dict[str, Any] | None = None,
     warnings: list[str] | None = None,
     reports_dir: Path = DEFAULT_REPORTS_DIR,
     generated_at: str | None = None,
@@ -45,6 +46,7 @@ def generate_analysis_summary(
         audit_log_reference=audit_log_reference,
         dcf_output=dcf_output,
         fair_value_per_share_output=fair_value_per_share_output,
+        model_rating_output=model_rating_output,
         warnings=warnings or [],
         generated_at=generated_at,
     )
@@ -64,6 +66,7 @@ def build_analysis_summary(
     audit_log_reference: str,
     dcf_output: dict[str, Any] | None = None,
     fair_value_per_share_output: dict[str, Any] | None = None,
+    model_rating_output: dict[str, Any] | None = None,
     warnings: list[str] | None = None,
     generated_at: str | None = None,
 ) -> dict[str, Any]:
@@ -75,6 +78,8 @@ def build_analysis_summary(
     fair_value_scenarios = fair_value_per_share_output.get("scenarios", []) if fair_value_per_share_output else []
     fair_value_assumptions = fair_value_per_share_output.get("assumptions", {}) if fair_value_per_share_output else None
     fair_value_warnings = fair_value_per_share_output.get("warnings", []) if fair_value_per_share_output else []
+    model_rating_assumptions = model_rating_output.get("assumptions", {}) if model_rating_output else None
+    model_rating_warnings = model_rating_output.get("warnings", []) if model_rating_output else []
 
     summary = {
         "ticker": normalized_ticker,
@@ -85,27 +90,33 @@ def build_analysis_summary(
             "ratio_source_references": _ratio_source_references(ratio_outputs),
             "dcf_source_references": dcf_output.get("source_references", []) if dcf_output else [],
             "fair_value_per_share_source_references": fair_value_per_share_output.get("source_references", []) if fair_value_per_share_output else [],
+            "model_rating_source_references": model_rating_output.get("source_references", []) if model_rating_output else [],
         },
         "assumptions": {
             "dcf_assumptions": dcf_assumptions,
             "dcf_available": dcf_output is not None,
             "fair_value_per_share_assumptions": fair_value_assumptions,
             "fair_value_per_share_available": fair_value_per_share_output is not None,
+            "model_rating_assumptions": model_rating_assumptions,
+            "model_rating_available": model_rating_output is not None,
         },
         "calculated_outputs": {
             "ratios": ratio_outputs,
             "dcf_scenarios": dcf_scenarios,
             "fair_value_per_share_scenarios": fair_value_scenarios,
+            "model_rating": model_rating_output,
         },
         "missing_data": {
             "research_gaps": research_gaps,
             "dcf_status": "included" if dcf_output else "not provided",
             "fair_value_per_share_status": "included" if fair_value_per_share_output else "not provided",
+            "model_rating_status": "included" if model_rating_output else "not provided",
         },
         "risks_warnings": {
             "warnings": warnings or [],
             "dcf_warnings": dcf_warnings,
             "fair_value_per_share_warnings": fair_value_warnings,
+            "model_rating_warnings": model_rating_warnings,
         },
     }
     return summary
@@ -143,6 +154,7 @@ def main() -> int:
     parser.add_argument("--ratio-outputs-json", type=Path, required=True)
     parser.add_argument("--dcf-output-json", type=Path)
     parser.add_argument("--fair-value-per-share-json", type=Path)
+    parser.add_argument("--model-rating-json", type=Path)
     parser.add_argument("--audit-log-reference", required=True)
     parser.add_argument("--warning", action="append", dest="warnings", default=[])
     parser.add_argument("--reports-dir", type=Path, default=DEFAULT_REPORTS_DIR)
@@ -157,6 +169,7 @@ def main() -> int:
             audit_log_reference=args.audit_log_reference,
             dcf_output=load_json(args.dcf_output_json) if args.dcf_output_json else None,
             fair_value_per_share_output=load_json(args.fair_value_per_share_json) if args.fair_value_per_share_json else None,
+            model_rating_output=load_json(args.model_rating_json) if args.model_rating_json else None,
             warnings=args.warnings,
             reports_dir=args.reports_dir,
         )

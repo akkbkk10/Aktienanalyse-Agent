@@ -104,6 +104,8 @@ def calculate_ratios_for_ticker(
 def _metrics_by_period(metrics: list[dict[str, Any]]) -> dict[str, dict[str, dict[str, Any]]]:
     grouped: dict[str, dict[str, dict[str, Any]]] = {}
     for metric in metrics:
+        if metric.get("metric_category") in {"share_count", "market_price"}:
+            continue
         period = str(metric.get("period", ""))
         metric_name = str(metric.get("metric_name", ""))
         if period and metric_name:

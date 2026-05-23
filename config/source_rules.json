@@ -11,7 +11,7 @@
   ],
   "max_last_verified_age_days": 180,
   "allowed_url_schemes": ["https"],
-  "allowed_source_types": ["SEC filing", "investor relations", "earnings release", "annual report"],
+  "allowed_source_types": ["SEC filing", "investor relations", "earnings release", "annual report", "market data"],
   "required_statement_types": ["fact", "assumption", "opinion"],
   "required_accounting_basis_labels": ["GAAP", "Non-GAAP", "IFRS", "Other"],
   "confidence_levels": ["low", "medium", "high"]

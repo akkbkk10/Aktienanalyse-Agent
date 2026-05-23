@@ -34,6 +34,7 @@ def generate_report(
     audit_log_reference: str,
     dcf_output: dict[str, Any] | None = None,
     fair_value_per_share_output: dict[str, Any] | None = None,
+    model_rating_output: dict[str, Any] | None = None,
     warnings: list[str] | None = None,
     reports_dir: Path = DEFAULT_REPORTS_DIR,
     generated_at: str | None = None,
@@ -48,6 +49,7 @@ def generate_report(
         audit_log_reference=audit_log_reference,
         dcf_output=dcf_output,
         fair_value_per_share_output=fair_value_per_share_output,
+        model_rating_output=model_rating_output,
         warnings=warnings or [],
         generated_at=timestamp,
     )
@@ -67,6 +69,7 @@ def render_report(
     audit_log_reference: str,
     dcf_output: dict[str, Any] | None,
     fair_value_per_share_output: dict[str, Any] | None = None,
+    model_rating_output: dict[str, Any] | None = None,
     warnings: list[str] | None = None,
     generated_at: str = "",
 ) -> str:
@@ -103,6 +106,9 @@ def render_report(
 
     if fair_value_per_share_output:
         lines.extend(_fair_value_per_share_section_lines(fair_value_per_share_output))
+
+    if model_rating_output:
+        lines.extend(_model_rating_section_lines(model_rating_output))
 
     lines.extend(["", "## Missing Data", ""])
     if research_gaps:
@@ -261,6 +267,40 @@ def _fair_value_per_share_section_lines(fair_value_output: dict[str, Any]) -> li
     return lines
 
 
+def _model_rating_section_lines(model_rating_output: dict[str, Any]) -> list[str]:
+    lines = [
+        "",
+        "### Model Rating",
+        "",
+        f"- Disclaimer: {model_rating_output.get('disclaimer')}",
+        f"- Rating: {model_rating_output.get('model_rating')}",
+        f"- Label: {model_rating_output.get('rating_label')}",
+        f"- Fair value per share used: {model_rating_output.get('fair_value_per_share_used')}",
+        f"- Market price used: {model_rating_output.get('market_price_used')}",
+        f"- Model gap percent: {model_rating_output.get('valuation_gap_percent')}",
+        f"- Rules version: {model_rating_output.get('rules_version')}",
+        "",
+        "#### Model Rating Assumptions",
+        "",
+    ]
+    for key, value in model_rating_output.get("assumptions", {}).items():
+        label = "model_gap_formula" if key == "valuation_gap_formula" else key
+        lines.append(f"- {label}: {value}")
+
+    lines.extend(["", "#### Model Rating Warnings", ""])
+    for warning in model_rating_output.get("warnings", []):
+        lines.append(f"- {warning}")
+
+    lines.extend(["", "#### Model Rating Source References", ""])
+    for source in model_rating_output.get("source_references", []):
+        lines.append(
+            f"- {_metric_label(source)} ({source.get('period')}): "
+            f"{source.get('source_type')} dated {source.get('source_date')} - {source.get('source_url')}"
+        )
+
+    return lines
+
+
 def _metric_label(source: dict[str, Any]) -> str:
     metric_name = source.get("metric_name")
     metric_id = source.get("metric_id")
@@ -275,6 +315,7 @@ def main() -> int:
     parser.add_argument("--ratio-outputs-json", type=Path, required=True)
     parser.add_argument("--dcf-output-json", type=Path)
     parser.add_argument("--fair-value-per-share-json", type=Path)
+    parser.add_argument("--model-rating-json", type=Path)
     parser.add_argument("--audit-log-reference", required=True)
     parser.add_argument("--warning", action="append", dest="warnings", default=[])
     parser.add_argument("--reports-dir", type=Path, default=DEFAULT_REPORTS_DIR)
@@ -289,6 +330,7 @@ def main() -> int:
             audit_log_reference=args.audit_log_reference,
             dcf_output=load_json(args.dcf_output_json) if args.dcf_output_json else None,
             fair_value_per_share_output=load_json(args.fair_value_per_share_json) if args.fair_value_per_share_json else None,
+            model_rating_output=load_json(args.model_rating_json) if args.model_rating_json else None,
             warnings=args.warnings,
             reports_dir=args.reports_dir,
         )

@@ -203,5 +203,23 @@
     "last_verified": "2026-05-23",
     "confidence": "high",
     "notes": "Share count input only. Do not use to calculate fair value per share yet."
+  },
+  {
+    "company": "NVIDIA Corporation",
+    "ticker": "NVDA",
+    "metric_id": "nvda_current_market_price_2026_05_23",
+    "metric_name": "Current market price",
+    "metric_category": "market_price",
+    "value": 215.33,
+    "unit": "USD per share",
+    "period": "Latest trade timestamp 2026-05-23 00:15 UTC",
+    "accounting_basis": "Other",
+    "statement_type": "fact",
+    "source_url": "https://www.nasdaq.com/market-activity/stocks/nvda",
+    "source_type": "market data",
+    "source_date": "2026-05-23",
+    "last_verified": "2026-05-24",
+    "confidence": "high",
+    "notes": "Externally sourced market price input for model rating only."
   }
 ]

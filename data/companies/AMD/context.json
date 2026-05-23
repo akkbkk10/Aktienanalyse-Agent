@@ -2,7 +2,7 @@
   "schema_version": "0.1.0",
   "ticker": "AMD",
   "company_name": "Advanced Micro Devices, Inc.",
-  "last_updated": "2026-05-23",
+  "last_updated": "2026-05-24",
   "metrics": [
     {
       "metric_id": "amd_revenue_fy2024",
@@ -225,10 +225,28 @@
       },
       "metric_category": "share_count",
       "notes": "Share count input only. Do not use to calculate fair value per share yet."
+    },
+    {
+      "metric_id": "amd_current_market_price_2026_05_23",
+      "metric_name": "Current market price",
+      "value": 467.51,
+      "unit": "USD per share",
+      "period": "Latest trade timestamp 2026-05-23 00:15 UTC",
+      "accounting_basis": "Other",
+      "statement_type": "fact",
+      "source_metadata": {
+        "source_url": "https://www.nasdaq.com/market-activity/stocks/amd",
+        "source_type": "market data",
+        "source_date": "2026-05-23",
+        "last_verified": "2026-05-24",
+        "confidence": "high"
+      },
+      "metric_category": "market_price",
+      "notes": "Externally sourced market price input for model rating only."
     }
   ],
   "source_metadata": {
     "source_file": "data\\amd_sample_metrics.json",
-    "metric_count": 13
+    "metric_count": 14
   }
 }
