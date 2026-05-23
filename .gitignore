@@ -5,4 +5,6 @@ __pycache__/
 htmlcov/
 .venv/
 venv/
-
+reports/*.md
+reports/*.jsonl
+!reports/.gitkeep
