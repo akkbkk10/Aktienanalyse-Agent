@@ -139,3 +139,23 @@ The research gap agent compares `config/watchlist.json` with `data/companies/<TI
 Detected gaps are automatically written to `research_queue.json` and mirrored to `research_queue.md` through the existing queue system. Duplicate queue entries are not appended twice.
 
 This workflow creates research follow-up tasks only. It does not create valuation, DCF, ratio analysis, price targets, recommendations, or memo output.
+
+## Ratio Calculation Workflow
+
+Calculate deterministic ratios from a validated company context:
+
+```powershell
+python scripts/calculate_ratios.py NVDA
+```
+
+The ratio calculation agent can calculate only:
+
+- `gross_margin`
+- `operating_margin`
+- `net_margin`
+- `free_cash_flow_margin`
+- `revenue_growth` when prior-period revenue exists
+
+Each ratio output includes ticker, ratio name, value, formula, input metrics used, source metric references, period, and confidence. If required input metrics are missing, the script creates research queue entries in `research_queue.json` and mirrors them to `research_queue.md`.
+
+This workflow is deterministic arithmetic only. It does not create valuation, DCF, fair value, price targets, recommendations, investment advice, or memo output.
