@@ -16,6 +16,7 @@ import calculate_ratios
 import check_valuation_readiness
 import detect_research_gaps
 import dcf_model
+import generate_analysis_summary
 import generate_report
 import validate_methodology
 import validate_sources
@@ -43,6 +44,7 @@ def run_analysis(
     watchlist_path: Path = detect_research_gaps.DEFAULT_WATCHLIST_PATH,
     rebuild_context: bool = True,
     generate_fact_report: bool = False,
+    generate_summary: bool = False,
     run_dcf: bool = False,
     dcf_assumptions_path: Path | None = None,
 ) -> dict[str, Any]:
@@ -61,6 +63,7 @@ def run_analysis(
             ratios_calculated=[],
             audit_log_written=False,
             report_path=None,
+            analysis_summary_path=None,
             dcf_run=False,
             dcf_scenarios_calculated=[],
             dcf_output_path=None,
@@ -79,6 +82,7 @@ def run_analysis(
             ratios_calculated=[],
             audit_log_written=False,
             report_path=None,
+            analysis_summary_path=None,
             dcf_run=False,
             dcf_scenarios_calculated=[],
             dcf_output_path=None,
@@ -101,12 +105,14 @@ def run_analysis(
     )
 
     report_path = None
+    analysis_summary_path = None
     dcf_output_path = None
     dcf_result = None
+    readiness_result = None
     dcf_warnings: list[str] = []
     dcf_scenarios_calculated: list[str] = []
 
-    if run_dcf:
+    if run_dcf or generate_summary:
         readiness_result = check_valuation_readiness.check_readiness(
             ticker=normalized_ticker,
             source_data_path=source_data_path,
@@ -118,6 +124,8 @@ def run_analysis(
             ratio_result=ratio_result,
             research_gaps=gap_result["gaps"],
         )
+
+    if run_dcf and readiness_result is not None:
         if readiness_result["ready_for_valuation"]:
             assumptions_path = dcf_assumptions_path or Path(
                 str(DEFAULT_DCF_ASSUMPTIONS_PATH_TEMPLATE).format(ticker=normalized_ticker)
@@ -153,6 +161,20 @@ def run_analysis(
             )
         )
 
+    if generate_summary:
+        analysis_summary_path = str(
+            generate_analysis_summary.generate_analysis_summary(
+                ticker=normalized_ticker,
+                validation_status=validation_status,
+                research_gaps=gap_result["gaps"],
+                ratio_outputs=ratio_result["ratios"],
+                audit_log_reference=str(audit_log_path),
+                dcf_output=dcf_result if dcf_output_path else None,
+                warnings=warnings + dcf_warnings,
+                reports_dir=reports_dir,
+            )
+        )
+
     methodology = validate_methodology.load_json(methodology_path)
     audit_record = write_audit_log.build_audit_record(
         ticker=normalized_ticker,
@@ -172,6 +194,7 @@ def run_analysis(
         ratios_calculated=[ratio["ratio_name"] for ratio in ratio_result["ratios"]],
         audit_log_written=True,
         report_path=report_path,
+        analysis_summary_path=analysis_summary_path,
         dcf_run=dcf_output_path is not None,
         dcf_scenarios_calculated=dcf_scenarios_calculated,
         dcf_output_path=dcf_output_path,
@@ -187,6 +210,7 @@ def _summary(
     ratios_calculated: list[str],
     audit_log_written: bool,
     report_path: str | None,
+    analysis_summary_path: str | None,
     dcf_run: bool,
     dcf_scenarios_calculated: list[str],
     dcf_output_path: str | None,
@@ -200,6 +224,7 @@ def _summary(
         "ratios_calculated": ratios_calculated,
         "audit_log_written": audit_log_written,
         "report_path": report_path,
+        "analysis_summary_path": analysis_summary_path,
         "dcf_run": dcf_run,
         "dcf_scenarios_calculated": dcf_scenarios_calculated,
         "dcf_output_path": dcf_output_path,
@@ -228,6 +253,7 @@ def main() -> int:
     parser.add_argument("--watchlist-path", type=Path, default=detect_research_gaps.DEFAULT_WATCHLIST_PATH)
     parser.add_argument("--no-rebuild-context", action="store_true")
     parser.add_argument("--generate-report", action="store_true")
+    parser.add_argument("--generate-summary", action="store_true")
     parser.add_argument("--run-dcf", action="store_true")
     parser.add_argument("--dcf-assumptions-path", type=Path)
     args = parser.parse_args()
@@ -245,6 +271,7 @@ def main() -> int:
             watchlist_path=args.watchlist_path,
             rebuild_context=not args.no_rebuild_context,
             generate_fact_report=args.generate_report,
+            generate_summary=args.generate_summary,
             run_dcf=args.run_dcf,
             dcf_assumptions_path=args.dcf_assumptions_path,
         )
