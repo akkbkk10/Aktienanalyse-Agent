@@ -22,6 +22,7 @@ Valuation, DCF, price target, and investment recommendation logic are intentiona
 - `data/` - raw and intermediate input data.
 - `data/companies/<TICKER>/context.json` - persistent company context files.
 - `reports/` - generated reports.
+- `audit_log.jsonl` - append-only audit log for reproducible analysis runs.
 - `research_queue.md` - queue of research requests.
 - `research_queue.json` - structured queue used for duplicate detection and automation.
 
@@ -175,3 +176,15 @@ python scripts/validate_methodology.py
 `config/methodology_buffett_ai.json` defines allowed future methodology settings, required ratio inputs, scenario names, discount-rate rules, margin-of-safety rules, and outputs that remain prohibited before a valuation stage exists.
 
 This workflow validates configuration shape only. It does not calculate DCF, fair value, intrinsic value, price targets, recommendations, investment advice, or memo output.
+
+## Audit Log Workflow
+
+Append a reproducible analysis-run audit record:
+
+```powershell
+python scripts/write_audit_log.py --ticker NVDA --methodology-version 0.1.0 --data-context-path data\companies\NVDA\context.json --source-file data\nvda_sample_metrics.json --validation-status-json path\to\validation_status.json --ratio-outputs-json path\to\ratio_outputs.json --research-gaps-json path\to\research_gaps.json
+```
+
+Each JSONL record includes timestamp, ticker, methodology version, data context path, source files used, validation status, ratio outputs, research gaps detected, and the current git commit hash when available.
+
+The audit log records what happened in a run. It does not calculate DCF, fair value, intrinsic value, price targets, recommendations, investment advice, or memo output.
