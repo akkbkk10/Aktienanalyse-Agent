@@ -3,7 +3,7 @@
 ## Status
 
 v1.0 is a release candidate for real user testing of the deterministic stock
-analysis workflow.
+analysis workflow. Final release-candidate validation completed on 2026-05-24.
 
 ## Supported Sample Companies
 
@@ -70,3 +70,11 @@ Reviewers should focus on:
 - deterministic batch behavior across independent tickers
 - absence of prohibited recommendation, advice, live-fetching, and trading
   behavior
+
+## Final Validation Notes
+
+The bundled DCF assumptions are intentionally labeled as example/manual-review
+inputs. In the validated v1.0 release candidate, these assumption sets cap model
+confidence below `A` and block active model signals. NVDA, AMD, and TSMC each
+complete the demo workflow with Model Confidence `C` and Model Signal
+`unavailable` until reviewed assumptions are supplied.
