@@ -20,6 +20,16 @@
       ],
       "max_last_verified_age_days": 180,
       "minimum_confidence": "medium"
+    },
+    "TSMC": {
+      "company_name": "Taiwan Semiconductor Manufacturing Company Limited",
+      "required_metrics": [
+        "Revenue",
+        "Net income",
+        "Free cash flow"
+      ],
+      "max_last_verified_age_days": 180,
+      "minimum_confidence": "medium"
     }
   }
 }

@@ -77,6 +77,30 @@ class RunBatchAnalysisTests(unittest.TestCase):
                 self.assertTrue(Path(result["output_paths_by_ticker"][ticker]["model_confidence_output_path"]).exists())
                 self.assertTrue(Path(result["output_paths_by_ticker"][ticker]["model_signal_output_path"]).exists())
 
+    def test_nvda_amd_and_tsmc_successful_batch_runs(self) -> None:
+        with batch_workspace() as paths:
+            result = run_batch_analysis.run_batch(
+                tickers=["NVDA", "AMD", "TSMC"],
+                context_root=paths["context_root"],
+                reports_dir=paths["reports_dir"],
+                audit_log_path=paths["audit_log"],
+                generate_fact_report=True,
+                generate_summary=True,
+                run_dcf=True,
+            )
+
+            self.assertEqual(result["tickers_processed"], ["NVDA", "AMD", "TSMC"])
+            self.assertEqual(result["successful_runs"], ["NVDA", "AMD", "TSMC"])
+            self.assertEqual(result["failed_runs"], {})
+            for ticker in ["NVDA", "AMD", "TSMC"]:
+                self.assertTrue(Path(result["output_paths_by_ticker"][ticker]["report_path"]).exists())
+                self.assertTrue(Path(result["output_paths_by_ticker"][ticker]["analysis_summary_path"]).exists())
+                self.assertTrue(Path(result["output_paths_by_ticker"][ticker]["dcf_output_path"]).exists())
+                self.assertTrue(Path(result["output_paths_by_ticker"][ticker]["fair_value_per_share_output_path"]).exists())
+                self.assertTrue(Path(result["output_paths_by_ticker"][ticker]["model_rating_output_path"]).exists())
+                self.assertTrue(Path(result["output_paths_by_ticker"][ticker]["model_confidence_output_path"]).exists())
+                self.assertTrue(Path(result["output_paths_by_ticker"][ticker]["model_signal_output_path"]).exists())
+
     def test_partial_failure_handling(self) -> None:
         with batch_workspace() as paths:
             result = run_batch_analysis.run_batch(
