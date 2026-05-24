@@ -1,0 +1,80 @@
+{
+  "schema_version": "0.1.0",
+  "type": "object",
+  "required_fields": [
+    "ticker",
+    "calculated",
+    "warnings",
+    "scenarios"
+  ],
+  "field_types": {
+    "ticker": "string",
+    "calculated": "boolean",
+    "warnings": "array",
+    "scenarios": "object"
+  },
+  "calculated_required_fields": [
+    "schema_version",
+    "unit",
+    "formulas",
+    "assumptions_used",
+    "source_references",
+    "source_metric_ids"
+  ],
+  "calculated_field_types": {
+    "schema_version": "string",
+    "unit": "string",
+    "formulas": "object",
+    "assumptions_used": "object",
+    "source_references": "array",
+    "source_metric_ids": "array"
+  },
+  "blocked_required_fields": [
+    "blocking_reasons",
+    "readiness"
+  ],
+  "blocked_field_types": {
+    "blocking_reasons": "array",
+    "readiness": "object"
+  },
+  "source_reference_required_fields": [
+    "metric_id",
+    "metric_name",
+    "period",
+    "source_url",
+    "source_date",
+    "confidence"
+  ],
+  "source_reference_field_types": {
+    "metric_id": "string",
+    "metric_name": "string",
+    "period": "string",
+    "source_url": "string",
+    "source_date": "date",
+    "confidence": "string"
+  },
+  "scenario_required_fields": [
+    "scenario",
+    "discounted_cash_flows",
+    "terminal_value",
+    "present_value_terminal_value",
+    "dcf_value"
+  ],
+  "scenario_field_types": {
+    "scenario": "string",
+    "discounted_cash_flows": "array",
+    "terminal_value": "number",
+    "present_value_terminal_value": "number",
+    "dcf_value": "number"
+  },
+  "discounted_cash_flow_required_fields": [
+    "year",
+    "free_cash_flow",
+    "present_value"
+  ],
+  "discounted_cash_flow_field_types": {
+    "year": "integer",
+    "free_cash_flow": "number",
+    "present_value": "number"
+  }
+}

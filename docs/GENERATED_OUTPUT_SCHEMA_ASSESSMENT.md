@@ -74,38 +74,45 @@ The fact report is a Markdown artifact, not a generated JSON artifact:
 | Model signal output | Protects the most user-facing model classification boundary. | Higher. Signal availability depends on rating, confidence, assumptions, and market freshness; schema hardening should follow upstream output contracts. | `config/`, `scripts/model_signal.py`, `tests/test_model_signal.py`. | Positive/neutral/negative/unavailable, blocking reasons, no recommendation language. | Later. |
 | Audit log | Confirms reproducibility fields and append-only records. | Low to moderate. It already has `validate_audit_record`, so a new schema may duplicate existing validation unless a concrete consumer needs it. | `config/`, `scripts/write_audit_log.py`, `tests/test_write_audit_log.py`. | Required fields, type checks, append-only behavior. | Later only if JSONL contract consumers need it. |
 
+## DCF Output Schema Hardening Status
+
+The DCF output recommendation has been partially implemented:
+
+- `config/dcf_output_schema.json` defines the standalone DCF output contract.
+- `scripts/dcf_model.py` validates calculated and blocked DCF outputs against
+  the contract.
+- DCF tests cover valid calculated output, valid blocked output, missing
+  required fields, invalid numeric fields, and missing source-reference
+  metadata.
+- v1.0 demo tests validate generated NVDA, AMD, and TSMC DCF output artifacts
+  against the contract.
+
+This covers DCF output only. It does not add schemas for fair value per share,
+model rating, model confidence, model signal, audit log, analysis summary, or
+fact report artifacts.
+
 ## Recommended Next Implementation PR
 
 Recommend exactly one next implementation target:
 
-**DCF output schema/contract hardening.**
+**Fair value per share output schema/contract assessment.**
 
 Small safe scope for the future implementation PR:
 
-- Add a standalone schema-like config for `*_dcf_output.json`.
-- Validate the current calculated DCF output shape without changing DCF math.
-- Support the existing blocked-output shape returned when valuation readiness
-  fails.
-- Protect required top-level fields already emitted by `scripts/dcf_model.py`,
-  such as `ticker`, `calculated`, `warnings`, and `scenarios`.
-- For calculated outputs, protect `schema_version`, `unit`, `formulas`,
-  `assumptions_used`, `source_references`, `source_metric_ids`, and scenario
-  result fields.
-- Require source references to keep `metric_id`, period, source URL, source
-  date, and confidence where already emitted.
-- Add focused tests in the DCF test area for valid calculated output, blocked
-  output, missing required field, and missing source-reference metadata.
-- Do not change formulas, assumptions, generated report wording, fair value
-  logic, model rating, model confidence, model signal, CLI behavior, or CI.
+- Review the current fair value per share JSON artifact now that DCF output has
+  contract protection.
+- Keep the first pass assessment-only unless a concrete missing guardrail is
+  found.
+- Do not change fair value calculations, DCF math, model behavior, report
+  wording, CLI behavior, or CI.
 
-Why DCF output should be first:
+Why this should be next:
 
-- It is the first generated JSON output in the valuation/output chain.
-- Fair value per share depends on it directly.
-- Reports and summaries already display DCF assumptions, scenario outputs,
-  formulas, warnings, and source references.
-- It is narrower than hardening the entire analysis summary and less coupled to
-  user-facing model classification than rating/confidence/signal outputs.
+- Fair value per share is the next direct consumer of DCF output.
+- It is narrower than model rating, confidence, signal, or full analysis
+  summary hardening.
+- Assessment-first keeps the project from broadening into every generated JSON
+  artifact at once.
 
 ## Keep For Later
 
