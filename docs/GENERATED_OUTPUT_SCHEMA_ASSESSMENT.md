@@ -91,26 +91,44 @@ This covers DCF output only. It does not add schemas for fair value per share,
 model rating, model confidence, model signal, audit log, analysis summary, or
 fact report artifacts.
 
+## Fair Value Per Share Schema Hardening Status
+
+The fair value per share output recommendation has been partially implemented:
+
+- `config/fair_value_per_share_output_schema.json` defines the standalone fair
+  value per share output contract.
+- `scripts/fair_value_per_share.py` validates generated fair value per share
+  outputs against the contract.
+- Fair value tests cover valid output, missing required fields, and invalid
+  numeric fields.
+- v1.0 demo tests validate generated NVDA, AMD, and TSMC fair value per share
+  output artifacts against the contract.
+
+This covers fair value per share output only. It does not add schemas for model
+rating, model confidence, model signal, audit log, analysis summary, or fact
+report artifacts.
+
 ## Recommended Next Implementation PR
 
 Recommend exactly one next implementation target:
 
-**Fair value per share output schema/contract assessment.**
+**Model rating output schema/contract assessment.**
 
 Small safe scope for the future implementation PR:
 
-- Review the current fair value per share JSON artifact now that DCF output has
-  contract protection.
+- Review the current model rating JSON artifact now that DCF output and fair
+  value per share output have contract protection.
 - Keep the first pass assessment-only unless a concrete missing guardrail is
   found.
-- Do not change fair value calculations, DCF math, model behavior, report
-  wording, CLI behavior, or CI.
+- Do not change model rating behavior, fair value calculations, DCF math,
+  report wording, CLI behavior, or CI.
 
 Why this should be next:
 
-- Fair value per share is the next direct consumer of DCF output.
-- It is narrower than model rating, confidence, signal, or full analysis
-  summary hardening.
+- Model rating is the next direct consumer of fair value per share output and
+  validated market price snapshots.
+- It is narrower than model confidence, model signal, or full analysis summary
+  hardening.
 - Assessment-first keeps the project from broadening into every generated JSON
   artifact at once.
 
@@ -121,7 +139,6 @@ Do not harden these in the next implementation PR:
 - all generated JSON outputs at once
 - analysis summary schema
 - fact report Markdown schema
-- fair value per share schema
 - model rating, confidence, or signal schemas
 - audit log schema unless a concrete JSONL consumer needs it
 - generated artifact manifest
