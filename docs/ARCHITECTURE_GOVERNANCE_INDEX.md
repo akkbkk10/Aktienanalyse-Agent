@@ -12,6 +12,7 @@ requirements.
 | Check current data fields and output structures | `docs/SCHEMA_FIELD_REFERENCE.md` | Lists current schema fields and observed output structures. |
 | Check generated artifact paths and required files | `docs/REPORT_ARTIFACT_CONTRACT.md` | Documents the current reports directory layout, shared audit log, and required per-ticker v1.0 demo artifacts. |
 | Assess data-contract hardening priorities | `docs/DATA_CONTRACT_SCHEMA_HARDENING_ASSESSMENT.md` | Reviews current schema protections and identifies the next small data-contract hardening candidate. |
+| Validate company context contract expectations | `config/company_context_schema.json` | Defines the standalone contract for persistent `data/companies/<TICKER>/context.json` files. |
 | Review generated output before merging | `docs/GENERATED_OUTPUT_REVIEW_GUIDE.md` | Helps inspect reports, summaries, model outputs, and audit logs for unsafe wording or traceability issues. |
 | Confirm guardrails for core or adapter work | `docs/GUARDRAIL_SECURITY_TEST_PLAN.md` | Defines prohibited behaviors, allowed behaviors, module/test mappings, and security review prompts. |
 | Propose a future adapter or framework evaluation | `docs/ADAPTER_PROPOSAL_CHECKLIST.md` | Frames adapter boundaries, required questions, tests, and review artifacts before implementation. |

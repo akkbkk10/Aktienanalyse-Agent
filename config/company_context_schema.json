@@ -1,0 +1,73 @@
+{
+  "schema_version": "0.1.0",
+  "type": "object",
+  "required_fields": [
+    "schema_version",
+    "ticker",
+    "company_name",
+    "last_updated",
+    "metrics",
+    "source_metadata"
+  ],
+  "field_types": {
+    "schema_version": "string",
+    "ticker": "string",
+    "company_name": "string",
+    "last_updated": "date",
+    "metrics": "array",
+    "source_metadata": "object"
+  },
+  "source_metadata_required_fields": [
+    "source_file",
+    "metric_count"
+  ],
+  "source_metadata_field_types": {
+    "source_file": "string_or_null",
+    "metric_count": "number"
+  },
+  "metric_required_fields": [
+    "metric_id",
+    "metric_name",
+    "value",
+    "unit",
+    "period",
+    "accounting_basis",
+    "statement_type",
+    "source_metadata"
+  ],
+  "metric_field_types": {
+    "metric_id": "string",
+    "metric_name": "string",
+    "value": "number",
+    "unit": "string",
+    "period": "string",
+    "accounting_basis": "string",
+    "statement_type": "string",
+    "source_metadata": "object"
+  },
+  "metric_optional_fields": [
+    "metric_category",
+    "notes",
+    "currency",
+    "exchange",
+    "price_type",
+    "as_of_datetime",
+    "fetched_at",
+    "provider",
+    "retrieval_method"
+  ],
+  "metric_source_metadata_required_fields": [
+    "source_url",
+    "source_type",
+    "source_date",
+    "last_verified",
+    "confidence"
+  ],
+  "metric_source_metadata_field_types": {
+    "source_url": "string",
+    "source_type": "string",
+    "source_date": "date",
+    "last_verified": "date",
+    "confidence": "string"
+  }
+}

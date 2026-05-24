@@ -95,20 +95,18 @@ the raw financial metric records, source evidence fields, market price snapshot
 fields, share count records, and DCF assumption inputs are already covered by
 schemas or validator checks.
 
-One concrete hardening gap remains:
+The concrete hardening gap identified by this assessment has been partially
+addressed:
 
-- **Company context files are validated indirectly, but do not have a standalone
-  schema contract.** `scripts/build_company_context.py` validates contexts as it
-  builds them, and tests verify context creation plus `metric_id` preservation.
-  However, downstream modules consume `data/companies/<TICKER>/context.json`
-  directly, and the context shape is currently documented as "current observed
-  structure" rather than formalized in `config/`.
+- **Company context files now have standalone schema/contract protection.**
+  `config/company_context_schema.json` formalizes the current top-level context
+  fields, per-metric fields, and nested source metadata fields already produced
+  by `scripts/build_company_context.py`. Focused tests validate the committed
+  NVDA, AMD, and TSMC context files against that contract.
 
-This is a real gap because the company context is the handoff point from source
-validation into ratios, research gaps, DCF readiness, fair value per share,
-model rating, model confidence, model signal, reports, summaries, and audit
-logs. A small context contract would make that handoff easier to review before
-future schema or adapter work.
+This partially closes the gap because the context handoff is now protected by a
+durable config file and tests. It does not attempt to formalize every generated
+JSON output schema, which remains broader follow-up work.
 
 ## Nice-To-Have Improvements For Later
 
@@ -128,34 +126,26 @@ These are useful, but broader than the next safe PR:
 
 Recommend exactly one next implementation block:
 
-**Company context schema hardening.**
+**Generated output schema assessment.**
 
 Small safe scope:
 
-- Add a formal company context schema or schema-like config for
-  `data/companies/<TICKER>/context.json`.
-- Keep the existing context shape and sample data unchanged unless validation
-  reveals an actual inconsistency.
-- Validate top-level context fields: `schema_version`, `ticker`, `company_name`,
-  `last_updated`, `metrics`, and context-level `source_metadata`.
-- Validate per-metric fields already produced by `scripts/build_company_context.py`:
-  `metric_id`, `metric_name`, `value`, `unit`, `period`, `accounting_basis`,
-  `statement_type`, and nested source metadata.
-- Preserve specialized handling for `share_count` and `market_price` metrics,
-  including market price snapshot fields where present.
-- Add focused tests that the committed NVDA, AMD, and TSMC context files satisfy
-  the contract.
-- Do not change financial values, DCF math, model behavior, generated report
-  wording, output schemas, CLI behavior, or adapter boundaries.
+- Review the current generated JSON artifacts documented in
+  `docs/REPORT_ARTIFACT_CONTRACT.md` and `docs/SCHEMA_FIELD_REFERENCE.md`.
+- Identify whether one narrow generated output, such as DCF output or fair
+  value per share output, needs standalone schema protection next.
+- Keep the first pass assessment-only unless a specific missing guardrail is
+  found.
+- Do not change calculations, model behavior, generated report wording, CLI
+  behavior, or adapter boundaries.
 
 Why this should be next:
 
-- It hardens the most important internal data handoff without touching
-  calculations.
-- It aligns with `docs/SCHEMA_FIELD_REFERENCE.md`, which already marks company
-  context as current observed structure.
-- It prepares the deterministic core for future schema or adapter proposals
-  without adding live fetching or framework code.
+- The raw source data, market price snapshots, and company context handoff now
+  have explicit contract protection.
+- Generated JSON outputs are still documented mainly as current observed
+  structure.
+- Assessment-first keeps this from expanding into a broad output-schema rewrite.
 
 ## Not Recommended Yet
 

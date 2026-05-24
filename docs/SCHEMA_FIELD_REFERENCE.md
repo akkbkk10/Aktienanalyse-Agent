@@ -68,8 +68,12 @@ retrieved the snapshot.
 
 ## Company Context Records
 
-Current observed structure from `data/companies/<TICKER>/context.json` and
-`scripts/build_company_context.py`.
+Formal schema/contract: `config/company_context_schema.json`.
+
+Company context files are built from validated source metrics by
+`scripts/build_company_context.py`. The contract documents the current context
+shape and protects the handoff from source validation into downstream
+deterministic analysis modules.
 
 | Field | Required | Type | Meaning | Source/traceability expectation | Example |
 | --- | --- | --- | --- | --- | --- |
