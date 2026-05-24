@@ -22,6 +22,7 @@ Price target, buy/sell/hold recommendation, personal investment advice, live dat
 - `config/` - schemas and validation rules.
 - `config/watchlist.json` - required research coverage by ticker.
 - `agents/` - documentation/contracts for the Hub-and-Spoke supervisor and specialized worker roles.
+- `docs/ARCHITECTURE_GOVERNANCE_INDEX.md` - navigation index for architecture-governance docs and templates.
 - `docs/GUARDRAIL_SECURITY_TEST_PLAN.md` - guardrail and security checklist for core and future adapter work.
 - `docs/GENERATED_OUTPUT_REVIEW_GUIDE.md` - review guide for generated reports, summaries, model outputs, and audit logs.
 - `docs/ADAPTER_PROPOSAL_CHECKLIST.md` - pre-implementation checklist for future adapter and framework proposals.
