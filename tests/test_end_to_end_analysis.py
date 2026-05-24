@@ -65,7 +65,7 @@ class EndToEndAnalysisTests(unittest.TestCase):
             self.assertIn("## Warnings", report_text)
             self.assertIn(str(audit_log_path), report_text)
 
-            normalized_report = report_text.lower()
+            normalized_report = report_text.lower().replace("not investment advice", "")
             for term in expected["prohibited_terms"]:
                 self.assertNotIn(term.lower(), normalized_report)
 

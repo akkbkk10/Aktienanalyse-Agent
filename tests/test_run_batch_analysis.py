@@ -35,6 +35,7 @@ class RunBatchAnalysisTests(unittest.TestCase):
             self.assertTrue(Path(result["output_paths_by_ticker"]["NVDA"]["dcf_output_path"]).exists())
             self.assertTrue(Path(result["output_paths_by_ticker"]["NVDA"]["fair_value_per_share_output_path"]).exists())
             self.assertTrue(Path(result["output_paths_by_ticker"]["NVDA"]["model_rating_output_path"]).exists())
+            self.assertTrue(Path(result["output_paths_by_ticker"]["NVDA"]["model_confidence_output_path"]).exists())
 
     def test_multiple_tickers_with_missing_data(self) -> None:
         with batch_workspace() as paths:
@@ -72,6 +73,7 @@ class RunBatchAnalysisTests(unittest.TestCase):
                 self.assertTrue(Path(result["output_paths_by_ticker"][ticker]["dcf_output_path"]).exists())
                 self.assertTrue(Path(result["output_paths_by_ticker"][ticker]["fair_value_per_share_output_path"]).exists())
                 self.assertTrue(Path(result["output_paths_by_ticker"][ticker]["model_rating_output_path"]).exists())
+                self.assertTrue(Path(result["output_paths_by_ticker"][ticker]["model_confidence_output_path"]).exists())
 
     def test_partial_failure_handling(self) -> None:
         with batch_workspace() as paths:
@@ -108,7 +110,16 @@ class RunBatchAnalysisTests(unittest.TestCase):
             )
             self.assertEqual(
                 set(result["output_paths_by_ticker"]["NVDA"]),
-                {"report_path", "analysis_summary_path", "dcf_output_path", "fair_value_per_share_output_path", "model_rating_output_path", "model_rating_status", "audit_log_path"},
+                {
+                    "report_path",
+                    "analysis_summary_path",
+                    "dcf_output_path",
+                    "fair_value_per_share_output_path",
+                    "model_rating_output_path",
+                    "model_rating_status",
+                    "model_confidence_output_path",
+                    "audit_log_path",
+                },
             )
 
 

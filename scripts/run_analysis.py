@@ -19,6 +19,7 @@ import dcf_model
 import fair_value_per_share
 import generate_analysis_summary
 import generate_report
+import model_confidence
 import model_rating
 import validate_methodology
 import validate_sources
@@ -76,6 +77,7 @@ def run_analysis(
             model_rating_output_path=None,
             model_rating_status="not_requested",
             model_rating_unavailable_reasons=[],
+            model_confidence_output_path=None,
             dcf_warnings=[],
             warnings=warnings,
         )
@@ -99,6 +101,7 @@ def run_analysis(
             model_rating_output_path=None,
             model_rating_status="not_requested",
             model_rating_unavailable_reasons=[],
+            model_confidence_output_path=None,
             dcf_warnings=[],
             warnings=warnings,
         )
@@ -128,9 +131,12 @@ def run_analysis(
     model_rating_output_path = None
     model_rating_status = "not_requested"
     model_rating_unavailable_reasons: list[str] = []
+    model_confidence_result = None
+    model_confidence_output_path = None
     readiness_result = None
     dcf_warnings: list[str] = []
     dcf_scenarios_calculated: list[str] = []
+    assumptions_path = dcf_assumptions_path or Path(str(DEFAULT_DCF_ASSUMPTIONS_PATH_TEMPLATE).format(ticker=normalized_ticker))
 
     if run_dcf or generate_summary:
         readiness_result = check_valuation_readiness.check_readiness(
@@ -147,9 +153,6 @@ def run_analysis(
 
     if run_dcf and readiness_result is not None:
         if readiness_result["ready_for_valuation"]:
-            assumptions_path = dcf_assumptions_path or Path(
-                str(DEFAULT_DCF_ASSUMPTIONS_PATH_TEMPLATE).format(ticker=normalized_ticker)
-            )
             dcf_result = dcf_model.run_dcf(
                 ticker=normalized_ticker,
                 assumptions_path=assumptions_path,
@@ -190,6 +193,17 @@ def run_analysis(
             warnings.append("Valuation readiness gate blocked DCF run.")
             dcf_warnings = readiness_result["blocking_reasons"]
 
+    model_confidence_result = model_confidence.calculate_model_confidence(
+        ticker=normalized_ticker,
+        validation_status=validation_status,
+        research_gaps=gap_result["gaps"],
+        context_root=context_root,
+        dcf_assumptions_path=assumptions_path,
+    )
+    model_confidence_output_path = str(
+        _write_model_confidence_output(normalized_ticker, model_confidence_result, reports_dir)
+    )
+
     if generate_fact_report:
         report_path = str(
             generate_report.generate_report(
@@ -203,6 +217,7 @@ def run_analysis(
                 model_rating_output=model_rating_result if model_rating_output_path else None,
                 model_rating_status=model_rating_status,
                 model_rating_unavailable_reasons=model_rating_unavailable_reasons,
+                model_confidence_output=model_confidence_result,
                 warnings=warnings + model_rating_unavailable_reasons,
                 reports_dir=reports_dir,
             )
@@ -221,6 +236,7 @@ def run_analysis(
                 model_rating_output=model_rating_result if model_rating_output_path else None,
                 model_rating_status=model_rating_status,
                 model_rating_unavailable_reasons=model_rating_unavailable_reasons,
+                model_confidence_output=model_confidence_result,
                 warnings=warnings + dcf_warnings,
                 reports_dir=reports_dir,
             )
@@ -253,6 +269,7 @@ def run_analysis(
         model_rating_output_path=model_rating_output_path,
         model_rating_status=model_rating_status,
         model_rating_unavailable_reasons=model_rating_unavailable_reasons,
+        model_confidence_output_path=model_confidence_output_path,
         dcf_warnings=dcf_warnings,
         warnings=warnings,
     )
@@ -273,6 +290,7 @@ def _summary(
     model_rating_output_path: str | None,
     model_rating_status: str,
     model_rating_unavailable_reasons: list[str],
+    model_confidence_output_path: str | None,
     dcf_warnings: list[str],
     warnings: list[str],
 ) -> dict[str, Any]:
@@ -291,6 +309,7 @@ def _summary(
         "model_rating_output_path": model_rating_output_path,
         "model_rating_status": model_rating_status,
         "model_rating_unavailable_reasons": model_rating_unavailable_reasons,
+        "model_confidence_output_path": model_confidence_output_path,
         "dcf_warnings": dcf_warnings,
         "warnings": warnings,
     }
@@ -314,6 +333,13 @@ def _write_model_rating_output(ticker: str, model_rating_result: dict[str, Any],
     reports_dir.mkdir(parents=True, exist_ok=True)
     output_path = reports_dir / f"{ticker}_model_rating_output.json"
     output_path.write_text(json.dumps(model_rating_result, indent=2, sort_keys=True), encoding="utf-8")
+    return output_path
+
+
+def _write_model_confidence_output(ticker: str, model_confidence_result: dict[str, Any], reports_dir: Path) -> Path:
+    reports_dir.mkdir(parents=True, exist_ok=True)
+    output_path = reports_dir / f"{ticker}_model_confidence_output.json"
+    output_path.write_text(json.dumps(model_confidence_result, indent=2, sort_keys=True), encoding="utf-8")
     return output_path
 
 
