@@ -56,3 +56,7 @@ Docs-only changes should still preserve the architecture boundary:
 Generated reports and summaries must remain under `reports/`, which is ignored
 by git. If a test needs generated files, use a temporary directory or an ignored
 `reports/tmp_*` path.
+
+For PRs that can change generated artifacts, use
+`docs/GENERATED_OUTPUT_REVIEW_GUIDE.md` to review fact reports, summaries, model
+outputs, and audit logs before merging.

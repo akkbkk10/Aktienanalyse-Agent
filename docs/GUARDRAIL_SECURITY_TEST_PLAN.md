@@ -76,6 +76,8 @@ The forbidden-output regression test runs the v1.0 demo in a temporary reports
 directory and scans generated reports, summaries, fair value per share outputs,
 model rating outputs, model confidence outputs, and model signal outputs for
 explicit recommendation, advice, live-data, order, or invented-source phrases.
+Use `docs/GENERATED_OUTPUT_REVIEW_GUIDE.md` for manual review of generated
+artifact diffs.
 
 For adapter proposals, also run any targeted tests that cover the touched module.
 Generated artifacts must remain under `reports/` and must not be committed.

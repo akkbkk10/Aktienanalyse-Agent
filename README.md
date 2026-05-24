@@ -23,6 +23,7 @@ Price target, buy/sell/hold recommendation, personal investment advice, live dat
 - `config/watchlist.json` - required research coverage by ticker.
 - `agents/` - documentation/contracts for the Hub-and-Spoke supervisor and specialized worker roles.
 - `docs/GUARDRAIL_SECURITY_TEST_PLAN.md` - guardrail and security checklist for core and future adapter work.
+- `docs/GENERATED_OUTPUT_REVIEW_GUIDE.md` - review guide for generated reports, summaries, model outputs, and audit logs.
 - `scripts/` - executable helper scripts.
 - `tests/` - test suite.
 - `data/` - raw and intermediate input data.
