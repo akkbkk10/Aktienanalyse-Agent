@@ -22,6 +22,17 @@ class CliHelpSmokeTests(unittest.TestCase):
         self.assertEqual(result.stderr, "")
         return result.stdout.lower()
 
+    def _run_invalid_option(self, script_name: str) -> str:
+        result = subprocess.run(
+            [sys.executable, str(REPO_ROOT / "scripts" / script_name), "--definitely-invalid-option"],
+            cwd=REPO_ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        self.assertNotEqual(result.returncode, 0)
+        return f"{result.stdout}\n{result.stderr}".lower()
+
     def test_run_v1_0_demo_help_is_discoverable(self) -> None:
         output = self._run_help("run_v1_0_demo.py")
 
@@ -49,6 +60,25 @@ class CliHelpSmokeTests(unittest.TestCase):
         self.assertIn("ticker", output)
         self.assertIn("reports-dir", output)
         self.assertIn("independently", output)
+
+    def test_run_v1_0_demo_invalid_option_fails_clearly(self) -> None:
+        output = self._run_invalid_option("run_v1_0_demo.py")
+
+        self.assertIn("usage", output)
+        self.assertIn("error", output)
+        self.assertIn("unrecognized arguments", output)
+
+    def test_run_analysis_invalid_option_fails_clearly(self) -> None:
+        output = self._run_invalid_option("run_analysis.py")
+
+        self.assertIn("usage", output)
+        self.assertIn("error", output)
+
+    def test_run_batch_analysis_invalid_option_fails_clearly(self) -> None:
+        output = self._run_invalid_option("run_batch_analysis.py")
+
+        self.assertIn("usage", output)
+        self.assertIn("error", output)
 
 
 if __name__ == "__main__":
