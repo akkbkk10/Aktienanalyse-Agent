@@ -13,7 +13,7 @@ Run the full test suite:
 python -m unittest discover -s tests
 ```
 
-Run the v1.0 release-candidate demo:
+Run the v1.0 demo workflow:
 
 ```powershell
 python scripts/run_v1_0_demo.py
@@ -66,9 +66,9 @@ Confirm generated outputs do not include:
 - broker/order behavior
 - automated trading logic
 
-## Release-Candidate Acceptance
+## v1.0 Demo Acceptance
 
-The v1.0 release candidate is ready for user testing when:
+The v1.0 demo workflow is ready for user testing when:
 
 - All automated tests pass.
 - The v1.0 demo exits with status code `0`.
