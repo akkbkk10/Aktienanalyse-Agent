@@ -56,13 +56,13 @@ python scripts/run_batch_analysis.py NVDA MSFT --generate-report --generate-summ
 
 The batch runner executes the existing per-ticker workflow: validation, context, research gaps, ratios, readiness, optional DCF, optional report, optional summary, and audit log. It returns structured JSON with tickers processed, successful runs, failed runs, output paths by ticker, and warnings by ticker.
 
-Run the supported NVDA + AMD sample batch:
+Run the supported NVDA + AMD + TSMC sample batch:
 
 ```powershell
-python scripts/run_batch_analysis.py NVDA AMD --generate-report --generate-summary --run-dcf
+python scripts/run_batch_analysis.py NVDA AMD TSMC --generate-report --generate-summary --run-dcf
 ```
 
-NVDA and AMD are currently the fully working sample tickers. Other tickers fail cleanly unless their source data and assumptions are added.
+NVDA, AMD, and TSMC are currently the fully working sample tickers. Other tickers fail cleanly unless their source data and assumptions are added.
 
 Sample data and any future live data ingestion must remain separate. Batch runs process each ticker independently, and a missing or invalid ticker must not block successful NVDA or AMD runs. Generated model outputs are analysis artifacts only and are not personal investment advice.
 
@@ -80,6 +80,11 @@ run the onboarding validator:
 ```powershell
 python scripts/validate_company_onboarding.py TICKER --metrics-path data\ticker_sample_metrics.json --dcf-assumptions-path data\companies\TICKER\dcf_assumptions.json
 ```
+
+TSMC was added through this workflow with sourced sample metrics in
+`data/tsmc_sample_metrics.json`, a persistent context at
+`data/companies/TSMC/context.json`, and example DCF assumptions at
+`data/companies/TSMC/dcf_assumptions.json`.
 
 The validator checks required financial metrics, `metric_id` presence, source
 metadata, market price snapshot fields, share count availability, DCF
