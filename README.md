@@ -29,6 +29,7 @@ Price target, buy/sell/hold recommendation, personal investment advice, live dat
 - `docs/ADAPTER_DECISION_RECORD_TEMPLATE.md` - decision record template for accepted, rejected, or deferred adapter proposals.
 - `docs/DATA_CONTRACT_REVIEW_CHECKLIST.md` - field-level traceability checklist for future schemas and adapter outputs.
 - `docs/CORE_BASELINE_INVENTORY.md` - technical baseline inventory and v1.1 readiness assessment.
+- `docs/SCHEMA_FIELD_REFERENCE.md` - field reference for current deterministic core data contracts.
 - `scripts/` - executable helper scripts.
 - `tests/` - test suite.
 - `data/` - raw and intermediate input data.
