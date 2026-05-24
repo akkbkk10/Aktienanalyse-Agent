@@ -57,6 +57,7 @@ The system may produce:
 | Example/manual-review assumptions reduce confidence | `scripts/model_confidence.py`, `config/model_confidence_rules.json` | `tests/test_model_confidence.py`, `tests/test_run_v1_0_demo.py` | model confidence JSON |
 | Example/manual-review assumptions block active signals | `scripts/model_signal.py`, `scripts/model_confidence.py` | `tests/test_model_signal.py`, `tests/test_run_v1_0_demo.py` | model signal JSON, reports, summaries |
 | No price targets or recommendation language | `scripts/generate_report.py`, `scripts/generate_analysis_summary.py`, model output scripts | `tests/test_generate_report.py`, `tests/test_generate_analysis_summary.py`, `tests/test_run_analysis.py`, `tests/test_end_to_end_analysis.py` | reports, summaries, model outputs |
+| Generated user-facing artifacts avoid forbidden output phrases | `scripts/run_v1_0_demo.py`, report/summary/model output scripts | `tests/test_forbidden_output_regression.py` | reports, summaries, model rating/confidence/signal outputs |
 | DCF only after readiness passes | `scripts/check_valuation_readiness.py`, `scripts/dcf_model.py`, `scripts/run_analysis.py` | `tests/test_check_valuation_readiness.py`, `tests/test_dcf_model.py`, `tests/test_workflow_order.py` | readiness JSON, DCF JSON |
 | Audit log after workflow artifacts | `scripts/run_analysis.py`, `scripts/write_audit_log.py` | `tests/test_write_audit_log.py`, `tests/test_workflow_order.py`, `tests/test_run_v1_0_demo.py` | audit log JSONL |
 | Ticker independence in batch runs | `scripts/run_batch_analysis.py` | `tests/test_run_batch_analysis.py` | batch JSON output |
@@ -70,6 +71,11 @@ changes:
 python -m unittest discover -s tests
 python scripts/run_v1_0_demo.py --reports-dir reports/tmp_guardrail_security_plan_demo
 ```
+
+The forbidden-output regression test runs the v1.0 demo in a temporary reports
+directory and scans generated reports, summaries, fair value per share outputs,
+model rating outputs, model confidence outputs, and model signal outputs for
+explicit recommendation, advice, live-data, order, or invented-source phrases.
 
 For adapter proposals, also run any targeted tests that cover the touched module.
 Generated artifacts must remain under `reports/` and must not be committed.
