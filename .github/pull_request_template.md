@@ -16,6 +16,7 @@
 
 - [ ] Generated reports/summaries/audit logs were not committed.
 - [ ] If generated artifacts were inspected, note the path or temporary directory:
+- [ ] For generated-output changes, reviewed `docs/GENERATED_OUTPUT_REVIEW_GUIDE.md`.
 - [ ] Not applicable.
 
 ## Guardrail Impact
