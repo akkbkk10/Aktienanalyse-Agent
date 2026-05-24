@@ -150,7 +150,7 @@ def render_report(
             "",
             "## Boundary",
             "",
-            "- This report is fact-only and contains no target prices or advice.",
+            "- This report is fact-only and contains no directional call or advice.",
         ]
     )
     return "\n".join(lines) + "\n"
