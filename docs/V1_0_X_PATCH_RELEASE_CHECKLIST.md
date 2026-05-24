@@ -8,6 +8,9 @@ explicitly reviewed.
 Do not create the release tag until all validation steps pass and the release
 commit on `main` is confirmed.
 
+Use `.github/ISSUE_TEMPLATE/release_tracking.md` to track release status before
+tagging.
+
 ## 1. Confirm PRs Are Merged Into Main
 
 - Confirm all intended maintenance PRs are merged.
