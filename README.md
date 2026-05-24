@@ -46,9 +46,9 @@ python scripts/run_v0_1_demo.py
 
 The demo runs validation, company context build/load, research gap detection, ratio calculation, valuation readiness, DCF, fact-only report generation, analysis summary generation, and audit logging. It prints generated file paths and writes runtime artifacts under `reports/v0_1_demo/`, which is ignored by git.
 
-## Run v1.0 Release-Candidate Demo
+## Run v1.0.0 Demo
 
-Run the full v1.0 sample-company workflow for NVDA, AMD, and TSMC with one command:
+Run the full v1.0.0 sample-company workflow for NVDA, AMD, and TSMC with one command:
 
 ```powershell
 python scripts/run_v1_0_demo.py

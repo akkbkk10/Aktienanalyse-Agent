@@ -2,8 +2,8 @@
 
 ## Status
 
-v1.0 is a release candidate for real user testing of the deterministic stock
-analysis workflow. Final release-candidate validation completed on 2026-05-24.
+v1.0.0 is ready for final release tagging after validation of the deterministic
+stock analysis workflow on 2026-05-24.
 
 ## Supported Sample Companies
 
@@ -48,7 +48,7 @@ Generated artifacts under `reports/` are ignored by git.
 
 ## Known Boundaries
 
-This release candidate does not include:
+This release does not include:
 
 - live data fetching
 - new companies beyond NVDA, AMD, and TSMC
@@ -74,7 +74,7 @@ Reviewers should focus on:
 ## Final Validation Notes
 
 The bundled DCF assumptions are intentionally labeled as example/manual-review
-inputs. In the validated v1.0 release candidate, these assumption sets cap model
+inputs. In the validated v1.0.0 release, these assumption sets cap model
 confidence below `A` and block active model signals. NVDA, AMD, and TSMC each
 complete the demo workflow with Model Confidence `C` and Model Signal
 `unavailable` until reviewed assumptions are supplied.
