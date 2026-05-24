@@ -372,21 +372,28 @@ def _default_source_data_path(ticker: str) -> Path:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Run deterministic pre-valuation analysis workflow for one or more tickers.")
-    parser.add_argument("tickers", nargs="+")
-    parser.add_argument("--source-data-path", type=Path)
-    parser.add_argument("--context-root", type=Path, default=DEFAULT_CONTEXT_ROOT)
-    parser.add_argument("--markdown-queue-path", type=Path, default=DEFAULT_MARKDOWN_QUEUE_PATH)
-    parser.add_argument("--json-queue-path", type=Path, default=DEFAULT_JSON_QUEUE_PATH)
-    parser.add_argument("--audit-log-path", type=Path, default=DEFAULT_AUDIT_LOG_PATH)
-    parser.add_argument("--reports-dir", type=Path, default=DEFAULT_REPORTS_DIR)
-    parser.add_argument("--methodology-path", type=Path, default=validate_methodology.DEFAULT_METHODOLOGY_PATH)
-    parser.add_argument("--watchlist-path", type=Path, default=detect_research_gaps.DEFAULT_WATCHLIST_PATH)
-    parser.add_argument("--no-rebuild-context", action="store_true")
-    parser.add_argument("--generate-report", action="store_true")
-    parser.add_argument("--generate-summary", action="store_true")
-    parser.add_argument("--run-dcf", action="store_true")
-    parser.add_argument("--dcf-assumptions-path", type=Path)
+    parser = argparse.ArgumentParser(
+        description="Run the deterministic analysis workflow for one or more tickers.",
+        epilog=(
+            "The workflow never fetches live data and does not produce price targets, "
+            "recommendations, investment advice, or trading actions. Generated artifacts "
+            "are written under --reports-dir."
+        ),
+    )
+    parser.add_argument("tickers", nargs="+", help="Ticker symbols to process.")
+    parser.add_argument("--source-data-path", type=Path, help="Source metrics JSON path. Required for non-sample tickers.")
+    parser.add_argument("--context-root", type=Path, default=DEFAULT_CONTEXT_ROOT, help="Company context root directory.")
+    parser.add_argument("--markdown-queue-path", type=Path, default=DEFAULT_MARKDOWN_QUEUE_PATH, help="Markdown research queue path.")
+    parser.add_argument("--json-queue-path", type=Path, default=DEFAULT_JSON_QUEUE_PATH, help="Structured JSON research queue path.")
+    parser.add_argument("--audit-log-path", type=Path, default=DEFAULT_AUDIT_LOG_PATH, help="Audit log JSONL path.")
+    parser.add_argument("--reports-dir", type=Path, default=DEFAULT_REPORTS_DIR, help="Directory for generated reports and model outputs.")
+    parser.add_argument("--methodology-path", type=Path, default=validate_methodology.DEFAULT_METHODOLOGY_PATH, help="Methodology config path.")
+    parser.add_argument("--watchlist-path", type=Path, default=detect_research_gaps.DEFAULT_WATCHLIST_PATH, help="Watchlist config path.")
+    parser.add_argument("--no-rebuild-context", action="store_true", help="Load an existing company context instead of rebuilding it.")
+    parser.add_argument("--generate-report", action="store_true", help="Generate a fact-only Markdown report.")
+    parser.add_argument("--generate-summary", action="store_true", help="Generate a structured JSON analysis summary.")
+    parser.add_argument("--run-dcf", action="store_true", help="Run DCF and downstream model-output stages when readiness passes.")
+    parser.add_argument("--dcf-assumptions-path", type=Path, help="DCF assumptions JSON path.")
     args = parser.parse_args()
 
     try:

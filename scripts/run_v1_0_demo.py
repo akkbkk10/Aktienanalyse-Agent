@@ -92,9 +92,34 @@ def _demo_completed(batch_result: dict[str, Any]) -> bool:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Run the v1.0 release-candidate demo for NVDA, AMD, and TSMC.")
-    parser.add_argument("--reports-dir", type=Path, default=DEFAULT_REPORTS_DIR)
-    parser.add_argument("--tickers", nargs="+", default=DEFAULT_TICKERS)
+    parser = argparse.ArgumentParser(
+        description=(
+            "Run the deterministic v1.0 demo workflow for the supported sample companies "
+            "NVDA, AMD, and TSMC."
+        ),
+        epilog=(
+            "The demo runs validation, company context, research gaps, ratios, readiness, "
+            "DCF, fair value per share, model rating, model confidence, model signal, "
+            "fact report, structured summary, and audit log generation. Outputs are "
+            "deterministic demo artifacts written under --reports-dir, which should be "
+            "an ignored reports/ path and not committed."
+        ),
+    )
+    parser.add_argument(
+        "--reports-dir",
+        type=Path,
+        default=DEFAULT_REPORTS_DIR,
+        help=(
+            "Directory for generated demo reports, summaries, model outputs, copied "
+            "contexts, and audit log. Default: reports/v1_0_demo."
+        ),
+    )
+    parser.add_argument(
+        "--tickers",
+        nargs="+",
+        default=DEFAULT_TICKERS,
+        help="Supported sample tickers to run. Default: NVDA AMD TSMC.",
+    )
     args = parser.parse_args()
 
     try:
