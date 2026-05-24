@@ -16,6 +16,7 @@ Related governance docs:
 - `docs/GUARDRAIL_SECURITY_TEST_PLAN.md`
 - `docs/GENERATED_OUTPUT_REVIEW_GUIDE.md`
 - `docs/ADAPTER_RISK_REGISTER_TEMPLATE.md`
+- `docs/ADAPTER_DECISION_RECORD_TEMPLATE.md`
 - `docs/V1_0_X_PATCH_RELEASE_CHECKLIST.md`
 
 ## Proposal Summary
@@ -192,6 +193,7 @@ Adapter proposals should identify review evidence before coding begins:
 - guardrail impact summary
 - generated-output review plan
 - adapter risk register, using `docs/ADAPTER_RISK_REGISTER_TEMPLATE.md`
+- adapter decision record, using `docs/ADAPTER_DECISION_RECORD_TEMPLATE.md`
 
 Generated reports, summaries, model outputs, and audit logs may be generated for
 review, but must not be committed.
