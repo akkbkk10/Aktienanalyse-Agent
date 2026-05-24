@@ -95,6 +95,18 @@ CI also runs the v1.0.0 demo:
 python scripts/run_v1_0_demo.py --reports-dir reports/tmp_ci_v1_0_demo
 ```
 
+## Command Reference
+
+Generated reports and model artifacts written under `reports/` are ignored by
+git and should not be committed.
+
+| Command | Purpose |
+| --- | --- |
+| `python scripts/run_v1_0_demo.py --help` | Show help for the deterministic v1.0 demo workflow for NVDA, AMD, and TSMC. |
+| `python scripts/run_v1_0_demo.py --reports-dir reports/tmp_demo` | Run the full sample-company demo and write deterministic demo artifacts under `reports/tmp_demo`. |
+| `python scripts/run_analysis.py --help` | Show help for running the deterministic workflow for one or more tickers. |
+| `python scripts/run_batch_analysis.py --help` | Show help for batch runs that process tickers independently. |
+
 ## Run v0.1 Demo
 
 Run the complete v0.1 NVDA workflow with one command:
