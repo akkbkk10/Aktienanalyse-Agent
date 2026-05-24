@@ -20,3 +20,4 @@ gate returns `ready_for_valuation: true`.
 - Do not use buy, sell, or hold language.
 - Do not provide investment advice.
 - Do not generate memos.
+- Do not fetch live data or call broker/order systems.

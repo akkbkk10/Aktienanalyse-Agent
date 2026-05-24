@@ -1,5 +1,8 @@
 # v0.1 Release Checklist
 
+Historical checklist for the v0.1 milestone. It is retained for release history
+and does not describe the current v1.0.0 workflow.
+
 Use this checklist before tagging or announcing a v0.1 release candidate.
 
 ## Required Controls
