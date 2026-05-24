@@ -106,14 +106,20 @@ def _default_dcf_assumptions_path(ticker: str) -> Path:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Run deterministic analysis for multiple tickers.")
-    parser.add_argument("tickers", nargs="+")
-    parser.add_argument("--reports-dir", type=Path, default=DEFAULT_REPORTS_DIR)
-    parser.add_argument("--context-root", type=Path, default=DEFAULT_CONTEXT_ROOT)
-    parser.add_argument("--audit-log-path", type=Path, default=DEFAULT_AUDIT_LOG_PATH)
-    parser.add_argument("--generate-report", action="store_true")
-    parser.add_argument("--generate-summary", action="store_true")
-    parser.add_argument("--run-dcf", action="store_true")
+    parser = argparse.ArgumentParser(
+        description="Run the deterministic workflow independently for one or more tickers.",
+        epilog=(
+            "Each ticker is processed independently. Generated artifacts are written "
+            "under --reports-dir and should remain in ignored reports/ paths."
+        ),
+    )
+    parser.add_argument("tickers", nargs="+", help="Ticker symbols to process, for example: NVDA AMD TSMC.")
+    parser.add_argument("--reports-dir", type=Path, default=DEFAULT_REPORTS_DIR, help="Output directory for generated batch artifacts.")
+    parser.add_argument("--context-root", type=Path, default=DEFAULT_CONTEXT_ROOT, help="Directory for generated company contexts.")
+    parser.add_argument("--audit-log-path", type=Path, default=DEFAULT_AUDIT_LOG_PATH, help="Path for the batch audit log JSONL file.")
+    parser.add_argument("--generate-report", action="store_true", help="Generate fact-only Markdown reports.")
+    parser.add_argument("--generate-summary", action="store_true", help="Generate structured JSON analysis summaries.")
+    parser.add_argument("--run-dcf", action="store_true", help="Run DCF and downstream model-output stages when readiness passes.")
     args = parser.parse_args()
 
     result = run_batch(
