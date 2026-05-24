@@ -25,6 +25,7 @@ Price target, buy/sell/hold recommendation, personal investment advice, live dat
 - `docs/GUARDRAIL_SECURITY_TEST_PLAN.md` - guardrail and security checklist for core and future adapter work.
 - `docs/GENERATED_OUTPUT_REVIEW_GUIDE.md` - review guide for generated reports, summaries, model outputs, and audit logs.
 - `docs/ADAPTER_PROPOSAL_CHECKLIST.md` - pre-implementation checklist for future adapter and framework proposals.
+- `docs/DATA_CONTRACT_REVIEW_CHECKLIST.md` - field-level traceability checklist for future schemas and adapter outputs.
 - `scripts/` - executable helper scripts.
 - `tests/` - test suite.
 - `data/` - raw and intermediate input data.
