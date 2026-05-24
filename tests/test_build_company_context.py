@@ -85,12 +85,34 @@ class BuildCompanyContextTests(unittest.TestCase):
         self.assertEqual(context["metrics"][0]["metric_category"], "share_count")
         self.assertEqual(context["metrics"][0]["unit"], "shares millions")
 
+    def test_existing_company_context_files_satisfy_contract(self) -> None:
+        for ticker in ["NVDA", "AMD", "TSMC"]:
+            with self.subTest(ticker=ticker):
+                context_path = REPO_ROOT / "data" / "companies" / ticker / "context.json"
+                context = json.loads(context_path.read_text(encoding="utf-8"))
+
+                self.assertEqual(build_company_context.validate_company_context(context), [])
+
     def test_missing_ticker_fails(self) -> None:
         record = valid_record()
         record["ticker"] = ""
 
         with self.assertRaises(build_company_context.ContextValidationError):
             build_company_context.build_context_from_records([record])
+
+    def test_missing_required_top_level_field_fails_contract_validation(self) -> None:
+        context = build_company_context.build_context_from_records([valid_record()])
+        del context["company_name"]
+
+        with self.assertRaises(build_company_context.ContextValidationError):
+            build_company_context.validate_company_context(context)
+
+    def test_invalid_required_top_level_field_type_fails_contract_validation(self) -> None:
+        context = build_company_context.build_context_from_records([valid_record()])
+        context["ticker"] = 123
+
+        with self.assertRaises(build_company_context.ContextValidationError):
+            build_company_context.validate_company_context(context)
 
     def test_missing_metrics_fails(self) -> None:
         context = {
@@ -101,6 +123,13 @@ class BuildCompanyContextTests(unittest.TestCase):
             "metrics": [],
             "source_metadata": {"source_file": None, "metric_count": 0},
         }
+
+        with self.assertRaises(build_company_context.ContextValidationError):
+            build_company_context.validate_company_context(context)
+
+    def test_missing_context_metric_source_metadata_field_fails_contract_validation(self) -> None:
+        context = build_company_context.build_context_from_records([valid_record()])
+        del context["metrics"][0]["source_metadata"]["source_url"]
 
         with self.assertRaises(build_company_context.ContextValidationError):
             build_company_context.validate_company_context(context)
