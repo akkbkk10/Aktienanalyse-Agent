@@ -13,6 +13,7 @@ Related governance docs:
 - `docs/ADAPTER_PROPOSAL_CHECKLIST.md`
 - `docs/GUARDRAIL_SECURITY_TEST_PLAN.md`
 - `docs/GENERATED_OUTPUT_REVIEW_GUIDE.md`
+- `.github/ISSUE_TEMPLATE/schema_change_proposal.md`
 
 ## Required Metadata
 
