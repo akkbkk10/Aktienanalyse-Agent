@@ -66,6 +66,11 @@ model ratings, model confidence outputs, model signals, and an audit log under
 `reports/v1_0_demo/`, which is ignored by git. Use
 `docs/V1_0_TEST_PLAN.md` for the manual review checklist.
 
+Release notes:
+
+- `docs/V1_0_RELEASE_NOTES.md`
+- `docs/V1_0_1_RELEASE_NOTES.md`
+
 ## v0.2 Batch Workflow
 
 Run the deterministic workflow for one or more tickers:
