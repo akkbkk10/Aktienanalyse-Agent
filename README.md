@@ -14,6 +14,10 @@ Price target, buy/sell/hold recommendation, personal investment advice, live dat
 ## Repository Layout
 
 - `AGENTS.md` - mandatory rules for agents and contributors.
+- `LICENSE` - Apache License 2.0.
+- `CONTRIBUTING.md` - contribution workflow and project guardrails.
+- `SECURITY.md` - vulnerability reporting and security scope.
+- `CODE_OF_CONDUCT.md` - respectful collaboration expectations.
 - `config/` - schemas and validation rules.
 - `config/watchlist.json` - required research coverage by ticker.
 - `agents/` - documentation/contracts for the Hub-and-Spoke supervisor and specialized worker roles.
