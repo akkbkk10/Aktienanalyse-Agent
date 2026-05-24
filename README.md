@@ -16,7 +16,7 @@ Price target, buy/sell/hold recommendation, personal investment advice, live dat
 - `AGENTS.md` - mandatory rules for agents and contributors.
 - `config/` - schemas and validation rules.
 - `config/watchlist.json` - required research coverage by ticker.
-- `agents/` - future agent definitions.
+- `agents/` - documentation/contracts for the Hub-and-Spoke supervisor and specialized worker roles.
 - `scripts/` - executable helper scripts.
 - `tests/` - test suite.
 - `data/` - raw and intermediate input data.
@@ -35,6 +35,12 @@ python -m unittest discover -s tests
 ```
 
 GitHub Actions runs the same command on every pull request.
+
+CI also runs the v1.0.0 demo:
+
+```bash
+python scripts/run_v1_0_demo.py --reports-dir reports/tmp_ci_v1_0_demo
+```
 
 ## Run v0.1 Demo
 
@@ -90,6 +96,12 @@ Use the onboarding templates and checklist before adding a new supported ticker:
 Create sourced sample metrics, add DCF assumptions, add a watchlist entry, and
 run the onboarding validator:
 
+```bash
+python scripts/validate_company_onboarding.py TICKER --metrics-path data/ticker_sample_metrics.json --dcf-assumptions-path data/companies/TICKER/dcf_assumptions.json
+```
+
+Windows PowerShell accepts backslash paths as well:
+
 ```powershell
 python scripts/validate_company_onboarding.py TICKER --metrics-path data\ticker_sample_metrics.json --dcf-assumptions-path data\companies\TICKER\dcf_assumptions.json
 ```
@@ -115,6 +127,21 @@ python -m unittest discover -s tests
 ```
 
 Use Python 3.12 or newer for local development.
+
+Most examples use forward-slash paths so they work in macOS, Linux, Git Bash,
+and PowerShell. Existing Windows backslash examples are equivalent.
+
+## Agent Contracts And Future Adapters
+
+The deterministic Python scripts are the core business logic. Files under
+`agents/` document the Hub-and-Spoke model: the orchestrator/supervisor
+coordinates specialized worker contracts for validation, context, gaps, ratios,
+readiness, DCF, reports, summaries, and audit outputs.
+
+These agent files are not runtime framework code. Future MCP, A2A, LangChain,
+CrewAI, OpenAI Agents SDK, or other framework integrations should be adapter
+layers around the deterministic core, not replacements for source validation,
+traceability, audit logging, or guardrails.
 
 ## Validate A Metrics File
 
@@ -269,7 +296,7 @@ The audit log records what happened in a run. It does not calculate DCF, fair va
 
 ## Orchestrator Workflow
 
-Run the deterministic pre-valuation workflow for one ticker:
+Run the deterministic workflow for one ticker:
 
 ```powershell
 python scripts/run_analysis.py NVDA --source-data-path data\nvda_sample_metrics.json

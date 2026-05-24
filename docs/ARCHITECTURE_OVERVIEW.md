@@ -1,7 +1,11 @@
 # Architecture Overview
 
-The v0.1 system is a deterministic, evidence-first stock analysis workflow. It
+The v1.0.0 system is a deterministic, evidence-first stock analysis workflow. It
 separates facts, assumptions, calculations, reports, summaries, and audit records.
+
+The architecture uses Hub-and-Spoke coordination: the orchestrator/supervisor
+coordinates specialized worker scripts, while the deterministic Python core
+remains framework-independent.
 
 ## Workflow
 
@@ -62,7 +66,8 @@ Model signal uses `config/model_signal_rules.json` and existing model outputs
 only. It can output `model_positive`, `model_neutral`, `model_negative`, or
 `unavailable`. It becomes unavailable when model confidence is `D`, model rating
 is unavailable, high-priority research gaps remain, or market price freshness
-does not pass. It does not fetch live data or create broker/order actions.
+does not pass. It also becomes unavailable when assumption quality requires
+manual review. It does not fetch live data or create broker/order actions.
 
 ## Market Price Snapshots
 
@@ -82,7 +87,15 @@ validated snapshots before downstream analysis runs.
 Each ticker is processed independently. A missing context, stale source, research
 gap, or failed assumption file for one ticker must not block another ticker in the
 same batch run. Batch output records successes, failures, output paths, and
-warnings by ticker so NVDA and AMD cannot cross-block each other.
+warnings by ticker so NVDA, AMD, and TSMC cannot cross-block each other.
+
+## Agent Contracts And Adapter Boundary
+
+Files under `agents/` are documentation and role contracts for the
+Hub-and-Spoke workflow. They are not runtime framework code. Future MCP, A2A,
+LangChain, CrewAI, OpenAI Agents SDK, or other framework integrations belong in
+adapter layers around the deterministic Python core. Adapter layers must
+preserve source traceability, auditability, and all output guardrails.
 
 ## Output Safety
 

@@ -25,6 +25,9 @@ jobs:
       - name: Validate AMD source data
         run: python scripts/validate_sources.py data/amd_sample_metrics.json
 
+      - name: Validate TSMC source data
+        run: python scripts/validate_sources.py data/tsmc_sample_metrics.json
+
       - name: Validate methodology config
         run: python scripts/validate_methodology.py
 
@@ -33,6 +36,9 @@ jobs:
 
       - name: Run NVDA and AMD batch workflow smoke test
         run: python scripts/run_batch_analysis.py NVDA AMD --generate-report --generate-summary --run-dcf --audit-log-path reports/ci/batch_audit_log.jsonl --reports-dir reports/ci/batch --context-root reports/ci/batch_context
+
+      - name: Run v1.0 demo workflow
+        run: python scripts/run_v1_0_demo.py --reports-dir reports/tmp_ci_v1_0_demo
 
       - name: Validate JSON config and data files
         shell: bash
@@ -44,9 +50,12 @@ jobs:
           python -m json.tool config/watchlist.json > /dev/null
           python -m json.tool data/amd_sample_metrics.json > /dev/null
           python -m json.tool data/nvda_sample_metrics.json > /dev/null
+          python -m json.tool data/tsmc_sample_metrics.json > /dev/null
           python -m json.tool data/companies/AMD/context.json > /dev/null
           python -m json.tool data/companies/AMD/dcf_assumptions.json > /dev/null
           python -m json.tool data/companies/NVDA/context.json > /dev/null
           python -m json.tool data/companies/NVDA/dcf_assumptions.json > /dev/null
+          python -m json.tool data/companies/TSMC/context.json > /dev/null
+          python -m json.tool data/companies/TSMC/dcf_assumptions.json > /dev/null
           python -m json.tool research_queue.json > /dev/null
           python -m json.tool tests/fixtures/nvda_expected_summary_structure.json > /dev/null

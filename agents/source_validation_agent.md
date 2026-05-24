@@ -18,9 +18,9 @@ Validate financial metric source evidence before any downstream analysis can use
 ## Rules
 
 - No financial number may pass without `source_url`, `source_type`, `source_date`, `unit`, `period`, and `confidence`.
-- Allowed source types are SEC filing, investor relations, earnings release, and annual report.
+- Allowed source types are SEC filing, investor relations, earnings release, annual report, and market data.
 - GAAP and Non-GAAP metrics must remain explicitly labeled and must not be treated as the same metric basis.
 - Conflicting values for the same ticker, metric, period, and accounting basis must be queued for research.
 - Stale source verification must be queued for research.
-- Do not implement valuation, DCF, ratios, memo generation, price targets, recommendations, or investment advice.
+- Do not implement valuation, DCF, ratios, memo generation, price targets, recommendations, investment advice, live fetching, or trading logic.
 

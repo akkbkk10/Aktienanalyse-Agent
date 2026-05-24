@@ -1,7 +1,8 @@
 # Valuation Readiness Agent
 
-The valuation readiness agent is a deterministic gatekeeper for future valuation work.
-It checks whether the pre-valuation evidence stack is complete enough to proceed later.
+The valuation readiness agent is a deterministic gatekeeper for the controlled
+valuation-stage workers in the v1.0.0 workflow. It checks whether the evidence
+stack is complete enough for DCF to run.
 
 ## Scope
 
@@ -27,6 +28,7 @@ The agent must return structured JSON with:
 - Do not calculate DCF.
 - Do not calculate fair value.
 - Do not calculate intrinsic value.
+- Do not calculate model rating, model confidence, or model signal.
 - Do not create price targets.
 - Do not make recommendations.
 - Do not use buy, sell, or hold language.
