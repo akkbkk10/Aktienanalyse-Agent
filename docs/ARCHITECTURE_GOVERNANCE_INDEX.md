@@ -15,6 +15,7 @@ requirements.
 | Assess data-contract hardening priorities | `docs/DATA_CONTRACT_SCHEMA_HARDENING_ASSESSMENT.md` | Reviews current schema protections and identifies the next small data-contract hardening candidate. |
 | Validate company context contract expectations | `config/company_context_schema.json` | Defines the standalone contract for persistent `data/companies/<TICKER>/context.json` files. |
 | Validate DCF output contract expectations | `config/dcf_output_schema.json` | Defines the standalone contract for generated `*_dcf_output.json` artifacts. |
+| Validate fair value per share output contract expectations | `config/fair_value_per_share_output_schema.json` | Defines the standalone contract for generated `*_fair_value_per_share_output.json` artifacts. |
 | Review generated output before merging | `docs/GENERATED_OUTPUT_REVIEW_GUIDE.md` | Helps inspect reports, summaries, model outputs, and audit logs for unsafe wording or traceability issues. |
 | Confirm guardrails for core or adapter work | `docs/GUARDRAIL_SECURITY_TEST_PLAN.md` | Defines prohibited behaviors, allowed behaviors, module/test mappings, and security review prompts. |
 | Propose a future adapter or framework evaluation | `docs/ADAPTER_PROPOSAL_CHECKLIST.md` | Frames adapter boundaries, required questions, tests, and review artifacts before implementation. |

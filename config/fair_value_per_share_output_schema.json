@@ -1,0 +1,86 @@
+{
+  "schema_version": "0.1.0",
+  "type": "object",
+  "required_fields": [
+    "ticker",
+    "calculated",
+    "currency",
+    "formulas",
+    "assumptions",
+    "warnings",
+    "source_references",
+    "disclaimer",
+    "scenarios"
+  ],
+  "field_types": {
+    "ticker": "string",
+    "calculated": "boolean",
+    "currency": "string",
+    "formulas": "object",
+    "assumptions": "object",
+    "warnings": "array",
+    "source_references": "array",
+    "disclaimer": "string",
+    "scenarios": "array"
+  },
+  "assumption_required_fields": [
+    "dcf_output_unit",
+    "share_count_unit",
+    "share_count_period",
+    "share_count_metric_id"
+  ],
+  "assumption_field_types": {
+    "dcf_output_unit": "string",
+    "share_count_unit": "string",
+    "share_count_period": "string",
+    "share_count_metric_id": "string"
+  },
+  "source_reference_required_fields": [
+    "metric_id",
+    "metric_name",
+    "metric_category",
+    "period",
+    "unit",
+    "accounting_basis",
+    "source_url",
+    "source_type",
+    "source_date",
+    "last_verified",
+    "confidence"
+  ],
+  "source_reference_field_types": {
+    "metric_id": "string",
+    "metric_name": "string",
+    "metric_category": "string",
+    "period": "string",
+    "unit": "string",
+    "accounting_basis": "string",
+    "source_url": "string",
+    "source_type": "string",
+    "source_date": "date",
+    "last_verified": "date",
+    "confidence": "string"
+  },
+  "scenario_required_fields": [
+    "ticker",
+    "scenario",
+    "fair_value_per_share",
+    "currency",
+    "dcf_value_used",
+    "share_count_used",
+    "share_count_metric_id",
+    "formula",
+    "source_references"
+  ],
+  "scenario_field_types": {
+    "ticker": "string",
+    "scenario": "string",
+    "fair_value_per_share": "number",
+    "currency": "string",
+    "dcf_value_used": "number",
+    "share_count_used": "number",
+    "share_count_metric_id": "string",
+    "formula": "string",
+    "source_references": "array"
+  }
+}

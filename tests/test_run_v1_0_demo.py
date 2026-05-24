@@ -20,6 +20,12 @@ dcf_model = importlib.util.module_from_spec(dcf_spec)
 assert dcf_spec.loader is not None
 dcf_spec.loader.exec_module(dcf_model)
 
+FAIR_VALUE_PATH = REPO_ROOT / "scripts" / "fair_value_per_share.py"
+fair_value_spec = importlib.util.spec_from_file_location("fair_value_per_share", FAIR_VALUE_PATH)
+fair_value_per_share = importlib.util.module_from_spec(fair_value_spec)
+assert fair_value_spec.loader is not None
+fair_value_spec.loader.exec_module(fair_value_per_share)
+
 
 class RunV10DemoTests(unittest.TestCase):
     def test_demo_runs_supported_sample_tickers(self) -> None:
@@ -106,6 +112,19 @@ class RunV10DemoTests(unittest.TestCase):
                     dcf_output = json.loads(Path(output_paths[ticker]["dcf_output_path"]).read_text(encoding="utf-8"))
 
                     self.assertEqual(dcf_model.validate_dcf_output(dcf_output), [])
+
+    def test_demo_fair_value_outputs_satisfy_contract(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            result = run_v1_0_demo.run_demo(reports_dir=Path(temp_dir) / "reports")
+            output_paths = result["generated_file_paths"]["output_paths_by_ticker"]
+
+            for ticker in ["NVDA", "AMD", "TSMC"]:
+                with self.subTest(ticker=ticker):
+                    fair_value_output = json.loads(
+                        Path(output_paths[ticker]["fair_value_per_share_output_path"]).read_text(encoding="utf-8")
+                    )
+
+                    self.assertEqual(fair_value_per_share.validate_fair_value_per_share_output(fair_value_output), [])
 
     def test_demo_points_to_manual_review_checklist(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

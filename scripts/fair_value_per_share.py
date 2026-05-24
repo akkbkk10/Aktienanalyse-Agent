@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import argparse
 import json
+from datetime import date
 from pathlib import Path
 from typing import Any
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONTEXT_ROOT = REPO_ROOT / "data" / "companies"
+DEFAULT_OUTPUT_SCHEMA_PATH = REPO_ROOT / "config" / "fair_value_per_share_output_schema.json"
 PROHIBITED_OUTPUT_TERMS = [
     "price target",
     "buy",
@@ -83,7 +85,56 @@ def calculate_fair_value_per_share(
         "scenarios": scenarios,
     }
     _assert_no_prohibited_language(result)
+    validate_fair_value_per_share_output(result)
     return result
+
+
+def validate_fair_value_per_share_output(
+    output: dict[str, Any],
+    schema: dict[str, Any] | None = None,
+) -> list[str]:
+    schema = schema or load_json(DEFAULT_OUTPUT_SCHEMA_PATH)
+    errors: list[str] = []
+
+    if not isinstance(output, dict):
+        raise FairValuePerShareError("Fair value per share output must be a JSON object.")
+
+    for field in schema.get("required_fields", []):
+        errors.extend(_validate_required_field(output, field, schema.get("field_types", {})))
+
+    if output.get("calculated") is not True:
+        errors.append("calculated must be true for fair value per share output.")
+
+    assumptions = output.get("assumptions")
+    if isinstance(assumptions, dict):
+        for field in schema.get("assumption_required_fields", []):
+            errors.extend(
+                _validate_required_field(
+                    assumptions,
+                    field,
+                    schema.get("assumption_field_types", {}),
+                    prefix="assumptions.",
+                )
+            )
+
+    source_references = output.get("source_references")
+    if isinstance(source_references, list):
+        if not source_references:
+            errors.append("source_references must be a non-empty array.")
+        for index, source_reference in enumerate(source_references):
+            errors.extend(_validate_source_reference(index, source_reference, schema, "source_references"))
+
+    scenarios = output.get("scenarios")
+    if isinstance(scenarios, list):
+        if not scenarios:
+            errors.append("scenarios must be a non-empty array.")
+        for index, scenario in enumerate(scenarios):
+            errors.extend(_validate_fair_value_scenario(index, scenario, schema))
+
+    if errors:
+        raise FairValuePerShareError("; ".join(errors))
+
+    return []
 
 
 def _find_share_count_metric(context: dict[str, Any]) -> dict[str, Any]:
@@ -110,6 +161,63 @@ def _validate_share_count_metric(metric: dict[str, Any]) -> None:
             raise FairValuePerShareError(f"Share count metric source metadata missing {field}.")
 
 
+def _validate_fair_value_scenario(index: int, scenario: Any, schema: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+
+    if not isinstance(scenario, dict):
+        return [f"scenarios item {index} must be an object."]
+
+    for field in schema.get("scenario_required_fields", []):
+        errors.extend(
+            _validate_required_field(
+                scenario,
+                field,
+                schema.get("scenario_field_types", {}),
+                prefix=f"scenarios item {index} ",
+            )
+        )
+
+    source_references = scenario.get("source_references")
+    if isinstance(source_references, list):
+        if not source_references:
+            errors.append(f"scenarios item {index} source_references must be a non-empty array.")
+        for source_index, source_reference in enumerate(source_references):
+            errors.extend(
+                _validate_source_reference(
+                    source_index,
+                    source_reference,
+                    schema,
+                    f"scenarios item {index} source_references",
+                )
+            )
+
+    return errors
+
+
+def _validate_source_reference(
+    index: int,
+    source_reference: Any,
+    schema: dict[str, Any],
+    label: str,
+) -> list[str]:
+    errors: list[str] = []
+
+    if not isinstance(source_reference, dict):
+        return [f"{label} item {index} must be an object."]
+
+    for field in schema.get("source_reference_required_fields", []):
+        errors.extend(
+            _validate_required_field(
+                source_reference,
+                field,
+                schema.get("source_reference_field_types", {}),
+                prefix=f"{label} item {index} ",
+            )
+        )
+
+    return errors
+
+
 def _source_reference(metric: dict[str, Any]) -> dict[str, Any]:
     source_metadata = metric.get("source_metadata", {})
     return {
@@ -133,6 +241,47 @@ def _currency_from_unit(unit: str) -> str:
 
 def _is_number(value: Any) -> bool:
     return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+
+def _validate_required_field(
+    payload: dict[str, Any],
+    field: str,
+    field_types: dict[str, str],
+    prefix: str = "",
+) -> list[str]:
+    if field not in payload or payload[field] in (None, ""):
+        return [f"{prefix}missing required field: {field}."]
+
+    expected_type = field_types.get(field)
+    if expected_type:
+        return _validate_contract_type(f"{prefix}{field}", payload[field], expected_type)
+
+    return []
+
+
+def _validate_contract_type(field: str, value: Any, expected_type: str) -> list[str]:
+    errors: list[str] = []
+
+    if expected_type == "string" and not isinstance(value, str):
+        errors.append(f"{field} must be a string.")
+    elif expected_type == "boolean" and not isinstance(value, bool):
+        errors.append(f"{field} must be a boolean.")
+    elif expected_type == "array" and not isinstance(value, list):
+        errors.append(f"{field} must be an array.")
+    elif expected_type == "object" and not isinstance(value, dict):
+        errors.append(f"{field} must be an object.")
+    elif expected_type == "number" and not _is_number(value):
+        errors.append(f"{field} must be a number.")
+    elif expected_type == "date":
+        if not isinstance(value, str):
+            errors.append(f"{field} must be a date string.")
+        else:
+            try:
+                date.fromisoformat(value)
+            except ValueError:
+                errors.append(f"{field} must use ISO date format YYYY-MM-DD.")
+
+    return errors
 
 
 def _assert_no_prohibited_language(result: dict[str, Any]) -> None:
