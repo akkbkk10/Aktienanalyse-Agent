@@ -77,6 +77,7 @@ def run_batch(
             "model_rating_output_path": summary.get("model_rating_output_path"),
             "model_rating_status": summary.get("model_rating_status"),
             "model_confidence_output_path": summary.get("model_confidence_output_path"),
+            "model_signal_output_path": summary.get("model_signal_output_path"),
             "audit_log_path": str(audit_log_path) if summary.get("audit_log_written") else None,
         }
         warnings_by_ticker[ticker] = (

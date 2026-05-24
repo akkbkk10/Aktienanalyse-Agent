@@ -21,6 +21,7 @@ import generate_analysis_summary
 import generate_report
 import model_confidence
 import model_rating
+import model_signal
 import validate_methodology
 import validate_sources
 import write_audit_log
@@ -78,6 +79,7 @@ def run_analysis(
             model_rating_status="not_requested",
             model_rating_unavailable_reasons=[],
             model_confidence_output_path=None,
+            model_signal_output_path=None,
             dcf_warnings=[],
             warnings=warnings,
         )
@@ -102,6 +104,7 @@ def run_analysis(
             model_rating_status="not_requested",
             model_rating_unavailable_reasons=[],
             model_confidence_output_path=None,
+            model_signal_output_path=None,
             dcf_warnings=[],
             warnings=warnings,
         )
@@ -133,6 +136,8 @@ def run_analysis(
     model_rating_unavailable_reasons: list[str] = []
     model_confidence_result = None
     model_confidence_output_path = None
+    model_signal_result = None
+    model_signal_output_path = None
     readiness_result = None
     dcf_warnings: list[str] = []
     dcf_scenarios_calculated: list[str] = []
@@ -203,6 +208,13 @@ def run_analysis(
     model_confidence_output_path = str(
         _write_model_confidence_output(normalized_ticker, model_confidence_result, reports_dir)
     )
+    model_signal_result = model_signal.calculate_model_signal(
+        ticker=normalized_ticker,
+        model_rating_output=model_rating_result,
+        model_confidence_output=model_confidence_result,
+        research_gaps=gap_result["gaps"],
+    )
+    model_signal_output_path = str(_write_model_signal_output(normalized_ticker, model_signal_result, reports_dir))
 
     if generate_fact_report:
         report_path = str(
@@ -218,6 +230,7 @@ def run_analysis(
                 model_rating_status=model_rating_status,
                 model_rating_unavailable_reasons=model_rating_unavailable_reasons,
                 model_confidence_output=model_confidence_result,
+                model_signal_output=model_signal_result,
                 warnings=warnings + model_rating_unavailable_reasons,
                 reports_dir=reports_dir,
             )
@@ -237,6 +250,7 @@ def run_analysis(
                 model_rating_status=model_rating_status,
                 model_rating_unavailable_reasons=model_rating_unavailable_reasons,
                 model_confidence_output=model_confidence_result,
+                model_signal_output=model_signal_result,
                 warnings=warnings + dcf_warnings,
                 reports_dir=reports_dir,
             )
@@ -270,6 +284,7 @@ def run_analysis(
         model_rating_status=model_rating_status,
         model_rating_unavailable_reasons=model_rating_unavailable_reasons,
         model_confidence_output_path=model_confidence_output_path,
+        model_signal_output_path=model_signal_output_path,
         dcf_warnings=dcf_warnings,
         warnings=warnings,
     )
@@ -291,6 +306,7 @@ def _summary(
     model_rating_status: str,
     model_rating_unavailable_reasons: list[str],
     model_confidence_output_path: str | None,
+    model_signal_output_path: str | None,
     dcf_warnings: list[str],
     warnings: list[str],
 ) -> dict[str, Any]:
@@ -310,6 +326,7 @@ def _summary(
         "model_rating_status": model_rating_status,
         "model_rating_unavailable_reasons": model_rating_unavailable_reasons,
         "model_confidence_output_path": model_confidence_output_path,
+        "model_signal_output_path": model_signal_output_path,
         "dcf_warnings": dcf_warnings,
         "warnings": warnings,
     }
@@ -340,6 +357,13 @@ def _write_model_confidence_output(ticker: str, model_confidence_result: dict[st
     reports_dir.mkdir(parents=True, exist_ok=True)
     output_path = reports_dir / f"{ticker}_model_confidence_output.json"
     output_path.write_text(json.dumps(model_confidence_result, indent=2, sort_keys=True), encoding="utf-8")
+    return output_path
+
+
+def _write_model_signal_output(ticker: str, model_signal_result: dict[str, Any], reports_dir: Path) -> Path:
+    reports_dir.mkdir(parents=True, exist_ok=True)
+    output_path = reports_dir / f"{ticker}_model_signal_output.json"
+    output_path.write_text(json.dumps(model_signal_result, indent=2, sort_keys=True), encoding="utf-8")
     return output_path
 
 

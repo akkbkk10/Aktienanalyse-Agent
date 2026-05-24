@@ -6,7 +6,7 @@ separates facts, assumptions, calculations, reports, summaries, and audit record
 ## Workflow
 
 ```text
-validation -> context -> gaps -> ratios -> readiness -> DCF -> fair value per share -> model rating -> model confidence -> report -> summary -> audit log
+validation -> context -> gaps -> ratios -> readiness -> DCF -> fair value per share -> model rating -> model confidence -> model signal -> report -> summary -> audit log
 ```
 
 ## Stages
@@ -20,9 +20,10 @@ validation -> context -> gaps -> ratios -> readiness -> DCF -> fair value per sh
 7. Fair value per share calculation divides existing DCF scenario values by sourced diluted share count metrics with `metric_id` traceability.
 8. Model rating maps fair value per share versus sourced current market price to documented rating buckets.
 9. Model confidence maps data quality, source freshness, research gaps, and assumption completeness to documented A-D quality grades.
-10. Fact-only report generation creates a Markdown report with facts, missing data, warnings, and optional DCF, fair value per share, model rating, and model confidence output.
-11. Analysis summary generation creates structured JSON separating facts, assumptions, calculated outputs, missing data, and risks/warnings.
-12. Audit logging records the reproducible analysis run.
+10. Model signal maps existing model rating, model confidence, model gap, research gaps, and market price freshness to documented non-personalized signal labels.
+11. Fact-only report generation creates a Markdown report with facts, missing data, warnings, and optional DCF, fair value per share, model rating, model confidence, and model signal output.
+12. Analysis summary generation creates structured JSON separating facts, assumptions, calculated outputs, missing data, and risks/warnings.
+13. Audit logging records the reproducible analysis run.
 
 ## Boundary
 
@@ -57,6 +58,12 @@ validated inputs only: source validation status, research gaps, stale data flags
 source confidence fields, DCF assumption completeness, and market price snapshot
 freshness. It is model quality information, not a model signal.
 
+Model signal uses `config/model_signal_rules.json` and existing model outputs
+only. It can output `model_positive`, `model_neutral`, `model_negative`, or
+`unavailable`. It becomes unavailable when model confidence is `D`, model rating
+is unavailable, high-priority research gaps remain, or market price freshness
+does not pass. It does not fetch live data or create broker/order actions.
+
 ## Market Price Snapshots
 
 Market prices are stored snapshots, not live trading data. `as_of_datetime`
@@ -80,7 +87,7 @@ warnings by ticker so NVDA and AMD cannot cross-block each other.
 ## Output Safety
 
 Model-generated reports, summaries, DCF outputs, and batch outputs are analysis
-artifacts only. They are not personal investment advice and must not include model
-signals, price targets, buy/sell/hold recommendations, or automated trading
-instructions. Model confidence grades are allowed only as non-personalized model
-quality output.
+artifacts only. They are not personal investment advice and must not include
+price targets, buy/sell/hold recommendations, or automated trading instructions.
+Model confidence grades and model signal labels are allowed only as
+non-personalized model outputs.

@@ -182,6 +182,30 @@ def model_confidence_output() -> dict:
     }
 
 
+def model_signal_output() -> dict:
+    return {
+        "ticker": "NVDA",
+        "model_signal": "model_positive",
+        "reasons": ["Model rating, model confidence, model gap, research gaps, and market price freshness meet positive rules."],
+        "blocking_reasons": [],
+        "model_rating_used": {
+            "model_rating": 4,
+            "rating_label": "undervalued on model basis",
+            "valuation_gap_percent": 25.0,
+            "rules_version": "0.1.0",
+        },
+        "model_confidence_used": {
+            "model_confidence": "A",
+            "confidence_label": "high data quality, low uncertainty",
+            "confidence_score": 100,
+            "rules_version": "0.1.0",
+        },
+        "rules_version": "0.1.0",
+        "warnings": [],
+        "disclaimer": "non-personalized model output, not investment advice.",
+    }
+
+
 class GenerateReportTests(unittest.TestCase):
     def test_report_creation(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -355,6 +379,28 @@ class GenerateReportTests(unittest.TestCase):
         self.assertIn("high data quality, low uncertainty", report)
         self.assertIn("as_of_datetime: 2026-05-23T00:15:00Z", report)
         self.assertIn("fetched_at: 2026-05-24T00:00:00Z", report)
+        for term in ["price target", "buy", "sell", "hold", "recommendation"]:
+            self.assertNotIn(term, report.lower())
+
+        generate_report.assert_no_prohibited_language(report)
+
+    def test_report_includes_model_signal_only_as_model_output(self) -> None:
+        report = generate_report.render_report(
+            ticker="NVDA",
+            validation_status={"valid": True, "errors": []},
+            research_gaps=[],
+            ratio_outputs=[ratio_output()],
+            audit_log_reference="audit_log.jsonl:1",
+            dcf_output=dcf_output(),
+            model_signal_output=model_signal_output(),
+            warnings=[],
+            generated_at="2026-05-24T12:00:00Z",
+        )
+
+        self.assertIn("### Model Signal", report)
+        self.assertIn("model_positive", report)
+        self.assertIn("non-personalized model output, not investment advice", report)
+        self.assertIn("Model rating used: 4", report)
         for term in ["price target", "buy", "sell", "hold", "recommendation"]:
             self.assertNotIn(term, report.lower())
 

@@ -9,7 +9,7 @@ The first implementation slice focuses on evidence discipline:
 - Keep facts, assumptions, and opinions separate.
 - Keep GAAP and Non-GAAP metrics explicitly labeled.
 
-Price target, recommendation, model signal, and automated trading logic are intentionally not implemented.
+Price target, buy/sell/hold recommendation, personal investment advice, live data fetching, and automated trading logic are intentionally not implemented.
 
 ## Repository Layout
 
@@ -274,9 +274,9 @@ Run the complete workflow with DCF, report, and structured summary:
 python scripts/run_analysis.py NVDA --source-data-path data\nvda_sample_metrics.json --run-dcf --dcf-assumptions-path data\companies\NVDA\dcf_assumptions.json --generate-report --generate-summary
 ```
 
-Full workflow order: validation -> context -> gaps -> ratios -> readiness -> optional DCF -> optional fair value per share -> optional model rating -> model confidence -> optional report -> analysis summary -> audit log. When DCF and report flags are used together, the report includes DCF, fair value per share, model rating, and model confidence sections with assumptions used, bear/base/bull scenario outputs, formulas, reasons, warnings, and source references. When summary generation is enabled, the JSON summary includes `analysis_summary_path`.
+Full workflow order: validation -> context -> gaps -> ratios -> readiness -> optional DCF -> optional fair value per share -> optional model rating -> model confidence -> model signal -> optional report -> analysis summary -> audit log. When DCF and report flags are used together, the report includes DCF, fair value per share, model rating, model confidence, and model signal sections with assumptions used, bear/base/bull scenario outputs, formulas, reasons, warnings, and source references. When summary generation is enabled, the JSON summary includes `analysis_summary_path`.
 
-The orchestrator does not create model signals, price targets, buy/sell/hold recommendations, investment advice, or final investment memo output.
+The orchestrator does not create price targets, buy/sell/hold recommendations, personal investment advice, live market data fetching, broker/order functionality, automated trading logic, or final investment memo output.
 
 ## Fact Report Workflow
 
@@ -288,7 +288,7 @@ python scripts/generate_report.py NVDA --validation-status-json path\to\validati
 
 Reports are written to `reports/` and separate facts, missing data, and warnings. They include validation status, research gaps, calculated ratios, source references, and an audit log reference.
 
-Fact reports may include fair value per share and model rating only as calculated model outputs when the required structured inputs are available. They may also include model confidence as model quality information based on source validation, research gaps, source freshness, metric confidence fields, DCF assumption completeness, and market price snapshot freshness.
+Fact reports may include fair value per share and model rating only as calculated model outputs when the required structured inputs are available. They may also include model confidence as model quality information and model signal as non-personalized model output based only on rating, confidence, model gap, research gaps, and market price freshness.
 
 When a DCF output JSON is provided, the fact report can include a DCF calculation section with assumptions, scenario outputs, formulas, warnings, and source references. This section remains calculation output only and does not include price targets, buy/sell/hold recommendations, investment advice, or final investment memo content.
 
@@ -300,7 +300,7 @@ Generate a structured JSON analysis summary from validated run artifacts:
 python scripts/generate_analysis_summary.py NVDA --validation-status-json path\to\validation_status.json --research-gaps-json path\to\research_gaps.json --ratio-outputs-json path\to\ratio_outputs.json --dcf-output-json reports\NVDA_dcf_output.json --audit-log-reference audit_log.jsonl:1
 ```
 
-The summary is written under `reports/` and separates facts, assumptions, calculated outputs, missing data, and risks/warnings. DCF scenario outputs, fair value per share calculations, model ratings, and model confidence are included only when their structured JSON outputs are available.
+The summary is written under `reports/` and separates facts, assumptions, calculated outputs, missing data, and risks/warnings. DCF scenario outputs, fair value per share calculations, model ratings, model confidence, and model signal are included only when their structured JSON outputs are available.
 
 This workflow does not create buy/sell/hold recommendations, price targets, investment advice, automated trading logic, or final investment memo content.
 
@@ -375,6 +375,22 @@ market price snapshot freshness to confidence grades A-D. Output is model qualit
 information only, not a model signal, recommendation, price target, or investment
 advice.
 
+## Model Signal Workflow
+
+Calculate a non-personalized model signal from existing model outputs:
+
+```powershell
+python scripts/model_signal.py NVDA --model-rating-json reports\NVDA_model_rating_output.json --model-confidence-json reports\NVDA_model_confidence_output.json --research-gaps-json path\to\research_gaps.json
+```
+
+`config/model_signal_rules.json` allows only `model_positive`, `model_neutral`,
+`model_negative`, or `unavailable`. The signal is unavailable when model
+confidence is `D`, model rating is unavailable, a high-priority research gap is
+open, or the market price snapshot is stale or missing. This output is
+non-personalized model output only; it is not a buy/sell/hold recommendation, a
+price target, personal investment advice, live data fetching, broker/order
+functionality, or automated trading logic.
+
 ## Market Price Snapshot Governance
 
 Market price is a stored snapshot, not live trading data. `as_of_datetime` is the
@@ -402,4 +418,4 @@ python scripts/run_analysis.py NVDA --source-data-path data\nvda_sample_metrics.
 
 This validates source data, rebuilds the company context, detects research gaps, calculates deterministic ratios, writes an audit log entry, and generates a fact-only report under `reports/`.
 
-The demo does not create model signals, price targets, recommendations, buy/sell/hold output, or investment advice.
+The demo does not create price targets, buy/sell/hold recommendations, personal investment advice, live data fetching, broker/order functionality, or automated trading logic.
