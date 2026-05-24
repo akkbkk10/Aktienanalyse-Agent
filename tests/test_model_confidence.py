@@ -84,6 +84,16 @@ def complete_assumptions() -> dict:
     }
 
 
+def example_assumptions() -> dict:
+    payload = complete_assumptions()
+    payload["assumption_label"] = "Example assumptions for deterministic tests"
+    payload["assumption_notes"] = [
+        "These are placeholder assumptions.",
+        "They require manual review before use.",
+    ]
+    return payload
+
+
 class ModelConfidenceTests(unittest.TestCase):
     def test_confidence_a_case(self) -> None:
         result = calculate_confidence_for_test([revenue_metric(), market_price_metric()])
@@ -142,7 +152,21 @@ class ModelConfidenceTests(unittest.TestCase):
         )
 
         self.assertEqual(result["model_confidence"], "B")
-        self.assertTrue(any("DCF assumptions are missing" in reason for reason in result["reasons"]))
+        self.assertTrue(any("Assumption set is missing" in reason for reason in result["reasons"]))
+
+    def test_example_dcf_assumptions_cap_confidence(self) -> None:
+        result = calculate_confidence_for_test(
+            [revenue_metric(), market_price_metric()],
+            assumptions_payload=example_assumptions(),
+        )
+
+        self.assertEqual(result["model_confidence"], "C")
+        self.assertLess(result["confidence_score"], 95)
+        self.assertEqual(result["assumption_quality"]["status"], "manual_review_required")
+        self.assertFalse(result["assumption_quality"]["active_signal_allowed"])
+        self.assertIn("example", result["assumption_quality"]["matched_terms"])
+        self.assertTrue(any("Assumption set is labeled" in reason for reason in result["reasons"]))
+        self.assertTrue(any("Assumption quality is insufficient" in warning for warning in result["warnings"]))
 
     def test_source_references_preserve_market_snapshot_timestamps(self) -> None:
         result = calculate_confidence_for_test([revenue_metric(), market_price_metric()])

@@ -40,6 +40,12 @@ def confidence_output(confidence: str = "A") -> dict:
         "model_confidence": confidence,
         "confidence_label": "quality bucket",
         "confidence_score": 95,
+        "assumption_quality": {
+            "status": "sufficient",
+            "active_signal_allowed": True,
+            "matched_terms": [],
+            "blocking_reasons": [],
+        },
         "rules_version": "0.1.0",
         "source_references": [],
         "disclaimer": "non-personalized model quality output, not investment advice.",
@@ -94,6 +100,23 @@ class ModelSignalTests(unittest.TestCase):
         )
 
         self.assertEqual(result["model_signal"], "unavailable")
+
+    def test_manual_review_assumptions_block_signal(self) -> None:
+        confidence = confidence_output("C")
+        confidence["assumption_quality"] = {
+            "status": "manual_review_required",
+            "active_signal_allowed": False,
+            "matched_terms": ["example", "manual review"],
+            "blocking_reasons": [
+                "Assumption set is labeled as example, test, temporary, or requiring manual review."
+            ],
+        }
+
+        result = calculate_signal_for_test(rating_output(1, -40.0), confidence)
+
+        self.assertEqual(result["model_signal"], "unavailable")
+        self.assertTrue(any("Assumption quality gate did not pass" in reason for reason in result["blocking_reasons"]))
+        self.assertTrue(any("Assumption quality blocks active model output" in warning for warning in result["warnings"]))
 
     def test_no_buy_sell_hold_language(self) -> None:
         result = calculate_signal_for_test(rating_output(4, 25.0), confidence_output("A"))
