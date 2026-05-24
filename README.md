@@ -26,6 +26,7 @@ Price target, buy/sell/hold recommendation, personal investment advice, live dat
 - `docs/GENERATED_OUTPUT_REVIEW_GUIDE.md` - review guide for generated reports, summaries, model outputs, and audit logs.
 - `docs/ADAPTER_PROPOSAL_CHECKLIST.md` - pre-implementation checklist for future adapter and framework proposals.
 - `docs/ADAPTER_RISK_REGISTER_TEMPLATE.md` - risk register template for future adapter proposals.
+- `docs/ADAPTER_DECISION_RECORD_TEMPLATE.md` - decision record template for accepted, rejected, or deferred adapter proposals.
 - `docs/DATA_CONTRACT_REVIEW_CHECKLIST.md` - field-level traceability checklist for future schemas and adapter outputs.
 - `scripts/` - executable helper scripts.
 - `tests/` - test suite.
