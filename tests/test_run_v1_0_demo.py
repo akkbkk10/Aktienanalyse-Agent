@@ -37,6 +37,33 @@ class RunV10DemoTests(unittest.TestCase):
                     self.assertTrue(path.exists(), f"{ticker} {key}")
                     self.assertTrue(path.is_relative_to(reports_dir), f"{ticker} {key}")
 
+    def test_demo_writes_expected_artifacts_to_custom_reports_dir(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            reports_dir = Path(temp_dir) / "custom_reports"
+            result = run_v1_0_demo.run_demo(reports_dir=reports_dir)
+
+            audit_log_path = Path(result["generated_file_paths"]["audit_log_path"])
+            self.assertTrue(audit_log_path.exists())
+            self.assertEqual(audit_log_path, reports_dir / "audit_log.jsonl")
+
+            expected_keys = {
+                "report_path",
+                "analysis_summary_path",
+                "dcf_output_path",
+                "fair_value_per_share_output_path",
+                "model_rating_output_path",
+                "model_confidence_output_path",
+                "model_signal_output_path",
+            }
+            output_paths = result["generated_file_paths"]["output_paths_by_ticker"]
+            for ticker in ["NVDA", "AMD", "TSMC"]:
+                ticker_dir = reports_dir / ticker
+                self.assertTrue(ticker_dir.is_dir(), ticker)
+                for key in expected_keys:
+                    path = Path(output_paths[ticker][key])
+                    self.assertTrue(path.exists(), f"{ticker} {key}")
+                    self.assertTrue(path.is_relative_to(ticker_dir), f"{ticker} {key}")
+
     def test_demo_outputs_expected_calculation_layers(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             result = run_v1_0_demo.run_demo(reports_dir=Path(temp_dir) / "reports")
