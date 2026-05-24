@@ -75,3 +75,25 @@ The v1.0 release candidate is ready for user testing when:
 - Each ticker has all required generated artifacts.
 - The manual review checklist is complete for NVDA, AMD, and TSMC.
 - Guardrail review finds no prohibited behavior or language.
+
+## Final v1.0.0 Validation Status
+
+Validation run date: 2026-05-24.
+
+Commands completed successfully:
+
+- `python -m unittest discover -s tests`
+- `python scripts\run_v1_0_demo.py --reports-dir reports\tmp_v1_0_final_validation`
+
+Demo results:
+
+| Ticker | Demo status | Model confidence | Assumption quality | Model signal |
+| --- | --- | --- | --- | --- |
+| NVDA | Passed | C | manual_review_required | unavailable |
+| AMD | Passed | C | manual_review_required | unavailable |
+| TSMC | Passed | C | manual_review_required | unavailable |
+
+Final validation confirms that the bundled example assumptions do not produce
+Model Confidence A and do not produce active model signals. Signals remain
+unavailable until reviewed assumptions replace the example/manual-review
+assumption sets.

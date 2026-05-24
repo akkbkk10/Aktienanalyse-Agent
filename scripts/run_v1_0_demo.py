@@ -50,7 +50,7 @@ def run_demo(
     generated_file_paths = _generated_file_paths(batch_result)
 
     return {
-        "demo_version": "1.0-rc",
+        "demo_version": "1.0.0",
         "tickers": normalized_tickers,
         "demo_completed": _demo_completed(batch_result),
         "generated_file_paths": generated_file_paths,
