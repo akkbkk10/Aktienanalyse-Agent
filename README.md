@@ -22,15 +22,7 @@ Price target, buy/sell/hold recommendation, personal investment advice, live dat
 - `config/` - schemas and validation rules.
 - `config/watchlist.json` - required research coverage by ticker.
 - `agents/` - documentation/contracts for the Hub-and-Spoke supervisor and specialized worker roles.
-- `docs/ARCHITECTURE_GOVERNANCE_INDEX.md` - navigation index for architecture-governance docs and templates.
-- `docs/GUARDRAIL_SECURITY_TEST_PLAN.md` - guardrail and security checklist for core and future adapter work.
-- `docs/GENERATED_OUTPUT_REVIEW_GUIDE.md` - review guide for generated reports, summaries, model outputs, and audit logs.
-- `docs/ADAPTER_PROPOSAL_CHECKLIST.md` - pre-implementation checklist for future adapter and framework proposals.
-- `docs/ADAPTER_RISK_REGISTER_TEMPLATE.md` - risk register template for future adapter proposals.
-- `docs/ADAPTER_DECISION_RECORD_TEMPLATE.md` - decision record template for accepted, rejected, or deferred adapter proposals.
-- `docs/DATA_CONTRACT_REVIEW_CHECKLIST.md` - field-level traceability checklist for future schemas and adapter outputs.
-- `docs/CORE_BASELINE_INVENTORY.md` - technical baseline inventory and v1.1 readiness assessment.
-- `docs/SCHEMA_FIELD_REFERENCE.md` - field reference for current deterministic core data contracts.
+- `docs/` - architecture, guardrail, data-contract, release, and maintainer documentation.
 - `scripts/` - executable helper scripts.
 - `tests/` - test suite.
 - `data/` - raw and intermediate input data.
@@ -39,6 +31,52 @@ Price target, buy/sell/hold recommendation, personal investment advice, live dat
 - `audit_log.jsonl` - append-only audit log for reproducible analysis runs.
 - `research_queue.md` - queue of research requests.
 - `research_queue.json` - structured queue used for duplicate detection and automation.
+
+## Documentation Map
+
+Getting started / current baseline:
+
+- `docs/ARCHITECTURE_OVERVIEW.md` - current deterministic workflow overview.
+- `docs/CORE_BASELINE_INVENTORY.md` - technical baseline inventory and v1.1 readiness assessment.
+- `docs/COMPANY_ONBOARDING_GUIDE.md` - safe workflow for adding a new supported ticker.
+
+Validation and guardrails:
+
+- `AGENTS.md` - mandatory rules for agents and contributors.
+- `docs/GUARDRAIL_SECURITY_TEST_PLAN.md` - guardrail and security checklist for core and future adapter work.
+- `docs/V1_0_TEST_PLAN.md` - v1.0 manual validation checklist.
+
+Data contracts and schemas:
+
+- `docs/SCHEMA_FIELD_REFERENCE.md` - field reference for current deterministic core data contracts.
+- `docs/DATA_CONTRACT_REVIEW_CHECKLIST.md` - field-level traceability checklist for future schemas and adapter outputs.
+- `.github/ISSUE_TEMPLATE/schema_change_proposal.md` - issue template for proposed schema or data-contract changes.
+
+Generated-output review:
+
+- `docs/GENERATED_OUTPUT_REVIEW_GUIDE.md` - review guide for generated reports, summaries, model outputs, and audit logs.
+
+Adapter and architecture governance:
+
+- `docs/ARCHITECTURE_GOVERNANCE_INDEX.md` - navigation index for architecture-governance docs and templates.
+- `docs/ADAPTER_PROPOSAL_CHECKLIST.md` - pre-implementation checklist for future adapter and framework proposals.
+- `docs/ADAPTER_RISK_REGISTER_TEMPLATE.md` - risk register template for future adapter proposals.
+- `docs/ADAPTER_DECISION_RECORD_TEMPLATE.md` - decision record template for accepted, rejected, or deferred adapter proposals.
+
+Maintainer and release workflow:
+
+- `docs/V1_0_X_PATCH_RELEASE_CHECKLIST.md` - v1.0.x patch release workflow.
+- `docs/V1_0_RELEASE_NOTES.md` - v1.0.0 release notes.
+- `docs/V1_0_1_RELEASE_NOTES.md` - v1.0.1 release notes.
+- `docs/V1_0_2_RELEASE_NOTES.md` - v1.0.2 release notes.
+- `docs/V1_0_3_RELEASE_NOTES.md` - v1.0.3 release notes.
+
+Open-source contribution and security:
+
+- `CONTRIBUTING.md` - contribution workflow and project guardrails.
+- `SECURITY.md` - vulnerability reporting and security scope.
+- `CODE_OF_CONDUCT.md` - respectful collaboration expectations.
+- `LICENSE` - Apache License 2.0.
 
 ## Run Tests
 
@@ -78,14 +116,6 @@ The demo generates reports, summaries, DCF outputs, fair value per share outputs
 model ratings, model confidence outputs, model signals, and an audit log under
 `reports/v1_0_demo/`, which is ignored by git. Use
 `docs/V1_0_TEST_PLAN.md` for the manual review checklist.
-
-Release notes:
-
-- `docs/V1_0_RELEASE_NOTES.md`
-- `docs/V1_0_1_RELEASE_NOTES.md`
-- `docs/V1_0_2_RELEASE_NOTES.md`
-- `docs/V1_0_3_RELEASE_NOTES.md`
-- `docs/V1_0_X_PATCH_RELEASE_CHECKLIST.md`
 
 ## v0.2 Batch Workflow
 
