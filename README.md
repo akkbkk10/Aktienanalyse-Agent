@@ -76,6 +76,7 @@ Release notes:
 
 - `docs/V1_0_RELEASE_NOTES.md`
 - `docs/V1_0_1_RELEASE_NOTES.md`
+- `docs/V1_0_2_RELEASE_NOTES.md`
 - `docs/V1_0_X_PATCH_RELEASE_CHECKLIST.md`
 
 ## v0.2 Batch Workflow
