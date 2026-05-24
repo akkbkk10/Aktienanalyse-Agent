@@ -41,6 +41,7 @@ class RunAnalysisTests(unittest.TestCase):
             self.assertIsNone(result["dcf_output_path"])
             self.assertIsNone(result["fair_value_per_share_output_path"])
             self.assertIsNone(result["model_rating_output_path"])
+            self.assertIsNotNone(result["model_confidence_output_path"])
             self.assertEqual(result["dcf_warnings"], [])
             self.assertEqual(result["warnings"], [])
 
@@ -311,6 +312,27 @@ class RunAnalysisTests(unittest.TestCase):
             self.assertTrue(Path(result["fair_value_per_share_output_path"]).exists())
             self.assertTrue(Path(result["model_rating_output_path"]).exists())
 
+    def test_model_confidence_output_file_created(self) -> None:
+        with temp_analysis_workspace() as paths:
+            result = run_analysis.run_analysis(
+                ticker="NVDA",
+                source_data_path=paths["source_data"],
+                context_root=paths["context_root"],
+                markdown_queue_path=paths["markdown_queue"],
+                json_queue_path=paths["json_queue"],
+                audit_log_path=paths["audit_log"],
+                reports_dir=paths["reports_dir"],
+                run_dcf=True,
+                dcf_assumptions_path=paths["dcf_assumptions"],
+            )
+
+            output_path = Path(result["model_confidence_output_path"])
+            output = json.loads(output_path.read_text(encoding="utf-8"))
+
+            self.assertTrue(output_path.exists())
+            self.assertIn(output["model_confidence"], {"A", "B", "C", "D"})
+            self.assertEqual(output["disclaimer"], "non-personalized model quality output, not investment advice.")
+
     def test_fair_value_per_share_output_file_created(self) -> None:
         with temp_analysis_workspace() as paths:
             result = run_analysis.run_analysis(
@@ -353,6 +375,44 @@ class RunAnalysisTests(unittest.TestCase):
             self.assertTrue(output_path.exists())
             self.assertIn(output["model_rating"], {1, 2, 3, 4, 5})
             self.assertEqual(output["assumptions"]["market_price_metric_id"], "nvda_current_market_price_2026_05_23")
+
+    def test_stale_market_price_blocks_only_model_rating(self) -> None:
+        with temp_analysis_workspace() as paths:
+            records = json.loads(paths["source_data"].read_text(encoding="utf-8"))
+            for record in records:
+                if record.get("metric_category") == "market_price":
+                    record["fetched_at"] = "2026-01-01T00:00:00Z"
+            paths["source_data"].write_text(json.dumps(records), encoding="utf-8")
+
+            result = run_analysis.run_analysis(
+                ticker="NVDA",
+                source_data_path=paths["source_data"],
+                context_root=paths["context_root"],
+                markdown_queue_path=paths["markdown_queue"],
+                json_queue_path=paths["json_queue"],
+                audit_log_path=paths["audit_log"],
+                reports_dir=paths["reports_dir"],
+                generate_fact_report=True,
+                generate_summary=True,
+                run_dcf=True,
+                dcf_assumptions_path=paths["dcf_assumptions"],
+            )
+
+            self.assertTrue(result["validation_status"]["valid"])
+            self.assertIn("net_margin", result["ratios_calculated"])
+            self.assertTrue(result["dcf_run"])
+            self.assertTrue(result["audit_log_written"])
+            self.assertEqual(result["model_rating_status"], "unavailable")
+            self.assertIsNone(result["model_rating_output_path"])
+            self.assertTrue(result["model_rating_unavailable_reasons"])
+            self.assertTrue(Path(result["model_confidence_output_path"]).exists())
+            self.assertTrue(Path(result["report_path"]).exists())
+            self.assertTrue(Path(result["analysis_summary_path"]).exists())
+
+            summary = json.loads(Path(result["analysis_summary_path"]).read_text(encoding="utf-8"))
+            self.assertEqual(summary["missing_data"]["model_rating_status"], "unavailable")
+            self.assertTrue(summary["missing_data"]["model_rating_unavailable_reasons"])
+            self.assertEqual(summary["missing_data"]["model_confidence_status"], "included")
 
     def test_dcf_output_has_no_price_target_or_recommendation_language(self) -> None:
         with temp_analysis_workspace() as paths:
@@ -422,7 +482,7 @@ class RunAnalysisTests(unittest.TestCase):
                 generate_fact_report=True,
             )
 
-            report = Path(result["report_path"]).read_text(encoding="utf-8").lower()
+            report = Path(result["report_path"]).read_text(encoding="utf-8").lower().replace("not investment advice", "")
 
             for term in ["valuation", "fair value", "intrinsic value", "price target", "buy", "sell", "hold", "recommendation", "investment advice"]:
                 self.assertNotIn(term, report)
@@ -448,6 +508,7 @@ class RunAnalysisTests(unittest.TestCase):
             self.assertIn("### DCF Calculation Output", report)
             self.assertIn("### Fair Value Per Share Model Calculation", report)
             self.assertIn("### Model Rating", report)
+            self.assertIn("### Model Confidence", report)
             self.assertIn("#### Assumptions Used", report)
             self.assertIn("#### DCF Warnings", report)
             self.assertIn("calculation output only, not investment advice", report)

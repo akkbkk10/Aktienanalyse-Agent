@@ -49,6 +49,32 @@ def valid_share_count_record() -> dict:
     return record
 
 
+def valid_market_price_record() -> dict:
+    record = valid_record()
+    record.update(
+        {
+            "metric_id": "exm_current_market_price_2026_05_23",
+            "metric_name": "Current market price",
+            "metric_category": "market_price",
+            "value": 100.0,
+            "unit": "USD per share",
+            "currency": "USD",
+            "exchange": "NASDAQ",
+            "price_type": "latest_trade",
+            "as_of_datetime": "2026-05-23T00:15:00Z",
+            "fetched_at": "2026-05-24T00:00:00Z",
+            "provider": "Nasdaq",
+            "retrieval_method": "manual_snapshot",
+            "period": "Latest trade timestamp 2026-05-23 00:15 UTC",
+            "accounting_basis": "Other",
+            "source_type": "market data",
+            "source_date": "2026-05-23",
+            "last_verified": "2026-05-24",
+        }
+    )
+    return record
+
+
 class ValidateSourcesTests(unittest.TestCase):
     def setUp(self) -> None:
         self.schema = validate_sources.load_json(REPO_ROOT / "config" / "financial_metric_schema.json")
@@ -127,6 +153,56 @@ class ValidateSourcesTests(unittest.TestCase):
         errors = validate_sources.validate_records([record], self.schema, self.rules)
 
         self.assertTrue(any(error.field == "source_date" for error in errors))
+
+    def test_valid_market_price_snapshot_has_no_errors(self) -> None:
+        errors = validate_sources.validate_records(
+            [valid_market_price_record()],
+            self.schema,
+            self.rules,
+            today=date(2026, 5, 24),
+        )
+
+        self.assertEqual(errors, [])
+
+    def test_market_price_missing_as_of_datetime_fails(self) -> None:
+        record = valid_market_price_record()
+        del record["as_of_datetime"]
+
+        errors = validate_sources.validate_records([record], self.schema, self.rules, today=date(2026, 5, 24))
+
+        self.assertTrue(any(error.field == "as_of_datetime" for error in errors))
+
+    def test_market_price_missing_fetched_at_fails(self) -> None:
+        record = valid_market_price_record()
+        del record["fetched_at"]
+
+        errors = validate_sources.validate_records([record], self.schema, self.rules, today=date(2026, 5, 24))
+
+        self.assertTrue(any(error.field == "fetched_at" for error in errors))
+
+    def test_market_price_missing_provider_fails(self) -> None:
+        record = valid_market_price_record()
+        del record["provider"]
+
+        errors = validate_sources.validate_records([record], self.schema, self.rules, today=date(2026, 5, 24))
+
+        self.assertTrue(any(error.field == "provider" for error in errors))
+
+    def test_market_price_missing_exchange_fails(self) -> None:
+        record = valid_market_price_record()
+        del record["exchange"]
+
+        errors = validate_sources.validate_records([record], self.schema, self.rules, today=date(2026, 5, 24))
+
+        self.assertTrue(any(error.field == "exchange" for error in errors))
+
+    def test_stale_market_price_snapshot_passes_source_validation(self) -> None:
+        record = valid_market_price_record()
+        record["fetched_at"] = "2026-01-01T00:00:00Z"
+
+        errors = validate_sources.validate_records([record], self.schema, self.rules, today=date(2026, 5, 24))
+
+        self.assertEqual(errors, [])
 
     def test_empty_metric_id_fails_validation(self) -> None:
         record = valid_record()

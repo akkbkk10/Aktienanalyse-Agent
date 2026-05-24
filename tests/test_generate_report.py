@@ -136,6 +136,8 @@ def model_rating_output() -> dict:
             "scenario_used": "base",
             "valuation_gap_formula": "(fair_value_per_share - current_market_price) / current_market_price",
             "market_price_metric_id": "nvda_current_market_price_2026_05_23",
+            "market_price_as_of_datetime": "2026-05-23T00:15:00Z",
+            "market_price_fetched_at": "2026-05-24T00:00:00Z",
         },
         "warnings": ["Model rating is a deterministic rule-based classification from fair value per share and sourced market price only."],
         "source_references": [
@@ -146,9 +148,37 @@ def model_rating_output() -> dict:
                 "source_type": "market data",
                 "source_date": "2026-05-23",
                 "source_url": "https://www.nasdaq.com/market-activity/stocks/nvda",
+                "as_of_datetime": "2026-05-23T00:15:00Z",
+                "fetched_at": "2026-05-24T00:00:00Z",
             }
         ],
         "disclaimer": "non-personalized model output, not investment advice.",
+    }
+
+
+def model_confidence_output() -> dict:
+    return {
+        "ticker": "NVDA",
+        "model_confidence": "A",
+        "confidence_label": "high data quality, low uncertainty",
+        "confidence_score": 100,
+        "reasons": ["Validated inputs, source freshness, research gaps, and assumptions meet model quality rules."],
+        "warnings": [],
+        "rules_version": "0.1.0",
+        "source_references": [
+            {
+                "metric_id": "nvda_current_market_price_2026_05_23",
+                "metric_name": "Current market price",
+                "metric_category": "market_price",
+                "period": "Latest trade timestamp 2026-05-23 00:15 UTC",
+                "source_type": "market data",
+                "source_date": "2026-05-23",
+                "source_url": "https://www.nasdaq.com/market-activity/stocks/nvda",
+                "as_of_datetime": "2026-05-23T00:15:00Z",
+                "fetched_at": "2026-05-24T00:00:00Z",
+            }
+        ],
+        "disclaimer": "non-personalized model quality output, not investment advice.",
     }
 
 
@@ -300,6 +330,31 @@ class GenerateReportTests(unittest.TestCase):
         self.assertIn("### Model Rating", report)
         self.assertIn("non-personalized model output, not investment advice", report)
         self.assertIn("fairly valued / neutral on model basis", report)
+        self.assertIn("as_of_datetime: 2026-05-23T00:15:00Z", report)
+        self.assertIn("fetched_at: 2026-05-24T00:00:00Z", report)
+        for term in ["price target", "buy", "sell", "hold", "recommendation"]:
+            self.assertNotIn(term, report.lower())
+
+        generate_report.assert_no_prohibited_language(report)
+
+    def test_report_includes_model_confidence_only_as_model_quality(self) -> None:
+        report = generate_report.render_report(
+            ticker="NVDA",
+            validation_status={"valid": True, "errors": []},
+            research_gaps=[],
+            ratio_outputs=[ratio_output()],
+            audit_log_reference="audit_log.jsonl:1",
+            dcf_output=dcf_output(),
+            model_confidence_output=model_confidence_output(),
+            warnings=[],
+            generated_at="2026-05-24T12:00:00Z",
+        )
+
+        self.assertIn("### Model Confidence", report)
+        self.assertIn("non-personalized model quality output, not investment advice", report)
+        self.assertIn("high data quality, low uncertainty", report)
+        self.assertIn("as_of_datetime: 2026-05-23T00:15:00Z", report)
+        self.assertIn("fetched_at: 2026-05-24T00:00:00Z", report)
         for term in ["price target", "buy", "sell", "hold", "recommendation"]:
             self.assertNotIn(term, report.lower())
 

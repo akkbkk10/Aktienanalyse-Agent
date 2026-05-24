@@ -35,6 +35,9 @@ def generate_report(
     dcf_output: dict[str, Any] | None = None,
     fair_value_per_share_output: dict[str, Any] | None = None,
     model_rating_output: dict[str, Any] | None = None,
+    model_rating_status: str = "not_requested",
+    model_rating_unavailable_reasons: list[str] | None = None,
+    model_confidence_output: dict[str, Any] | None = None,
     warnings: list[str] | None = None,
     reports_dir: Path = DEFAULT_REPORTS_DIR,
     generated_at: str | None = None,
@@ -50,6 +53,9 @@ def generate_report(
         dcf_output=dcf_output,
         fair_value_per_share_output=fair_value_per_share_output,
         model_rating_output=model_rating_output,
+        model_rating_status=model_rating_status,
+        model_rating_unavailable_reasons=model_rating_unavailable_reasons or [],
+        model_confidence_output=model_confidence_output,
         warnings=warnings or [],
         generated_at=timestamp,
     )
@@ -70,6 +76,9 @@ def render_report(
     dcf_output: dict[str, Any] | None,
     fair_value_per_share_output: dict[str, Any] | None = None,
     model_rating_output: dict[str, Any] | None = None,
+    model_rating_status: str = "not_requested",
+    model_rating_unavailable_reasons: list[str] | None = None,
+    model_confidence_output: dict[str, Any] | None = None,
     warnings: list[str] | None = None,
     generated_at: str = "",
 ) -> str:
@@ -109,6 +118,11 @@ def render_report(
 
     if model_rating_output:
         lines.extend(_model_rating_section_lines(model_rating_output))
+    elif model_rating_status == "unavailable":
+        lines.extend(_model_rating_unavailable_lines(model_rating_unavailable_reasons or []))
+
+    if model_confidence_output:
+        lines.extend(_model_confidence_section_lines(model_confidence_output))
 
     lines.extend(["", "## Missing Data", ""])
     if research_gaps:
@@ -297,7 +311,58 @@ def _model_rating_section_lines(model_rating_output: dict[str, Any]) -> list[str
             f"- {_metric_label(source)} ({source.get('period')}): "
             f"{source.get('source_type')} dated {source.get('source_date')} - {source.get('source_url')}"
         )
+        lines.append(f"  - as_of_datetime: {source.get('as_of_datetime')}")
+        lines.append(f"  - fetched_at: {source.get('fetched_at')}")
 
+    return lines
+
+
+def _model_rating_unavailable_lines(reasons: list[str]) -> list[str]:
+    lines = ["", "### Model Rating", "", "- Status: unavailable"]
+    if reasons:
+        for reason in reasons:
+            lines.append(f"- Reason: {reason}")
+    return lines
+
+
+def _model_confidence_section_lines(model_confidence_output: dict[str, Any]) -> list[str]:
+    lines = [
+        "",
+        "### Model Confidence",
+        "",
+        f"- Disclaimer: {model_confidence_output.get('disclaimer')}",
+        f"- Confidence: {model_confidence_output.get('model_confidence')}",
+        f"- Label: {model_confidence_output.get('confidence_label')}",
+        f"- Score: {model_confidence_output.get('confidence_score')}",
+        f"- Rules version: {model_confidence_output.get('rules_version')}",
+        "",
+        "#### Model Confidence Reasons",
+        "",
+    ]
+    for reason in model_confidence_output.get("reasons", []):
+        lines.append(f"- {reason}")
+
+    lines.extend(["", "#### Model Confidence Warnings", ""])
+    warnings = model_confidence_output.get("warnings", [])
+    if warnings:
+        for warning in warnings:
+            lines.append(f"- {warning}")
+    else:
+        lines.append("- No model confidence warnings provided.")
+
+    lines.extend(["", "#### Model Confidence Source References", ""])
+    source_references = model_confidence_output.get("source_references", [])
+    if source_references:
+        for source in source_references:
+            lines.append(
+                f"- {_metric_label(source)} ({source.get('period')}): "
+                f"{source.get('source_type')} dated {source.get('source_date')} - {source.get('source_url')}"
+            )
+            if source.get("metric_category") == "market_price":
+                lines.append(f"  - as_of_datetime: {source.get('as_of_datetime')}")
+                lines.append(f"  - fetched_at: {source.get('fetched_at')}")
+    else:
+        lines.append("- No model confidence source references provided.")
     return lines
 
 
@@ -316,6 +381,7 @@ def main() -> int:
     parser.add_argument("--dcf-output-json", type=Path)
     parser.add_argument("--fair-value-per-share-json", type=Path)
     parser.add_argument("--model-rating-json", type=Path)
+    parser.add_argument("--model-confidence-json", type=Path)
     parser.add_argument("--audit-log-reference", required=True)
     parser.add_argument("--warning", action="append", dest="warnings", default=[])
     parser.add_argument("--reports-dir", type=Path, default=DEFAULT_REPORTS_DIR)
@@ -331,6 +397,7 @@ def main() -> int:
             dcf_output=load_json(args.dcf_output_json) if args.dcf_output_json else None,
             fair_value_per_share_output=load_json(args.fair_value_per_share_json) if args.fair_value_per_share_json else None,
             model_rating_output=load_json(args.model_rating_json) if args.model_rating_json else None,
+            model_confidence_output=load_json(args.model_confidence_json) if args.model_confidence_json else None,
             warnings=args.warnings,
             reports_dir=args.reports_dir,
         )

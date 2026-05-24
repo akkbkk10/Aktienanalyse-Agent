@@ -1,0 +1,48 @@
+{
+  "rules_version": "0.1.0",
+  "score_floor": 0,
+  "score_ceiling": 100,
+  "deductions": {
+    "source_validation_failure": 40,
+    "high_priority_research_gap": 25,
+    "standard_research_gap": 10,
+    "stale_research_gap": 15,
+    "low_metric_confidence": 12,
+    "medium_metric_confidence": 4,
+    "missing_dcf_assumptions": 20,
+    "incomplete_dcf_assumptions": 15,
+    "stale_market_price_snapshot": 10,
+    "missing_market_price_snapshot": 10
+  },
+  "required_dcf_scenarios": ["bear", "base", "bull"],
+  "required_dcf_scenario_fields": [
+    "discount_rate",
+    "terminal_growth_rate",
+    "starting_free_cash_flow",
+    "forecast_years"
+  ],
+  "confidence_buckets": [
+    {
+      "model_confidence": "A",
+      "confidence_label": "high data quality, low uncertainty",
+      "minimum_score": 95
+    },
+    {
+      "model_confidence": "B",
+      "confidence_label": "solid data quality, normal uncertainty",
+      "minimum_score": 75,
+      "maximum_score": 94
+    },
+    {
+      "model_confidence": "C",
+      "confidence_label": "usable, but many assumptions or uncertainties",
+      "minimum_score": 55,
+      "maximum_score": 74
+    },
+    {
+      "model_confidence": "D",
+      "confidence_label": "too uncertain for clear model interpretation",
+      "maximum_score": 54
+    }
+  ]
+}
