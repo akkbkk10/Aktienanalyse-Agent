@@ -11,6 +11,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONTEXT_ROOT = REPO_ROOT / "data" / "companies"
 DEFAULT_RULES_PATH = REPO_ROOT / "config" / "model_rating_rules.json"
 DEFAULT_SOURCE_RULES_PATH = REPO_ROOT / "config" / "source_rules.json"
+DEFAULT_OUTPUT_SCHEMA_PATH = REPO_ROOT / "config" / "model_rating_output_schema.json"
 REQUIRED_MARKET_PRICE_SNAPSHOT_FIELDS = [
     "metric_id",
     "value",
@@ -96,7 +97,46 @@ def calculate_model_rating(
         "disclaimer": DISCLAIMER,
     }
     _assert_no_prohibited_language(result)
+    validate_model_rating_output(result)
     return result
+
+
+def validate_model_rating_output(
+    output: dict[str, Any],
+    schema: dict[str, Any] | None = None,
+) -> list[str]:
+    schema = schema or load_json(DEFAULT_OUTPUT_SCHEMA_PATH)
+    errors: list[str] = []
+
+    if not isinstance(output, dict):
+        raise ModelRatingError("Model rating output must be a JSON object.")
+
+    for field in schema.get("required_fields", []):
+        errors.extend(_validate_required_field(output, field, schema.get("field_types", {})))
+
+    assumptions = output.get("assumptions")
+    if isinstance(assumptions, dict):
+        for field in schema.get("assumption_required_fields", []):
+            errors.extend(
+                _validate_required_field(
+                    assumptions,
+                    field,
+                    schema.get("assumption_field_types", {}),
+                    prefix="assumptions.",
+                )
+            )
+
+    source_references = output.get("source_references")
+    if isinstance(source_references, list):
+        if not source_references:
+            errors.append("source_references must be a non-empty array.")
+        for index, source_reference in enumerate(source_references):
+            errors.extend(_validate_source_reference(index, source_reference, schema))
+
+    if errors:
+        raise ModelRatingError("; ".join(errors))
+
+    return []
 
 
 def _find_market_price_metric(context: dict[str, Any]) -> dict[str, Any]:
@@ -174,6 +214,73 @@ def _source_reference(metric: dict[str, Any]) -> dict[str, Any]:
         "last_verified": source_metadata.get("last_verified"),
         "confidence": source_metadata.get("confidence"),
     }
+
+
+def _validate_source_reference(index: int, source_reference: Any, schema: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+
+    if not isinstance(source_reference, dict):
+        return [f"source_references item {index} must be an object."]
+
+    for field in schema.get("source_reference_required_fields", []):
+        errors.extend(
+            _validate_required_field(
+                source_reference,
+                field,
+                schema.get("source_reference_field_types", {}),
+                prefix=f"source_references item {index} ",
+            )
+        )
+
+    return errors
+
+
+def _validate_required_field(
+    payload: dict[str, Any],
+    field: str,
+    field_types: dict[str, str],
+    prefix: str = "",
+) -> list[str]:
+    if field not in payload or payload[field] in (None, ""):
+        return [f"{prefix}missing required field: {field}."]
+
+    expected_type = field_types.get(field)
+    if expected_type:
+        return _validate_contract_type(f"{prefix}{field}", payload[field], expected_type)
+
+    return []
+
+
+def _validate_contract_type(field: str, value: Any, expected_type: str) -> list[str]:
+    errors: list[str] = []
+
+    if expected_type == "string" and not isinstance(value, str):
+        errors.append(f"{field} must be a string.")
+    elif expected_type == "boolean" and not isinstance(value, bool):
+        errors.append(f"{field} must be a boolean.")
+    elif expected_type == "array" and not isinstance(value, list):
+        errors.append(f"{field} must be an array.")
+    elif expected_type == "object" and not isinstance(value, dict):
+        errors.append(f"{field} must be an object.")
+    elif expected_type == "number" and not _is_number(value):
+        errors.append(f"{field} must be a number.")
+    elif expected_type == "integer" and (not isinstance(value, int) or isinstance(value, bool)):
+        errors.append(f"{field} must be an integer.")
+    elif expected_type == "date":
+        if not isinstance(value, str):
+            errors.append(f"{field} must be a date string.")
+        else:
+            try:
+                date.fromisoformat(value)
+            except ValueError:
+                errors.append(f"{field} must use ISO date format YYYY-MM-DD.")
+    elif expected_type == "datetime":
+        if not isinstance(value, str):
+            errors.append(f"{field} must be a datetime string.")
+        elif _parse_iso_datetime(value) is None:
+            errors.append(f"{field} must use ISO datetime format.")
+
+    return errors
 
 
 def _assert_no_prohibited_language(result: dict[str, Any]) -> None:

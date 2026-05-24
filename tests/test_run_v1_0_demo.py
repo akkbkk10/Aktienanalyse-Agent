@@ -26,6 +26,12 @@ fair_value_per_share = importlib.util.module_from_spec(fair_value_spec)
 assert fair_value_spec.loader is not None
 fair_value_spec.loader.exec_module(fair_value_per_share)
 
+MODEL_RATING_PATH = REPO_ROOT / "scripts" / "model_rating.py"
+model_rating_spec = importlib.util.spec_from_file_location("model_rating", MODEL_RATING_PATH)
+model_rating = importlib.util.module_from_spec(model_rating_spec)
+assert model_rating_spec.loader is not None
+model_rating_spec.loader.exec_module(model_rating)
+
 
 class RunV10DemoTests(unittest.TestCase):
     def test_demo_runs_supported_sample_tickers(self) -> None:
@@ -125,6 +131,19 @@ class RunV10DemoTests(unittest.TestCase):
                     )
 
                     self.assertEqual(fair_value_per_share.validate_fair_value_per_share_output(fair_value_output), [])
+
+    def test_demo_model_rating_outputs_satisfy_contract(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            result = run_v1_0_demo.run_demo(reports_dir=Path(temp_dir) / "reports")
+            output_paths = result["generated_file_paths"]["output_paths_by_ticker"]
+
+            for ticker in ["NVDA", "AMD", "TSMC"]:
+                with self.subTest(ticker=ticker):
+                    rating_output = json.loads(
+                        Path(output_paths[ticker]["model_rating_output_path"]).read_text(encoding="utf-8")
+                    )
+
+                    self.assertEqual(model_rating.validate_model_rating_output(rating_output), [])
 
     def test_demo_points_to_manual_review_checklist(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
