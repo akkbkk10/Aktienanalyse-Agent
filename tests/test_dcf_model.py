@@ -137,6 +137,78 @@ class DCFModelTests(unittest.TestCase):
             self.assertEqual(result["source_references"][0]["metric_id"], "nvda_free_cash_flow_fy2025")
             self.assertEqual(result["scenarios"]["base"]["starting_free_cash_flow_metric_id"], "nvda_free_cash_flow_fy2025")
 
+    def test_calculated_dcf_output_satisfies_contract(self) -> None:
+        with dcf_workspace() as paths:
+            result = dcf_model.run_dcf(
+                ticker="NVDA",
+                assumptions_path=paths["assumptions"],
+                source_data_path=paths["source_data"],
+                context_root=paths["context_root"],
+                readiness_result=ready_result(),
+            )
+
+            self.assertEqual(dcf_model.validate_dcf_output(result), [])
+
+    def test_blocked_dcf_output_satisfies_contract(self) -> None:
+        with dcf_workspace() as paths:
+            result = dcf_model.run_dcf(
+                ticker="NVDA",
+                assumptions_path=paths["assumptions"],
+                source_data_path=paths["source_data"],
+                context_root=paths["context_root"],
+                readiness_result={
+                    "ticker": "NVDA",
+                    "ready_for_valuation": False,
+                    "blocking_reasons": ["Required ratios are unavailable."],
+                    "warnings": [],
+                    "required_next_actions": ["Calculate required ratios."],
+                },
+            )
+
+            self.assertEqual(dcf_model.validate_dcf_output(result), [])
+
+    def test_dcf_output_missing_required_field_fails_contract_validation(self) -> None:
+        with dcf_workspace() as paths:
+            result = dcf_model.run_dcf(
+                ticker="NVDA",
+                assumptions_path=paths["assumptions"],
+                source_data_path=paths["source_data"],
+                context_root=paths["context_root"],
+                readiness_result=ready_result(),
+            )
+            del result["warnings"]
+
+            with self.assertRaises(dcf_model.DCFValidationError):
+                dcf_model.validate_dcf_output(result)
+
+    def test_dcf_output_invalid_numeric_field_fails_contract_validation(self) -> None:
+        with dcf_workspace() as paths:
+            result = dcf_model.run_dcf(
+                ticker="NVDA",
+                assumptions_path=paths["assumptions"],
+                source_data_path=paths["source_data"],
+                context_root=paths["context_root"],
+                readiness_result=ready_result(),
+            )
+            result["scenarios"]["base"]["dcf_value"] = "not-a-number"
+
+            with self.assertRaises(dcf_model.DCFValidationError):
+                dcf_model.validate_dcf_output(result)
+
+    def test_dcf_output_missing_source_reference_metadata_fails_contract_validation(self) -> None:
+        with dcf_workspace() as paths:
+            result = dcf_model.run_dcf(
+                ticker="NVDA",
+                assumptions_path=paths["assumptions"],
+                source_data_path=paths["source_data"],
+                context_root=paths["context_root"],
+                readiness_result=ready_result(),
+            )
+            del result["source_references"][0]["source_url"]
+
+            with self.assertRaises(dcf_model.DCFValidationError):
+                dcf_model.validate_dcf_output(result)
+
 
 def ready_result() -> dict:
     return {

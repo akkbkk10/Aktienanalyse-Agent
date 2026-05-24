@@ -16,6 +16,7 @@ import check_valuation_readiness
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_SCHEMA_PATH = REPO_ROOT / "config" / "dcf_assumptions_schema.json"
+DEFAULT_DCF_OUTPUT_SCHEMA_PATH = REPO_ROOT / "config" / "dcf_output_schema.json"
 DEFAULT_CONTEXT_ROOT = REPO_ROOT / "data" / "companies"
 DEFAULT_SOURCE_DATA_PATH = REPO_ROOT / "data" / "nvda_sample_metrics.json"
 PROHIBITED_OUTPUT_TERMS = [
@@ -60,7 +61,7 @@ def run_dcf(
         audit_log_path=readiness_audit_log_path,
     )
     if not readiness.get("ready_for_valuation"):
-        return {
+        result = {
             "ticker": normalized_ticker,
             "calculated": False,
             "blocking_reasons": ["Valuation readiness gate did not pass."],
@@ -68,6 +69,8 @@ def run_dcf(
             "warnings": [],
             "scenarios": {},
         }
+        validate_dcf_output(result)
+        return result
 
     assumptions = load_json(assumptions_path)
     schema = load_json(schema_path)
@@ -92,7 +95,33 @@ def run_dcf(
         "scenarios": scenarios,
     }
     _assert_no_prohibited_language(result)
+    validate_dcf_output(result)
     return result
+
+
+def validate_dcf_output(
+    output: dict[str, Any],
+    schema: dict[str, Any] | None = None,
+) -> list[str]:
+    schema = schema or load_json(DEFAULT_DCF_OUTPUT_SCHEMA_PATH)
+    errors: list[str] = []
+
+    if not isinstance(output, dict):
+        raise DCFValidationError("DCF output must be a JSON object.")
+
+    for field in schema.get("required_fields", []):
+        errors.extend(_validate_required_field(output, field, schema.get("field_types", {})))
+
+    calculated = output.get("calculated")
+    if calculated is True:
+        errors.extend(_validate_calculated_dcf_output(output, schema))
+    elif calculated is False:
+        errors.extend(_validate_blocked_dcf_output(output, schema))
+
+    if errors:
+        raise DCFValidationError("; ".join(errors))
+
+    return []
 
 
 def validate_assumptions(
@@ -125,6 +154,126 @@ def validate_assumptions(
         errors.extend(_validate_scenario(str(scenario_name), scenario, schema))
 
     errors.extend(_validate_source_references(assumptions.get("source_references"), schema))
+    return errors
+
+
+def _validate_calculated_dcf_output(output: dict[str, Any], schema: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+
+    for field in schema.get("calculated_required_fields", []):
+        errors.extend(_validate_required_field(output, field, schema.get("calculated_field_types", {})))
+
+    source_references = output.get("source_references")
+    if isinstance(source_references, list):
+        if not source_references:
+            errors.append("source_references must be a non-empty array.")
+        for index, source_reference in enumerate(source_references):
+            if not isinstance(source_reference, dict):
+                errors.append(f"source_references item {index} must be an object.")
+                continue
+            for field in schema.get("source_reference_required_fields", []):
+                errors.extend(
+                    _validate_required_field(
+                        source_reference,
+                        field,
+                        schema.get("source_reference_field_types", {}),
+                        prefix=f"source_references item {index} ",
+                    )
+                )
+
+    scenarios = output.get("scenarios")
+    if isinstance(scenarios, dict):
+        if not scenarios:
+            errors.append("scenarios must be a non-empty object for calculated DCF output.")
+        for scenario_name, scenario in scenarios.items():
+            if not isinstance(scenario, dict):
+                errors.append(f"Scenario {scenario_name} must be an object.")
+                continue
+            for field in schema.get("scenario_required_fields", []):
+                errors.extend(
+                    _validate_required_field(
+                        scenario,
+                        field,
+                        schema.get("scenario_field_types", {}),
+                        prefix=f"Scenario {scenario_name} ",
+                    )
+                )
+            discounted_cash_flows = scenario.get("discounted_cash_flows")
+            if isinstance(discounted_cash_flows, list):
+                if not discounted_cash_flows:
+                    errors.append(f"Scenario {scenario_name} discounted_cash_flows must be a non-empty array.")
+                for index, cash_flow in enumerate(discounted_cash_flows):
+                    if not isinstance(cash_flow, dict):
+                        errors.append(f"Scenario {scenario_name} discounted_cash_flows item {index} must be an object.")
+                        continue
+                    for field in schema.get("discounted_cash_flow_required_fields", []):
+                        errors.extend(
+                            _validate_required_field(
+                                cash_flow,
+                                field,
+                                schema.get("discounted_cash_flow_field_types", {}),
+                                prefix=f"Scenario {scenario_name} discounted_cash_flows item {index} ",
+                            )
+                        )
+
+    return errors
+
+
+def _validate_blocked_dcf_output(output: dict[str, Any], schema: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+
+    for field in schema.get("blocked_required_fields", []):
+        errors.extend(_validate_required_field(output, field, schema.get("blocked_field_types", {})))
+
+    scenarios = output.get("scenarios")
+    if isinstance(scenarios, dict) and scenarios:
+        errors.append("scenarios must be empty when DCF output is not calculated.")
+
+    return errors
+
+
+def _validate_required_field(
+    payload: dict[str, Any],
+    field: str,
+    field_types: dict[str, str],
+    prefix: str = "",
+) -> list[str]:
+    if field not in payload or payload[field] in (None, ""):
+        return [f"{prefix}missing required field: {field}."]
+
+    expected_type = field_types.get(field)
+    if expected_type:
+        return _validate_contract_type(f"{prefix}{field}", payload[field], expected_type)
+
+    return []
+
+
+def _validate_contract_type(field: str, value: Any, expected_type: str) -> list[str]:
+    errors: list[str] = []
+
+    if expected_type == "string" and not isinstance(value, str):
+        errors.append(f"{field} must be a string.")
+    elif expected_type == "boolean" and not isinstance(value, bool):
+        errors.append(f"{field} must be a boolean.")
+    elif expected_type == "array" and not isinstance(value, list):
+        errors.append(f"{field} must be an array.")
+    elif expected_type == "object" and not isinstance(value, dict):
+        errors.append(f"{field} must be an object.")
+    elif expected_type == "number" and not _is_number(value):
+        errors.append(f"{field} must be a number.")
+    elif expected_type == "integer" and (not isinstance(value, int) or isinstance(value, bool)):
+        errors.append(f"{field} must be an integer.")
+    elif expected_type == "date":
+        if not isinstance(value, str):
+            errors.append(f"{field} must be a date string.")
+        else:
+            from datetime import date
+
+            try:
+                date.fromisoformat(value)
+            except ValueError:
+                errors.append(f"{field} must use ISO date format YYYY-MM-DD.")
+
     return errors
 
 
