@@ -38,6 +38,7 @@ def generate_report(
     model_rating_status: str = "not_requested",
     model_rating_unavailable_reasons: list[str] | None = None,
     model_confidence_output: dict[str, Any] | None = None,
+    model_signal_output: dict[str, Any] | None = None,
     warnings: list[str] | None = None,
     reports_dir: Path = DEFAULT_REPORTS_DIR,
     generated_at: str | None = None,
@@ -56,6 +57,7 @@ def generate_report(
         model_rating_status=model_rating_status,
         model_rating_unavailable_reasons=model_rating_unavailable_reasons or [],
         model_confidence_output=model_confidence_output,
+        model_signal_output=model_signal_output,
         warnings=warnings or [],
         generated_at=timestamp,
     )
@@ -79,6 +81,7 @@ def render_report(
     model_rating_status: str = "not_requested",
     model_rating_unavailable_reasons: list[str] | None = None,
     model_confidence_output: dict[str, Any] | None = None,
+    model_signal_output: dict[str, Any] | None = None,
     warnings: list[str] | None = None,
     generated_at: str = "",
 ) -> str:
@@ -123,6 +126,9 @@ def render_report(
 
     if model_confidence_output:
         lines.extend(_model_confidence_section_lines(model_confidence_output))
+
+    if model_signal_output:
+        lines.extend(_model_signal_section_lines(model_signal_output))
 
     lines.extend(["", "## Missing Data", ""])
     if research_gaps:
@@ -366,6 +372,52 @@ def _model_confidence_section_lines(model_confidence_output: dict[str, Any]) -> 
     return lines
 
 
+def _model_signal_section_lines(model_signal_output: dict[str, Any]) -> list[str]:
+    lines = [
+        "",
+        "### Model Signal",
+        "",
+        f"- Disclaimer: {model_signal_output.get('disclaimer')}",
+        f"- Signal: {model_signal_output.get('model_signal')}",
+        f"- Rules version: {model_signal_output.get('rules_version')}",
+        "",
+        "#### Model Signal Reasons",
+        "",
+    ]
+    for reason in model_signal_output.get("reasons", []):
+        lines.append(f"- {reason}")
+
+    lines.extend(["", "#### Model Signal Blocking Reasons", ""])
+    blocking_reasons = model_signal_output.get("blocking_reasons", [])
+    if blocking_reasons:
+        for reason in blocking_reasons:
+            lines.append(f"- {reason}")
+    else:
+        lines.append("- No blocking reasons provided.")
+
+    lines.extend(["", "#### Model Signal Inputs", ""])
+    rating_used = model_signal_output.get("model_rating_used")
+    confidence_used = model_signal_output.get("model_confidence_used")
+    if isinstance(rating_used, dict):
+        lines.append(f"- Model rating used: {rating_used.get('model_rating')}")
+        lines.append(f"- Model gap percent used: {rating_used.get('valuation_gap_percent')}")
+    else:
+        lines.append("- Model rating used: unavailable")
+    if isinstance(confidence_used, dict):
+        lines.append(f"- Model confidence used: {confidence_used.get('model_confidence')}")
+    else:
+        lines.append("- Model confidence used: unavailable")
+
+    lines.extend(["", "#### Model Signal Warnings", ""])
+    warnings = model_signal_output.get("warnings", [])
+    if warnings:
+        for warning in warnings:
+            lines.append(f"- {warning}")
+    else:
+        lines.append("- No model signal warnings provided.")
+    return lines
+
+
 def _metric_label(source: dict[str, Any]) -> str:
     metric_name = source.get("metric_name")
     metric_id = source.get("metric_id")
@@ -382,6 +434,7 @@ def main() -> int:
     parser.add_argument("--fair-value-per-share-json", type=Path)
     parser.add_argument("--model-rating-json", type=Path)
     parser.add_argument("--model-confidence-json", type=Path)
+    parser.add_argument("--model-signal-json", type=Path)
     parser.add_argument("--audit-log-reference", required=True)
     parser.add_argument("--warning", action="append", dest="warnings", default=[])
     parser.add_argument("--reports-dir", type=Path, default=DEFAULT_REPORTS_DIR)
@@ -398,6 +451,7 @@ def main() -> int:
             fair_value_per_share_output=load_json(args.fair_value_per_share_json) if args.fair_value_per_share_json else None,
             model_rating_output=load_json(args.model_rating_json) if args.model_rating_json else None,
             model_confidence_output=load_json(args.model_confidence_json) if args.model_confidence_json else None,
+            model_signal_output=load_json(args.model_signal_json) if args.model_signal_json else None,
             warnings=args.warnings,
             reports_dir=args.reports_dir,
         )

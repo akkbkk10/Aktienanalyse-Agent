@@ -155,6 +155,30 @@ def model_confidence_output() -> dict:
     }
 
 
+def model_signal_output() -> dict:
+    return {
+        "ticker": "NVDA",
+        "model_signal": "model_positive",
+        "reasons": ["Model rating, model confidence, model gap, research gaps, and market price freshness meet positive rules."],
+        "blocking_reasons": [],
+        "model_rating_used": {
+            "model_rating": 4,
+            "rating_label": "undervalued on model basis",
+            "valuation_gap_percent": 25.0,
+            "rules_version": "0.1.0",
+        },
+        "model_confidence_used": {
+            "model_confidence": "A",
+            "confidence_label": "high data quality, low uncertainty",
+            "confidence_score": 100,
+            "rules_version": "0.1.0",
+        },
+        "rules_version": "0.1.0",
+        "warnings": [],
+        "disclaimer": "non-personalized model output, not investment advice.",
+    }
+
+
 class GenerateAnalysisSummaryTests(unittest.TestCase):
     def test_summary_creation(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -283,6 +307,23 @@ class GenerateAnalysisSummaryTests(unittest.TestCase):
             summary["facts"]["model_confidence_source_references"][0]["fetched_at"],
             "2026-05-24T00:00:00Z",
         )
+        generate_analysis_summary.assert_no_prohibited_language(summary)
+
+    def test_model_signal_included_only_as_model_output(self) -> None:
+        summary = generate_analysis_summary.build_analysis_summary(
+            ticker="NVDA",
+            validation_status={"valid": True, "errors": []},
+            research_gaps=[],
+            ratio_outputs=[ratio_output()],
+            audit_log_reference="audit_log.jsonl:1",
+            dcf_output=dcf_output(),
+            model_signal_output=model_signal_output(),
+            generated_at="2026-05-24T12:00:00Z",
+        )
+
+        self.assertTrue(summary["assumptions"]["model_signal_available"])
+        self.assertEqual(summary["missing_data"]["model_signal_status"], "included")
+        self.assertEqual(summary["calculated_outputs"]["model_signal"]["model_signal"], "model_positive")
         generate_analysis_summary.assert_no_prohibited_language(summary)
 
     def test_no_buy_sell_hold_recommendation_language(self) -> None:

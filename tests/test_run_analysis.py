@@ -42,6 +42,7 @@ class RunAnalysisTests(unittest.TestCase):
             self.assertIsNone(result["fair_value_per_share_output_path"])
             self.assertIsNone(result["model_rating_output_path"])
             self.assertIsNotNone(result["model_confidence_output_path"])
+            self.assertIsNotNone(result["model_signal_output_path"])
             self.assertEqual(result["dcf_warnings"], [])
             self.assertEqual(result["warnings"], [])
 
@@ -333,6 +334,27 @@ class RunAnalysisTests(unittest.TestCase):
             self.assertIn(output["model_confidence"], {"A", "B", "C", "D"})
             self.assertEqual(output["disclaimer"], "non-personalized model quality output, not investment advice.")
 
+    def test_model_signal_output_file_created(self) -> None:
+        with temp_analysis_workspace() as paths:
+            result = run_analysis.run_analysis(
+                ticker="NVDA",
+                source_data_path=paths["source_data"],
+                context_root=paths["context_root"],
+                markdown_queue_path=paths["markdown_queue"],
+                json_queue_path=paths["json_queue"],
+                audit_log_path=paths["audit_log"],
+                reports_dir=paths["reports_dir"],
+                run_dcf=True,
+                dcf_assumptions_path=paths["dcf_assumptions"],
+            )
+
+            output_path = Path(result["model_signal_output_path"])
+            output = json.loads(output_path.read_text(encoding="utf-8"))
+
+            self.assertTrue(output_path.exists())
+            self.assertIn(output["model_signal"], {"model_positive", "model_neutral", "model_negative", "unavailable"})
+            self.assertEqual(output["disclaimer"], "non-personalized model output, not investment advice.")
+
     def test_fair_value_per_share_output_file_created(self) -> None:
         with temp_analysis_workspace() as paths:
             result = run_analysis.run_analysis(
@@ -406,6 +428,7 @@ class RunAnalysisTests(unittest.TestCase):
             self.assertIsNone(result["model_rating_output_path"])
             self.assertTrue(result["model_rating_unavailable_reasons"])
             self.assertTrue(Path(result["model_confidence_output_path"]).exists())
+            self.assertTrue(Path(result["model_signal_output_path"]).exists())
             self.assertTrue(Path(result["report_path"]).exists())
             self.assertTrue(Path(result["analysis_summary_path"]).exists())
 
@@ -413,6 +436,8 @@ class RunAnalysisTests(unittest.TestCase):
             self.assertEqual(summary["missing_data"]["model_rating_status"], "unavailable")
             self.assertTrue(summary["missing_data"]["model_rating_unavailable_reasons"])
             self.assertEqual(summary["missing_data"]["model_confidence_status"], "included")
+            self.assertEqual(summary["missing_data"]["model_signal_status"], "included")
+            self.assertEqual(summary["calculated_outputs"]["model_signal"]["model_signal"], "unavailable")
 
     def test_dcf_output_has_no_price_target_or_recommendation_language(self) -> None:
         with temp_analysis_workspace() as paths:
@@ -509,6 +534,7 @@ class RunAnalysisTests(unittest.TestCase):
             self.assertIn("### Fair Value Per Share Model Calculation", report)
             self.assertIn("### Model Rating", report)
             self.assertIn("### Model Confidence", report)
+            self.assertIn("### Model Signal", report)
             self.assertIn("#### Assumptions Used", report)
             self.assertIn("#### DCF Warnings", report)
             self.assertIn("calculation output only, not investment advice", report)

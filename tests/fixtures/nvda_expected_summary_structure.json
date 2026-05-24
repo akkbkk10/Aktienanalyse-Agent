@@ -15,6 +15,7 @@
     "model_rating_status",
     "model_rating_unavailable_reasons",
     "model_confidence_output_path",
+    "model_signal_output_path",
     "dcf_warnings",
     "warnings"
   ],

@@ -1,0 +1,28 @@
+{
+  "rules_version": "0.1.0",
+  "allowed_signals": [
+    "model_positive",
+    "model_neutral",
+    "model_negative",
+    "unavailable"
+  ],
+  "positive": {
+    "minimum_model_rating": 4,
+    "allowed_confidence": ["A", "B"],
+    "minimum_valuation_gap_percent": 15.0
+  },
+  "negative": {
+    "maximum_model_rating": 2,
+    "allowed_confidence": ["A", "B", "C"],
+    "maximum_valuation_gap_percent": -15.0
+  },
+  "unavailable": {
+    "confidence_values": ["D"],
+    "high_priority_gap_types": [
+      "missing_context",
+      "missing_metric",
+      "missing_source_metadata",
+      "stale_metric"
+    ]
+  }
+}
