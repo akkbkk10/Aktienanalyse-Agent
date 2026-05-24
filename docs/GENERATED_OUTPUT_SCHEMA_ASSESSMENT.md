@@ -108,27 +108,43 @@ This covers fair value per share output only. It does not add schemas for model
 rating, model confidence, model signal, audit log, analysis summary, or fact
 report artifacts.
 
+## Model Rating Schema Hardening Status
+
+The model rating output recommendation has been partially implemented:
+
+- `config/model_rating_output_schema.json` defines the standalone model rating
+  output contract.
+- `scripts/model_rating.py` validates generated model rating outputs against
+  the contract.
+- Model rating tests cover valid output, missing required fields, invalid field
+  types, source-reference preservation, and prohibited-language boundaries.
+- v1.0 demo tests validate generated NVDA, AMD, and TSMC model rating output
+  artifacts against the contract.
+
+This covers model rating output only. It does not add schemas for model
+confidence, model signal, audit log, analysis summary, or fact report artifacts.
+
 ## Recommended Next Implementation PR
 
 Recommend exactly one next implementation target:
 
-**Model rating output schema/contract assessment.**
+**Model confidence output schema assessment.**
 
 Small safe scope for the future implementation PR:
 
-- Review the current model rating JSON artifact now that DCF output and fair
-  value per share output have contract protection.
+- Review the current model confidence JSON artifact now that DCF output, fair
+  value per share output, and model rating output have contract protection.
 - Keep the first pass assessment-only unless a concrete missing guardrail is
   found.
-- Do not change model rating behavior, fair value calculations, DCF math,
-  report wording, CLI behavior, or CI.
+- Do not change model confidence behavior, assumption-quality rules, model
+  rating behavior, fair value calculations, DCF math, report wording, CLI
+  behavior, or CI.
 
 Why this should be next:
 
-- Model rating is the next direct consumer of fair value per share output and
-  validated market price snapshots.
-- It is narrower than model confidence, model signal, or full analysis summary
-  hardening.
+- Model confidence is the next upstream input to model signal after model
+  rating.
+- It is narrower than model signal or full analysis summary hardening.
 - Assessment-first keeps the project from broadening into every generated JSON
   artifact at once.
 
@@ -139,7 +155,7 @@ Do not harden these in the next implementation PR:
 - all generated JSON outputs at once
 - analysis summary schema
 - fact report Markdown schema
-- model rating, confidence, or signal schemas
+- model confidence or signal schemas
 - audit log schema unless a concrete JSONL consumer needs it
 - generated artifact manifest
 

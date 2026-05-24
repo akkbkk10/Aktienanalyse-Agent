@@ -126,6 +126,56 @@ class ModelRatingTests(unittest.TestCase):
         serialized = json.dumps(result).lower().replace("not investment advice", "")
         self.assertNotIn("investment advice", serialized)
 
+    def test_valid_model_rating_output_satisfies_contract(self) -> None:
+        with temp_context([market_price_metric()]) as context_root:
+            result = calculate_model_rating_for_test(context_root, 100)
+
+        self.assertEqual(model_rating.validate_model_rating_output(result), [])
+
+    def test_missing_required_model_rating_output_field_fails_contract(self) -> None:
+        with temp_context([market_price_metric()]) as context_root:
+            result = calculate_model_rating_for_test(context_root, 100)
+        del result["rules_version"]
+
+        with self.assertRaisesRegex(model_rating.ModelRatingError, "missing required field: rules_version"):
+            model_rating.validate_model_rating_output(result)
+
+    def test_invalid_model_rating_output_type_fails_contract(self) -> None:
+        with temp_context([market_price_metric()]) as context_root:
+            result = calculate_model_rating_for_test(context_root, 100)
+        result["model_rating"] = "3"
+
+        with self.assertRaisesRegex(model_rating.ModelRatingError, "model_rating must be an integer"):
+            model_rating.validate_model_rating_output(result)
+
+    def test_model_rating_source_references_satisfy_contract(self) -> None:
+        with temp_context([market_price_metric()]) as context_root:
+            result = calculate_model_rating_for_test(context_root, 100)
+
+        reference = result["source_references"][0]
+        for field in [
+            "metric_id",
+            "metric_name",
+            "metric_category",
+            "period",
+            "unit",
+            "currency",
+            "exchange",
+            "price_type",
+            "as_of_datetime",
+            "fetched_at",
+            "provider",
+            "retrieval_method",
+            "source_url",
+            "source_type",
+            "source_date",
+            "last_verified",
+            "confidence",
+        ]:
+            self.assertIn(field, reference)
+
+        self.assertEqual(model_rating.validate_model_rating_output(result), [])
+
     def assert_rating(self, fair_value: float, expected_rating: int, expected_label: str) -> None:
         with temp_context([market_price_metric()]) as context_root:
             result = calculate_model_rating_for_test(context_root, fair_value)
