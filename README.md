@@ -46,6 +46,19 @@ python scripts/run_v0_1_demo.py
 
 The demo runs validation, company context build/load, research gap detection, ratio calculation, valuation readiness, DCF, fact-only report generation, analysis summary generation, and audit logging. It prints generated file paths and writes runtime artifacts under `reports/v0_1_demo/`, which is ignored by git.
 
+## Run v1.0 Release-Candidate Demo
+
+Run the full v1.0 sample-company workflow for NVDA, AMD, and TSMC with one command:
+
+```powershell
+python scripts/run_v1_0_demo.py
+```
+
+The demo generates reports, summaries, DCF outputs, fair value per share outputs,
+model ratings, model confidence outputs, model signals, and an audit log under
+`reports/v1_0_demo/`, which is ignored by git. Use
+`docs/V1_0_TEST_PLAN.md` for the manual review checklist.
+
 ## v0.2 Batch Workflow
 
 Run the deterministic workflow for one or more tickers:
@@ -64,7 +77,7 @@ python scripts/run_batch_analysis.py NVDA AMD TSMC --generate-report --generate-
 
 NVDA, AMD, and TSMC are currently the fully working sample tickers. Other tickers fail cleanly unless their source data and assumptions are added.
 
-Sample data and any future live data ingestion must remain separate. Batch runs process each ticker independently, and a missing or invalid ticker must not block successful NVDA or AMD runs. Generated model outputs are analysis artifacts only and are not personal investment advice.
+Sample data and any future live data ingestion must remain separate. Batch runs process each ticker independently, and a missing or invalid ticker must not block successful NVDA, AMD, or TSMC runs. Generated model outputs are analysis artifacts only and are not personal investment advice.
 
 ## How To Add A New Company
 
