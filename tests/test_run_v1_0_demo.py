@@ -57,10 +57,11 @@ class RunV10DemoTests(unittest.TestCase):
                 self.assertTrue(fair_value["calculated"])
                 self.assertIn(model_rating["model_rating"], [1, 2, 3, 4, 5])
                 self.assertIn(model_confidence["model_confidence"], ["A", "B", "C", "D"])
-                self.assertIn(
-                    model_signal["model_signal"],
-                    ["model_positive", "model_neutral", "model_negative", "unavailable"],
-                )
+                self.assertNotEqual(model_confidence["model_confidence"], "A")
+                self.assertEqual(model_confidence["assumption_quality"]["status"], "manual_review_required")
+                self.assertTrue(model_confidence["warnings"])
+                self.assertEqual(model_signal["model_signal"], "unavailable")
+                self.assertTrue(model_signal["blocking_reasons"])
 
     def test_demo_points_to_manual_review_checklist(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

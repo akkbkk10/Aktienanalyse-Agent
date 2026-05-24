@@ -60,6 +60,11 @@ def calculate_model_signal(
     if model_confidence in rules.get("unavailable", {}).get("confidence_values", []):
         blocking_reasons.append("Model confidence is D.")
 
+    assumption_quality_reason = _assumption_quality_blocking_reason(model_confidence_output)
+    if assumption_quality_reason:
+        blocking_reasons.append(assumption_quality_reason)
+        warnings.append("Assumption quality blocks active model output until reviewed assumptions are provided.")
+
     high_priority_gaps = _high_priority_gaps(research_gaps, rules)
     if high_priority_gaps:
         blocking_reasons.append(f"{len(high_priority_gaps)} high-priority research gap(s) remain open.")
@@ -177,8 +182,23 @@ def _model_confidence_used(model_confidence_output: dict[str, Any] | None) -> di
         "model_confidence": model_confidence_output.get("model_confidence"),
         "confidence_label": model_confidence_output.get("confidence_label"),
         "confidence_score": model_confidence_output.get("confidence_score"),
+        "assumption_quality": model_confidence_output.get("assumption_quality"),
         "rules_version": model_confidence_output.get("rules_version"),
     }
+
+
+def _assumption_quality_blocking_reason(model_confidence_output: dict[str, Any] | None) -> str | None:
+    if not isinstance(model_confidence_output, dict):
+        return None
+    assumption_quality = model_confidence_output.get("assumption_quality")
+    if not isinstance(assumption_quality, dict):
+        return None
+    if assumption_quality.get("active_signal_allowed", True):
+        return None
+    blocking_reasons = assumption_quality.get("blocking_reasons")
+    if isinstance(blocking_reasons, list) and blocking_reasons:
+        return f"Assumption quality gate did not pass: {blocking_reasons[0]}"
+    return "Assumption quality gate did not pass."
 
 
 def _validate_allowed_signal(result: dict[str, Any], rules: dict[str, Any]) -> None:

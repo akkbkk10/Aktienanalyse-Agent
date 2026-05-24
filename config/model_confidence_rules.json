@@ -11,8 +11,20 @@
     "medium_metric_confidence": 4,
     "missing_dcf_assumptions": 20,
     "incomplete_dcf_assumptions": 15,
+    "manual_review_dcf_assumptions": 25,
     "stale_market_price_snapshot": 10,
     "missing_market_price_snapshot": 10
+  },
+  "assumption_quality": {
+    "manual_review_keywords": [
+      "example",
+      "test",
+      "placeholder",
+      "manual review",
+      "reviewed before use"
+    ],
+    "manual_review_confidence_cap": 74,
+    "blocks_active_signal": true
   },
   "required_dcf_scenarios": ["bear", "base", "bull"],
   "required_dcf_scenario_fields": [

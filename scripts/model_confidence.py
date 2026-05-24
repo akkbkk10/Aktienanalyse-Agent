@@ -52,6 +52,7 @@ def calculate_model_confidence(
     score = int(rules.get("score_ceiling", 100))
     reasons: list[str] = []
     warnings: list[str] = []
+    assumption_quality = _default_assumption_quality()
 
     if not validation_status.get("valid"):
         score = _deduct(score, rules, "source_validation_failure")
@@ -59,12 +60,13 @@ def calculate_model_confidence(
 
     score = _apply_research_gap_deductions(score, rules, research_gaps, reasons)
     score = _apply_metric_confidence_deductions(score, rules, metrics, reasons)
-    score = _apply_dcf_assumption_deductions(
+    score, assumption_quality = _apply_dcf_assumption_deductions(
         score=score,
         rules=rules,
         assumptions_path=dcf_assumptions_path
         or Path(str(DEFAULT_DCF_ASSUMPTIONS_PATH_TEMPLATE).format(ticker=normalized_ticker)),
         reasons=reasons,
+        warnings=warnings,
     )
     score = _apply_market_price_deductions(
         score=score,
@@ -88,6 +90,7 @@ def calculate_model_confidence(
         "reasons": reasons,
         "warnings": warnings,
         "rules_version": rules["rules_version"],
+        "assumption_quality": assumption_quality,
         "source_references": _source_references(metrics),
         "disclaimer": DISCLAIMER,
     }
@@ -165,18 +168,76 @@ def _apply_dcf_assumption_deductions(
     rules: dict[str, Any],
     assumptions_path: Path,
     reasons: list[str],
-) -> int:
+    warnings: list[str],
+) -> tuple[int, dict[str, Any]]:
+    assumption_quality = _default_assumption_quality()
     try:
         assumptions = load_json(assumptions_path)
     except (OSError, json.JSONDecodeError):
-        reasons.append("DCF assumptions are missing or unreadable.")
-        return score - _deduction(rules, "missing_dcf_assumptions")
+        reasons.append("Assumption set is missing or unreadable.")
+        assumption_quality.update(
+            {
+                "status": "missing_or_unreadable",
+                "active_signal_allowed": False,
+                "blocking_reasons": ["Assumption set is missing or unreadable."],
+            }
+        )
+        return score - _deduction(rules, "missing_dcf_assumptions"), assumption_quality
 
     missing_items = _missing_dcf_assumption_items(assumptions, rules)
     if missing_items:
-        reasons.append(f"DCF assumptions are incomplete: {', '.join(missing_items)}.")
-        return score - _deduction(rules, "incomplete_dcf_assumptions")
-    return score
+        reasons.append(f"Assumption set is incomplete: {', '.join(missing_items)}.")
+        assumption_quality.update(
+            {
+                "status": "incomplete",
+                "active_signal_allowed": False,
+                "blocking_reasons": [f"Assumption set is incomplete: {', '.join(missing_items)}."],
+            }
+        )
+        return score - _deduction(rules, "incomplete_dcf_assumptions"), assumption_quality
+
+    manual_review_matches = _manual_review_assumption_matches(assumptions, rules)
+    if manual_review_matches:
+        cap = int(rules.get("assumption_quality", {}).get("manual_review_confidence_cap", score))
+        score = min(score - _deduction(rules, "manual_review_dcf_assumptions"), cap)
+        reason = "Assumption set is labeled as example, test, temporary, or requiring manual review."
+        reasons.append(reason)
+        warnings.append("Assumption quality is insufficient for active directional output until reviewed assumptions replace the example set.")
+        assumption_quality.update(
+            {
+                "status": "manual_review_required",
+                "active_signal_allowed": not bool(rules.get("assumption_quality", {}).get("blocks_active_signal", True)),
+                "matched_terms": manual_review_matches,
+                "blocking_reasons": [reason],
+            }
+        )
+    return score, assumption_quality
+
+
+def _default_assumption_quality() -> dict[str, Any]:
+    return {
+        "status": "sufficient",
+        "active_signal_allowed": True,
+        "matched_terms": [],
+        "blocking_reasons": [],
+    }
+
+
+def _manual_review_assumption_matches(assumptions: dict[str, Any], rules: dict[str, Any]) -> list[str]:
+    quality_rules = rules.get("assumption_quality", {})
+    keywords = [str(keyword).lower() for keyword in quality_rules.get("manual_review_keywords", [])]
+    text_parts = [
+        assumptions.get("assumption_label"),
+        *(assumptions.get("assumption_notes") if isinstance(assumptions.get("assumption_notes"), list) else []),
+    ]
+    haystack = " ".join(str(part).lower() for part in text_parts if part)
+    return sorted({_safe_manual_review_term(keyword) for keyword in keywords if keyword and keyword in haystack})
+
+
+def _safe_manual_review_term(keyword: str) -> str:
+    if keyword == "placeholder":
+        return "temporary"
+    return keyword
 
 
 def _missing_dcf_assumption_items(assumptions: dict[str, Any], rules: dict[str, Any]) -> list[str]:
