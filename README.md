@@ -54,6 +54,7 @@ Data contracts and schemas:
 
 Generated-output review:
 
+- `docs/REPORT_ARTIFACT_CONTRACT.md` - current generated artifact layout and required v1.0 demo outputs.
 - `docs/GENERATED_OUTPUT_REVIEW_GUIDE.md` - review guide for generated reports, summaries, model outputs, and audit logs.
 
 Adapter and architecture governance:

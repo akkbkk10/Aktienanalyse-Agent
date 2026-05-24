@@ -10,6 +10,9 @@ ignored reports path such as:
 python scripts/run_v1_0_demo.py --reports-dir reports/tmp_generated_output_review
 ```
 
+The current expected artifact paths and required v1.0 demo outputs are
+documented in `docs/REPORT_ARTIFACT_CONTRACT.md`.
+
 ## Artifacts To Review
 
 Inspect generated outputs for each affected ticker:
