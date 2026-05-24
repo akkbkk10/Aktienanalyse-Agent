@@ -18,6 +18,7 @@ Price target, buy/sell/hold recommendation, personal investment advice, live dat
 - `CONTRIBUTING.md` - contribution workflow and project guardrails.
 - `SECURITY.md` - vulnerability reporting and security scope.
 - `CODE_OF_CONDUCT.md` - respectful collaboration expectations.
+- `.github/` - CI workflow plus issue and pull request templates.
 - `config/` - schemas and validation rules.
 - `config/watchlist.json` - required research coverage by ticker.
 - `agents/` - documentation/contracts for the Hub-and-Spoke supervisor and specialized worker roles.
