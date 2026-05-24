@@ -11,6 +11,7 @@ requirements.
 | Understand the current deterministic core baseline | `docs/CORE_BASELINE_INVENTORY.md` | Maps workflow stages, modules, tests, artifacts, guardrails, and v1.1 readiness gaps. |
 | Check current data fields and output structures | `docs/SCHEMA_FIELD_REFERENCE.md` | Lists current schema fields and observed output structures. |
 | Check generated artifact paths and required files | `docs/REPORT_ARTIFACT_CONTRACT.md` | Documents the current reports directory layout, shared audit log, and required per-ticker v1.0 demo artifacts. |
+| Assess generated JSON schema priorities | `docs/GENERATED_OUTPUT_SCHEMA_ASSESSMENT.md` | Compares generated artifact schema candidates and recommends the next narrow hardening target. |
 | Assess data-contract hardening priorities | `docs/DATA_CONTRACT_SCHEMA_HARDENING_ASSESSMENT.md` | Reviews current schema protections and identifies the next small data-contract hardening candidate. |
 | Validate company context contract expectations | `config/company_context_schema.json` | Defines the standalone contract for persistent `data/companies/<TICKER>/context.json` files. |
 | Review generated output before merging | `docs/GENERATED_OUTPUT_REVIEW_GUIDE.md` | Helps inspect reports, summaries, model outputs, and audit logs for unsafe wording or traceability issues. |
