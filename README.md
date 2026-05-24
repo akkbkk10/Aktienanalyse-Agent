@@ -66,6 +66,27 @@ NVDA and AMD are currently the fully working sample tickers. Other tickers fail 
 
 Sample data and any future live data ingestion must remain separate. Batch runs process each ticker independently, and a missing or invalid ticker must not block successful NVDA or AMD runs. Generated model outputs are analysis artifacts only and are not personal investment advice.
 
+## How To Add A New Company
+
+Use the onboarding templates and checklist before adding a new supported ticker:
+
+- `docs/COMPANY_ONBOARDING_GUIDE.md`
+- `data/company_template/sample_metrics_template.json`
+- `data/company_template/dcf_assumptions_template.json`
+
+Create sourced sample metrics, add DCF assumptions, add a watchlist entry, and
+run the onboarding validator:
+
+```powershell
+python scripts/validate_company_onboarding.py TICKER --metrics-path data\ticker_sample_metrics.json --dcf-assumptions-path data\companies\TICKER\dcf_assumptions.json
+```
+
+The validator checks required financial metrics, `metric_id` presence, source
+metadata, market price snapshot fields, share count availability, DCF
+assumptions, watchlist entry, and company context generation. It does not fetch
+live data and does not create recommendations, price targets, personal investment
+advice, or trading logic.
+
 ## Setup
 
 ```powershell
