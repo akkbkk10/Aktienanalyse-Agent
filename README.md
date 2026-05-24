@@ -70,6 +70,7 @@ Maintainer and release workflow:
 - `docs/V1_0_1_RELEASE_NOTES.md` - v1.0.1 release notes.
 - `docs/V1_0_2_RELEASE_NOTES.md` - v1.0.2 release notes.
 - `docs/V1_0_3_RELEASE_NOTES.md` - v1.0.3 release notes.
+- `docs/V1_0_4_RELEASE_NOTES.md` - v1.0.4 release notes.
 
 Open-source contribution and security:
 
