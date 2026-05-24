@@ -74,6 +74,8 @@ def run_analysis(
             dcf_output_path=None,
             fair_value_per_share_output_path=None,
             model_rating_output_path=None,
+            model_rating_status="not_requested",
+            model_rating_unavailable_reasons=[],
             dcf_warnings=[],
             warnings=warnings,
         )
@@ -95,6 +97,8 @@ def run_analysis(
             dcf_output_path=None,
             fair_value_per_share_output_path=None,
             model_rating_output_path=None,
+            model_rating_status="not_requested",
+            model_rating_unavailable_reasons=[],
             dcf_warnings=[],
             warnings=warnings,
         )
@@ -122,6 +126,8 @@ def run_analysis(
     fair_value_output_path = None
     model_rating_result = None
     model_rating_output_path = None
+    model_rating_status = "not_requested"
+    model_rating_unavailable_reasons: list[str] = []
     readiness_result = None
     dcf_warnings: list[str] = []
     dcf_scenarios_calculated: list[str] = []
@@ -172,10 +178,12 @@ def run_analysis(
                     model_rating_output_path = str(
                         _write_model_rating_output(normalized_ticker, model_rating_result, reports_dir)
                     )
+                    model_rating_status = "available"
                 except fair_value_per_share.FairValuePerShareError as exc:
                     dcf_warnings.append(str(exc))
                 except model_rating.ModelRatingError as exc:
-                    dcf_warnings.append(str(exc))
+                    model_rating_status = "unavailable"
+                    model_rating_unavailable_reasons.append(str(exc))
             else:
                 dcf_warnings = dcf_result.get("blocking_reasons", [])
         else:
@@ -193,7 +201,9 @@ def run_analysis(
                 dcf_output=dcf_result if dcf_output_path else None,
                 fair_value_per_share_output=fair_value_result if fair_value_output_path else None,
                 model_rating_output=model_rating_result if model_rating_output_path else None,
-                warnings=warnings,
+                model_rating_status=model_rating_status,
+                model_rating_unavailable_reasons=model_rating_unavailable_reasons,
+                warnings=warnings + model_rating_unavailable_reasons,
                 reports_dir=reports_dir,
             )
         )
@@ -209,6 +219,8 @@ def run_analysis(
                 dcf_output=dcf_result if dcf_output_path else None,
                 fair_value_per_share_output=fair_value_result if fair_value_output_path else None,
                 model_rating_output=model_rating_result if model_rating_output_path else None,
+                model_rating_status=model_rating_status,
+                model_rating_unavailable_reasons=model_rating_unavailable_reasons,
                 warnings=warnings + dcf_warnings,
                 reports_dir=reports_dir,
             )
@@ -239,6 +251,8 @@ def run_analysis(
         dcf_output_path=dcf_output_path,
         fair_value_per_share_output_path=fair_value_output_path,
         model_rating_output_path=model_rating_output_path,
+        model_rating_status=model_rating_status,
+        model_rating_unavailable_reasons=model_rating_unavailable_reasons,
         dcf_warnings=dcf_warnings,
         warnings=warnings,
     )
@@ -257,6 +271,8 @@ def _summary(
     dcf_output_path: str | None,
     fair_value_per_share_output_path: str | None,
     model_rating_output_path: str | None,
+    model_rating_status: str,
+    model_rating_unavailable_reasons: list[str],
     dcf_warnings: list[str],
     warnings: list[str],
 ) -> dict[str, Any]:
@@ -273,6 +289,8 @@ def _summary(
         "dcf_output_path": dcf_output_path,
         "fair_value_per_share_output_path": fair_value_per_share_output_path,
         "model_rating_output_path": model_rating_output_path,
+        "model_rating_status": model_rating_status,
+        "model_rating_unavailable_reasons": model_rating_unavailable_reasons,
         "dcf_warnings": dcf_warnings,
         "warnings": warnings,
     }

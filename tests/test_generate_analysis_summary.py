@@ -111,6 +111,8 @@ def model_rating_output() -> dict:
         "assumptions": {
             "scenario_used": "base",
             "market_price_metric_id": "nvda_current_market_price_2026_05_23",
+            "market_price_as_of_datetime": "2026-05-23T00:15:00Z",
+            "market_price_fetched_at": "2026-05-24T00:00:00Z",
         },
         "warnings": ["Model rating is a deterministic rule-based classification from fair value per share and sourced market price only."],
         "source_references": [
@@ -120,6 +122,8 @@ def model_rating_output() -> dict:
                 "source_url": "https://www.nasdaq.com/market-activity/stocks/nvda",
                 "source_date": "2026-05-23",
                 "confidence": "high",
+                "as_of_datetime": "2026-05-23T00:15:00Z",
+                "fetched_at": "2026-05-24T00:00:00Z",
             }
         ],
         "disclaimer": "non-personalized model output, not investment advice.",
@@ -229,6 +233,10 @@ class GenerateAnalysisSummaryTests(unittest.TestCase):
         self.assertTrue(summary["assumptions"]["model_rating_available"])
         self.assertEqual(summary["missing_data"]["model_rating_status"], "included")
         self.assertEqual(summary["calculated_outputs"]["model_rating"]["model_rating"], 3)
+        self.assertEqual(
+            summary["facts"]["model_rating_source_references"][0]["fetched_at"],
+            "2026-05-24T00:00:00Z",
+        )
         generate_analysis_summary.assert_no_prohibited_language(summary)
 
     def test_no_buy_sell_hold_recommendation_language(self) -> None:

@@ -34,6 +34,8 @@ def generate_analysis_summary(
     dcf_output: dict[str, Any] | None = None,
     fair_value_per_share_output: dict[str, Any] | None = None,
     model_rating_output: dict[str, Any] | None = None,
+    model_rating_status: str = "not_requested",
+    model_rating_unavailable_reasons: list[str] | None = None,
     warnings: list[str] | None = None,
     reports_dir: Path = DEFAULT_REPORTS_DIR,
     generated_at: str | None = None,
@@ -47,6 +49,8 @@ def generate_analysis_summary(
         dcf_output=dcf_output,
         fair_value_per_share_output=fair_value_per_share_output,
         model_rating_output=model_rating_output,
+        model_rating_status=model_rating_status,
+        model_rating_unavailable_reasons=model_rating_unavailable_reasons or [],
         warnings=warnings or [],
         generated_at=generated_at,
     )
@@ -67,6 +71,8 @@ def build_analysis_summary(
     dcf_output: dict[str, Any] | None = None,
     fair_value_per_share_output: dict[str, Any] | None = None,
     model_rating_output: dict[str, Any] | None = None,
+    model_rating_status: str = "not_requested",
+    model_rating_unavailable_reasons: list[str] | None = None,
     warnings: list[str] | None = None,
     generated_at: str | None = None,
 ) -> dict[str, Any]:
@@ -99,6 +105,7 @@ def build_analysis_summary(
             "fair_value_per_share_available": fair_value_per_share_output is not None,
             "model_rating_assumptions": model_rating_assumptions,
             "model_rating_available": model_rating_output is not None,
+            "model_rating_status": model_rating_status,
         },
         "calculated_outputs": {
             "ratios": ratio_outputs,
@@ -110,7 +117,8 @@ def build_analysis_summary(
             "research_gaps": research_gaps,
             "dcf_status": "included" if dcf_output else "not provided",
             "fair_value_per_share_status": "included" if fair_value_per_share_output else "not provided",
-            "model_rating_status": "included" if model_rating_output else "not provided",
+            "model_rating_status": "included" if model_rating_output else model_rating_status,
+            "model_rating_unavailable_reasons": model_rating_unavailable_reasons or [],
         },
         "risks_warnings": {
             "warnings": warnings or [],

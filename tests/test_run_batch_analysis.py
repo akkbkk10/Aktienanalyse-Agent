@@ -108,7 +108,7 @@ class RunBatchAnalysisTests(unittest.TestCase):
             )
             self.assertEqual(
                 set(result["output_paths_by_ticker"]["NVDA"]),
-                {"report_path", "analysis_summary_path", "dcf_output_path", "fair_value_per_share_output_path", "model_rating_output_path", "audit_log_path"},
+                {"report_path", "analysis_summary_path", "dcf_output_path", "fair_value_per_share_output_path", "model_rating_output_path", "model_rating_status", "audit_log_path"},
             )
 
 

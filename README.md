@@ -356,10 +356,27 @@ python scripts/model_rating.py NVDA --fair-value-per-share-json reports\NVDA_fai
 ```
 
 The rating requires a sourced `market_price` metric with `metric_id`, source URL,
-source date, confidence, last verified date, and unit. The rule file
-`config/model_rating_rules.json` maps fair value versus market price gaps to
-ratings 1-5. Output is rule-based model classification only, not investment
-advice.
+source date, confidence, last verified date, unit, `as_of_datetime`, and
+`fetched_at`. The rule file `config/model_rating_rules.json` maps fair value
+versus market price gaps to ratings 1-5. Output is rule-based model
+classification only, not investment advice.
+
+## Market Price Snapshot Governance
+
+Market price is a stored snapshot, not live trading data. `as_of_datetime` is the
+time the price refers to. `fetched_at` is the time this system stored or retrieved
+the snapshot. `config/market_price_snapshot_schema.json` defines the required
+snapshot contract.
+
+Source validation checks snapshot shape and required fields. Snapshot freshness
+is enforced only by `model_rating.py`; stale market prices make model rating
+unavailable but do not block source validation, ratios, DCF, report generation,
+summary generation, or audit logging.
+
+No valuation, fair value per share, model rating, report, summary, or orchestrator
+module may fetch live market data directly. Future live fetching must go through
+a separate Market Data Agent that writes validated snapshot records. Tests use
+fixed sample snapshots only.
 
 ## Run full NVDA demo
 

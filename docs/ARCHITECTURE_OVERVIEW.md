@@ -51,6 +51,19 @@ the same source metadata fields as every other financial number. Model ratings
 use these sourced market prices together with fair value per share outputs and
 documented rules.
 
+## Market Price Snapshots
+
+Market prices are stored snapshots, not live trading data. `as_of_datetime`
+records the timestamp the price refers to, while `fetched_at` records when this
+system stored or retrieved the snapshot. Validation enforces the snapshot
+contract in `config/market_price_snapshot_schema.json`.
+
+Snapshot freshness is checked only by `model_rating.py`. A stale or unavailable
+market price makes model rating unavailable with reasons, but does not block
+source validation, ratios, DCF, reports, summaries, or audit logging. Future live
+fetching must be implemented through a separate Market Data Agent that writes
+validated snapshots before downstream analysis runs.
+
 ## Ticker Independence
 
 Each ticker is processed independently. A missing context, stale source, research

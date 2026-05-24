@@ -136,6 +136,8 @@ def model_rating_output() -> dict:
             "scenario_used": "base",
             "valuation_gap_formula": "(fair_value_per_share - current_market_price) / current_market_price",
             "market_price_metric_id": "nvda_current_market_price_2026_05_23",
+            "market_price_as_of_datetime": "2026-05-23T00:15:00Z",
+            "market_price_fetched_at": "2026-05-24T00:00:00Z",
         },
         "warnings": ["Model rating is a deterministic rule-based classification from fair value per share and sourced market price only."],
         "source_references": [
@@ -146,6 +148,8 @@ def model_rating_output() -> dict:
                 "source_type": "market data",
                 "source_date": "2026-05-23",
                 "source_url": "https://www.nasdaq.com/market-activity/stocks/nvda",
+                "as_of_datetime": "2026-05-23T00:15:00Z",
+                "fetched_at": "2026-05-24T00:00:00Z",
             }
         ],
         "disclaimer": "non-personalized model output, not investment advice.",
@@ -300,6 +304,8 @@ class GenerateReportTests(unittest.TestCase):
         self.assertIn("### Model Rating", report)
         self.assertIn("non-personalized model output, not investment advice", report)
         self.assertIn("fairly valued / neutral on model basis", report)
+        self.assertIn("as_of_datetime: 2026-05-23T00:15:00Z", report)
+        self.assertIn("fetched_at: 2026-05-24T00:00:00Z", report)
         for term in ["price target", "buy", "sell", "hold", "recommendation"]:
             self.assertNotIn(term, report.lower())
 

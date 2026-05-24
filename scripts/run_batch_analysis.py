@@ -75,9 +75,14 @@ def run_batch(
             "dcf_output_path": summary.get("dcf_output_path"),
             "fair_value_per_share_output_path": summary.get("fair_value_per_share_output_path"),
             "model_rating_output_path": summary.get("model_rating_output_path"),
+            "model_rating_status": summary.get("model_rating_status"),
             "audit_log_path": str(audit_log_path) if summary.get("audit_log_written") else None,
         }
-        warnings_by_ticker[ticker] = summary.get("warnings", []) + summary.get("dcf_warnings", [])
+        warnings_by_ticker[ticker] = (
+            summary.get("warnings", [])
+            + summary.get("dcf_warnings", [])
+            + summary.get("model_rating_unavailable_reasons", [])
+        )
 
     return {
         "tickers_processed": normalized_tickers,

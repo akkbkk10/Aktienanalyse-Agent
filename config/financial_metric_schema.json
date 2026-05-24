@@ -79,6 +79,34 @@
     },
     "notes": {
       "type": "string"
+    },
+    "currency": {
+      "type": "string",
+      "minLength": 1
+    },
+    "exchange": {
+      "type": "string",
+      "minLength": 1
+    },
+    "price_type": {
+      "type": "string",
+      "enum": ["close", "latest_trade", "opening", "intraday_snapshot"]
+    },
+    "as_of_datetime": {
+      "type": "string",
+      "minLength": 1
+    },
+    "fetched_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "provider": {
+      "type": "string",
+      "minLength": 1
+    },
+    "retrieval_method": {
+      "type": "string",
+      "enum": ["manual_snapshot", "file_import", "market_data_agent"]
     }
   },
   "additionalProperties": false

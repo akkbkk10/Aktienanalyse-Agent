@@ -35,6 +35,8 @@ def generate_report(
     dcf_output: dict[str, Any] | None = None,
     fair_value_per_share_output: dict[str, Any] | None = None,
     model_rating_output: dict[str, Any] | None = None,
+    model_rating_status: str = "not_requested",
+    model_rating_unavailable_reasons: list[str] | None = None,
     warnings: list[str] | None = None,
     reports_dir: Path = DEFAULT_REPORTS_DIR,
     generated_at: str | None = None,
@@ -50,6 +52,8 @@ def generate_report(
         dcf_output=dcf_output,
         fair_value_per_share_output=fair_value_per_share_output,
         model_rating_output=model_rating_output,
+        model_rating_status=model_rating_status,
+        model_rating_unavailable_reasons=model_rating_unavailable_reasons or [],
         warnings=warnings or [],
         generated_at=timestamp,
     )
@@ -70,6 +74,8 @@ def render_report(
     dcf_output: dict[str, Any] | None,
     fair_value_per_share_output: dict[str, Any] | None = None,
     model_rating_output: dict[str, Any] | None = None,
+    model_rating_status: str = "not_requested",
+    model_rating_unavailable_reasons: list[str] | None = None,
     warnings: list[str] | None = None,
     generated_at: str = "",
 ) -> str:
@@ -109,6 +115,8 @@ def render_report(
 
     if model_rating_output:
         lines.extend(_model_rating_section_lines(model_rating_output))
+    elif model_rating_status == "unavailable":
+        lines.extend(_model_rating_unavailable_lines(model_rating_unavailable_reasons or []))
 
     lines.extend(["", "## Missing Data", ""])
     if research_gaps:
@@ -297,7 +305,17 @@ def _model_rating_section_lines(model_rating_output: dict[str, Any]) -> list[str
             f"- {_metric_label(source)} ({source.get('period')}): "
             f"{source.get('source_type')} dated {source.get('source_date')} - {source.get('source_url')}"
         )
+        lines.append(f"  - as_of_datetime: {source.get('as_of_datetime')}")
+        lines.append(f"  - fetched_at: {source.get('fetched_at')}")
 
+    return lines
+
+
+def _model_rating_unavailable_lines(reasons: list[str]) -> list[str]:
+    lines = ["", "### Model Rating", "", "- Status: unavailable"]
+    if reasons:
+        for reason in reasons:
+            lines.append(f"- Reason: {reason}")
     return lines
 
 
