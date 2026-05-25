@@ -57,6 +57,7 @@ Generated-output review:
 
 - `docs/REPORT_ARTIFACT_CONTRACT.md` - current generated artifact layout and required v1.0 demo outputs.
 - `docs/GENERATED_OUTPUT_SCHEMA_ASSESSMENT.md` - assessment of generated JSON artifact schema hardening candidates.
+- `docs/FACT_REPORT_EXPECTATIONS.md` - stable fact report Markdown expectations and flexible-content boundaries.
 - `docs/FACT_REPORT_CONTRACT_NEED_ASSESSMENT.md` - assessment of fact report Markdown contract and expectations needs.
 - `docs/ANALYSIS_SUMMARY_SCHEMA_NEED_ASSESSMENT.md` - assessment of analysis summary schema need and narrow contract readiness.
 - `docs/AUDIT_LOG_EXPECTATIONS.md` - audit log envelope expectations and intentionally flexible diagnostics.
