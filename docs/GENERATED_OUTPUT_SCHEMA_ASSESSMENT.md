@@ -218,36 +218,55 @@ rating, model confidence, and model signal details should continue to rely on
 their own contracts rather than being duplicated wholesale inside the analysis
 summary schema.
 
+## Analysis Summary Schema Hardening Status
+
+The analysis summary output recommendation has been implemented for the current
+generated analysis summary artifact:
+
+- `config/analysis_summary_output_schema.json` defines the standalone analysis
+  summary output contract.
+- `scripts/generate_analysis_summary.py` validates generated analysis summaries
+  against the contract before writing.
+- Analysis summary tests cover valid output, missing required top-level fields,
+  invalid required top-level field types, missing required section fields, and
+  nullable optional upstream outputs.
+- v1.0 demo tests validate generated NVDA, AMD, and TSMC analysis summary
+  artifacts against the contract.
+
+This covers the analysis summary report-facing envelope and broad section field
+types only. It does not duplicate the nested DCF, fair value per share, model
+rating, model confidence, or model signal contracts inside the summary schema.
+It also does not add schemas for audit log or fact report artifacts.
+
 ## Recommended Next Implementation PR
 
 Recommend exactly one next implementation target:
 
-**Narrow analysis summary schema/contract.**
+**Fact report Markdown schema need assessment.**
 
 Small safe scope for the future implementation PR:
 
-- Add `config/analysis_summary_schema.json`.
-- Validate the current generated analysis summary artifact against the schema.
-- Protect the required top-level summary envelope, named section groups, and
-  broad field types.
-- Keep embedded upstream outputs, source references, warnings, research gaps,
-  blocker text, timestamps, paths, and audit references flexible.
-- Validate generated NVDA, AMD, and TSMC demo summaries.
-- Add focused negative tests for missing required fields and invalid required
-  field types.
-- Do not change analysis summary behavior, audit log behavior, model signal
+- Review the current fact report Markdown artifact now that generated JSON
+  report artifacts have contract protection or documented expectations.
+- Keep the first pass assessment-only because Markdown report content is
+  user-facing prose and should not be schema-hardened without confirming the
+  stable contract boundary.
+- Do not change fact report wording, analysis summary behavior, audit log
+  behavior, model signal
   behavior, model confidence behavior, model rating behavior, fair value
   calculations, DCF math, report wording, CLI behavior, or CI.
 
 Why this should be next:
 
 - DCF output, fair value per share output, model rating output, model
-  confidence output, and model signal output now have contract protection.
+  confidence output, model signal output, and analysis summary output now have
+  contract protection.
 - The audit log assessment found that existing validator coverage is sufficient
   for now and that nested diagnostic payloads should stay flexible.
-- Analysis summary is the next generated JSON artifact that remains
-  documentation-reviewed only, and the assessment found a stable envelope across
-  generated NVDA, AMD, and TSMC summaries.
+- Fact report Markdown is the remaining report-facing generated artifact that
+  is documentation-reviewed only. It should be assessed before any schema or
+  structured-contract work because it is prose-heavy and protected today by
+  generated-output review and forbidden-output tests.
 
 ## Keep For Later
 
@@ -255,7 +274,7 @@ Do not harden these in the next implementation PR:
 
 - all generated JSON outputs at once
 - analysis summary nested upstream-output internals beyond broad type checks
-- fact report Markdown schema
+- fact report Markdown schema implementation before assessment
 - audit log schema implementation unless the assessment identifies a concrete
   need
 - generated artifact manifest
