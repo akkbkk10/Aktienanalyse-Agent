@@ -15,6 +15,7 @@ CI.
 - `docs/SCHEMA_FIELD_REFERENCE.md`
 - `docs/GENERATED_OUTPUT_REVIEW_GUIDE.md`
 - `docs/ARCHITECTURE_GOVERNANCE_INDEX.md`
+- `docs/AUDIT_LOG_SCHEMA_NEED_ASSESSMENT.md`
 - `docs/MODEL_CONFIDENCE_OUTPUT_SCHEMA_ASSESSMENT.md`
 - `docs/MODEL_SIGNAL_OUTPUT_SCHEMA_ASSESSMENT.md`
 - `scripts/run_v1_0_demo.py`
@@ -180,38 +181,54 @@ This covers the normal generated model signal object only. It does not add
 schemas for audit log, analysis summary, or fact report artifacts. It also does
 not define a separate durable CLI error artifact contract.
 
+## Audit Log Schema Need Assessment Status
+
+`docs/AUDIT_LOG_SCHEMA_NEED_ASSESSMENT.md` now reviews the generated
+`audit_log.jsonl` shape, existing validator coverage, stable top-level envelope,
+flexible diagnostic payloads, report artifact boundary, and compatibility risks
+of over-constraining append-only audit records.
+
+The assessment recommends documenting audit log expectations without standalone
+schema enforcement for now. The current top-level audit envelope already has
+direct validation in `scripts/write_audit_log.py`, focused tests in
+`tests/test_write_audit_log.py`, and demo layout coverage in
+`tests/test_run_v1_0_demo.py`. Nested `validation_status`, `ratio_outputs`, and
+`research_gaps_detected` should remain flexible unless a concrete future
+consumer requires stricter machine-readable validation.
+
 ## Recommended Next Implementation PR
 
 Recommend exactly one next implementation target:
 
-**Audit log schema need assessment.**
+**Analysis summary schema assessment.**
 
 Small safe scope for the future implementation PR:
 
-- Review whether the existing JSONL audit log validator is sufficient or
-  whether a standalone config contract would help future consumers.
-- Keep the first pass assessment-only unless a concrete missing guardrail is
-  found.
-- Do not change audit log behavior, model signal behavior, model confidence
-  behavior, model rating behavior, fair value calculations, DCF math, report
-  wording, CLI behavior, or CI.
+- Review the current analysis summary JSON artifact now that lower-level
+  generated output contracts are in place and audit log schema enforcement has
+  been deferred.
+- Keep the first pass assessment-only because analysis summary aggregates many
+  upstream artifacts and is broader than the lower-level contracts.
+- Do not change analysis summary behavior, audit log behavior, model signal
+  behavior, model confidence behavior, model rating behavior, fair value
+  calculations, DCF math, report wording, CLI behavior, or CI.
 
 Why this should be next:
 
 - DCF output, fair value per share output, model rating output, model
   confidence output, and model signal output now have contract protection.
-- The audit log already has direct validator coverage, so assessment-first can
-  determine whether a standalone schema would add value or merely duplicate
-  existing tests.
-- This is narrower than analysis summary hardening and avoids broad aggregate
-  schema work until lower-level output contracts are complete.
+- The audit log assessment found that existing validator coverage is sufficient
+  for now and that nested diagnostic payloads should stay flexible.
+- Analysis summary is the next generated JSON artifact that remains
+  documentation-reviewed only, but it should be assessed before any schema work
+  because it aggregates many upstream outputs.
 
 ## Keep For Later
 
 Do not harden these in the next implementation PR:
 
 - all generated JSON outputs at once
-- analysis summary schema
+- analysis summary schema implementation before assessment
 - fact report Markdown schema
 - audit log schema implementation unless the assessment identifies a concrete
   need
