@@ -15,6 +15,7 @@ CI.
 - `docs/SCHEMA_FIELD_REFERENCE.md`
 - `docs/GENERATED_OUTPUT_REVIEW_GUIDE.md`
 - `docs/ARCHITECTURE_GOVERNANCE_INDEX.md`
+- `docs/AUDIT_LOG_EXPECTATIONS.md`
 - `docs/AUDIT_LOG_SCHEMA_NEED_ASSESSMENT.md`
 - `docs/MODEL_CONFIDENCE_OUTPUT_SCHEMA_ASSESSMENT.md`
 - `docs/MODEL_SIGNAL_OUTPUT_SCHEMA_ASSESSMENT.md`
@@ -195,6 +196,10 @@ direct validation in `scripts/write_audit_log.py`, focused tests in
 `tests/test_run_v1_0_demo.py`. Nested `validation_status`, `ratio_outputs`, and
 `research_gaps_detected` should remain flexible unless a concrete future
 consumer requires stricter machine-readable validation.
+
+`docs/AUDIT_LOG_EXPECTATIONS.md` now documents the stable audit log envelope,
+intentionally flexible diagnostic content, why no standalone schema is enforced
+yet, and conditions that could justify a future schema.
 
 ## Recommended Next Implementation PR
 
