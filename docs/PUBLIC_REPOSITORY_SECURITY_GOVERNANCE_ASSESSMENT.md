@@ -23,6 +23,9 @@ assessment has been partially implemented in repository files:
   reporting, owner-review, and secret-hygiene flow more clearly.
 - `.github/workflows/tests.yml` now declares explicit read-only repository
   contents permission for the test-only CI workflow.
+- `docs/RELEASE_AND_TAG_GOVERNANCE.md` now documents release-note PR rules, tag
+  timing, tag naming, generated-artifact exclusions, and manual GitHub setting
+  checks.
 
 This assessment finds several file-based controls already present, but the most
 important public-repository controls for `main` are not verifiable from
@@ -31,8 +34,9 @@ conversation resolution, force-push protection, branch deletion protection,
 secret scanning, push protection, dependency graph, Dependabot, and private
 vulnerability reporting require manual verification in GitHub.
 
-Recommended next PR: release and tag governance documentation. Keep it
-documentation-only and do not mix it with model-output schema work.
+Recommended next PR: resume generated-output schema hardening only after
+maintainers verify the public repository settings that cannot be proven from
+files.
 
 ## 2. Current Public-Repository Posture
 
@@ -58,6 +62,9 @@ File-based posture is stronger than a bare public repository:
   on pull requests with explicit read-only repository contents permission.
 - `.gitignore` excludes generated reports, JSON outputs, JSONL logs, caches,
   virtual environments, and `.env` files.
+- `docs/RELEASE_AND_TAG_GOVERNANCE.md` documents release-note PR expectations,
+  tag timing, `vX.Y.Z` tag naming, generated-artifact exclusions, and manual
+  GitHub setting checks.
 
 Current public-repository posture still has important unknowns:
 
@@ -86,7 +93,7 @@ Current public-repository posture still has important unknowns:
 | Secret hygiene documentation | present in repository | `.gitignore` excludes `.env` and `.env.*`; `CONTRIBUTING.md`, `SECURITY.md`, and `docs/SECRET_HYGIENE_CHECKLIST.md` now document secret and generated-artifact hygiene. | recommended now: manually verify secret scanning and push protection. |
 | Secret scanning / push protection | not verifiable from repository files | GitHub Advanced Security or repository security settings are not represented in files. | recommended now: manually verify secret scanning and push protection for the public repo. |
 | Dependabot / dependency graph | not verifiable from repository files | No `.github/dependabot.yml` is present. The project currently uses only the Python standard library, but GitHub dependency graph and Dependabot settings still require manual verification. | recommended later: add Dependabot only if package manifests or GitHub Actions update policy warrant it. |
-| Release and tag governance | present in repository | `docs/V1_0_X_PATCH_RELEASE_CHECKLIST.md` documents release validation, tag creation, GitHub Release creation, and remote tag caution. | recommended later: after branch protection is verified, document who may tag releases and whether tags are protected. |
+| Release and tag governance | present in repository | `docs/RELEASE_AND_TAG_GOVERNANCE.md` documents release-note PR rules, tag timing, tag naming, generated-artifact exclusions, and manual GitHub setting checks. `docs/V1_0_X_PATCH_RELEASE_CHECKLIST.md` documents release validation, tag creation, GitHub Release creation, and remote tag caution. | recommended now: manually verify tag protection or tag rulesets for `v*`. |
 | Public no-investment-advice messaging | present in repository | `README.md`, `AGENTS.md`, `CONTRIBUTING.md`, `SECURITY.md`, architecture docs, scripts, and tests repeatedly preserve the no-investment-advice boundary. | recommended later: keep this language stable as schema work continues; review public-facing wording in every generated-output PR. |
 
 Additional file-based observations:
@@ -137,8 +144,8 @@ The remaining concrete gaps are:
   reporting is enabled.
 - Required checks, reviews, conversation resolution, and branch protections for
   `main` are not verifiable from files.
-- Secret scanning, push protection, dependency graph, Dependabot alerts, and
-  tag protections are not verifiable from files.
+- Secret scanning, push protection, dependency graph, Dependabot alerts, and tag
+  protection or tag rulesets are not verifiable from files.
 - CODEOWNERS enforcement is not verifiable from files because it depends on
   branch protection or ruleset settings.
 
@@ -149,22 +156,20 @@ output wording can be copied outside the maintainer context.
 
 ## 6. Recommended Next PR
 
-Recommended next PR: release and tag governance documentation.
+Recommended next PR: resume generated-output schema hardening only after
+maintainers manually verify public repository settings that cannot be proven from
+files.
 
 Scope:
 
-- Document who can create release tags.
-- Document whether tag protection or rulesets are expected.
-- Document how release notes should state no financial behavior changes.
-- Do not create tags or change release workflow behavior.
+- Continue with the next narrow generated-output schema candidate.
+- Keep deterministic, evidence-based, no-investment-advice boundaries intact.
+- Do not use schema work to change release governance, GitHub UI settings, live
+  fetching, adapters, or financial behavior.
 
 ## 7. Suggested Next 2-4 PR Sequence
 
-1. Release and tag governance documentation.
-   Document who can create release tags, whether tag protection or rulesets are
-   expected, and how release notes should state no financial behavior changes.
-
-2. Resume generated-output schema hardening.
+1. Resume generated-output schema hardening.
    Continue with the next model-output schema candidate only after the public
    repository settings and governance docs are checked.
 
