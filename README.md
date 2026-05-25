@@ -85,6 +85,7 @@ Maintainer and release workflow:
 Open-source contribution and security:
 
 - `docs/PUBLIC_REPOSITORY_SECURITY_GOVERNANCE_ASSESSMENT.md` - public repository security and governance posture assessment.
+- `docs/SECRET_HYGIENE_CHECKLIST.md` - checklist for avoiding secrets, private data, and generated artifacts in public contributions.
 - `CONTRIBUTING.md` - contribution workflow and project guardrails.
 - `SECURITY.md` - vulnerability reporting and security scope.
 - `CODE_OF_CONDUCT.md` - respectful collaboration expectations.

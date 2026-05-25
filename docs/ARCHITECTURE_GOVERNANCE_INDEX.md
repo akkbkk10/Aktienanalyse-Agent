@@ -20,6 +20,7 @@ requirements.
 | Validate model rating output contract expectations | `config/model_rating_output_schema.json` | Defines the standalone contract for generated `*_model_rating_output.json` artifacts. |
 | Review generated output before merging | `docs/GENERATED_OUTPUT_REVIEW_GUIDE.md` | Helps inspect reports, summaries, model outputs, and audit logs for unsafe wording or traceability issues. |
 | Assess public repository security and governance posture | `docs/PUBLIC_REPOSITORY_SECURITY_GOVERNANCE_ASSESSMENT.md` | Separates file-based governance findings from GitHub settings that require manual verification before more schema work. |
+| Check secret hygiene before public contribution | `docs/SECRET_HYGIENE_CHECKLIST.md` | Lists files, tokens, generated artifacts, and private data that must not be posted or committed. |
 | Confirm guardrails for core or adapter work | `docs/GUARDRAIL_SECURITY_TEST_PLAN.md` | Defines prohibited behaviors, allowed behaviors, module/test mappings, and security review prompts. |
 | Propose a future adapter or framework evaluation | `docs/ADAPTER_PROPOSAL_CHECKLIST.md` | Frames adapter boundaries, required questions, tests, and review artifacts before implementation. |
 | Review field-level data contract expectations | `docs/DATA_CONTRACT_REVIEW_CHECKLIST.md` | Covers required metadata, separation of facts/assumptions/calculations, snapshot expectations, and prohibited shortcuts. |
