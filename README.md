@@ -57,6 +57,7 @@ Generated-output review:
 
 - `docs/REPORT_ARTIFACT_CONTRACT.md` - current generated artifact layout and required v1.0 demo outputs.
 - `docs/GENERATED_OUTPUT_SCHEMA_ASSESSMENT.md` - assessment of generated JSON artifact schema hardening candidates.
+- `docs/AUDIT_LOG_EXPECTATIONS.md` - audit log envelope expectations and intentionally flexible diagnostics.
 - `docs/AUDIT_LOG_SCHEMA_NEED_ASSESSMENT.md` - assessment of audit log schema need and flexible diagnostic fields.
 - `docs/MODEL_CONFIDENCE_OUTPUT_SCHEMA_ASSESSMENT.md` - assessment of model confidence output schema readiness and narrow contract scope.
 - `docs/MODEL_SIGNAL_OUTPUT_SCHEMA_ASSESSMENT.md` - assessment of model signal output schema readiness and no-advice guardrails.

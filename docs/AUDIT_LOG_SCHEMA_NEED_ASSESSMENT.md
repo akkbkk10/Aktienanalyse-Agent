@@ -184,7 +184,8 @@ snapshots unless a concrete downstream consumer requires a stricter contract.
 ## Recommendation
 
 Recommended next step: document audit log expectations without schema
-enforcement.
+enforcement. That recommendation has been implemented in
+`docs/AUDIT_LOG_EXPECTATIONS.md`.
 
 Do not implement a standalone audit log schema now. The current audit log
 already has direct validator coverage in `scripts/write_audit_log.py`, focused
@@ -196,7 +197,7 @@ Safe documentation-only scope:
 - Treat `audit_log.jsonl` as a shared operational artifact in the report
   artifact layout.
 - Preserve the existing top-level audit envelope documented in
-  `docs/SCHEMA_FIELD_REFERENCE.md`.
+  `docs/SCHEMA_FIELD_REFERENCE.md` and `docs/AUDIT_LOG_EXPECTATIONS.md`.
 - Keep nested `validation_status`, `ratio_outputs`, and
   `research_gaps_detected` flexible.
 - Add a standalone schema only if a future consumer needs machine-readable audit

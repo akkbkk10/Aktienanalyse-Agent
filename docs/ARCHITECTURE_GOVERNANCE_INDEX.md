@@ -12,6 +12,7 @@ requirements.
 | Check current data fields and output structures | `docs/SCHEMA_FIELD_REFERENCE.md` | Lists current schema fields and observed output structures. |
 | Check generated artifact paths and required files | `docs/REPORT_ARTIFACT_CONTRACT.md` | Documents the current reports directory layout, shared audit log, and required per-ticker v1.0 demo artifacts. |
 | Assess generated JSON schema priorities | `docs/GENERATED_OUTPUT_SCHEMA_ASSESSMENT.md` | Compares generated artifact schema candidates and recommends the next narrow hardening target. |
+| Check audit log expectations | `docs/AUDIT_LOG_EXPECTATIONS.md` | Documents the stable audit log envelope, flexible diagnostics, and why no standalone schema is enforced yet. |
 | Assess audit log schema need | `docs/AUDIT_LOG_SCHEMA_NEED_ASSESSMENT.md` | Reviews generated audit log records, stable envelope fields, flexible diagnostics, and recommends documentation without schema enforcement. |
 | Assess model confidence output schema readiness | `docs/MODEL_CONFIDENCE_OUTPUT_SCHEMA_ASSESSMENT.md` | Reviews actual model confidence artifacts and recommends a narrow future contract scope. |
 | Assess model signal output schema readiness | `docs/MODEL_SIGNAL_OUTPUT_SCHEMA_ASSESSMENT.md` | Reviews actual model signal artifacts, no-advice guardrails, and recommends a narrow future contract scope. |
