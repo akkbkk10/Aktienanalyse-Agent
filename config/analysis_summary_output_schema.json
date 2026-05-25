@@ -1,0 +1,118 @@
+{
+  "schema_version": "0.1.0",
+  "type": "object",
+  "required_fields": [
+    "ticker",
+    "generated_at",
+    "audit_log_reference",
+    "facts",
+    "assumptions",
+    "calculated_outputs",
+    "missing_data",
+    "risks_warnings"
+  ],
+  "field_types": {
+    "ticker": "string",
+    "generated_at": "string",
+    "audit_log_reference": "string",
+    "facts": "object",
+    "assumptions": "object",
+    "calculated_outputs": "object",
+    "missing_data": "object",
+    "risks_warnings": "object"
+  },
+  "section_required_fields": {
+    "facts": [
+      "validation_status",
+      "ratio_source_references",
+      "dcf_source_references",
+      "fair_value_per_share_source_references",
+      "model_rating_source_references",
+      "model_confidence_source_references"
+    ],
+    "assumptions": [
+      "dcf_assumptions",
+      "dcf_available",
+      "fair_value_per_share_assumptions",
+      "fair_value_per_share_available",
+      "model_rating_assumptions",
+      "model_rating_available",
+      "model_rating_status",
+      "model_confidence_available",
+      "model_signal_available"
+    ],
+    "calculated_outputs": [
+      "ratios",
+      "dcf_scenarios",
+      "fair_value_per_share_scenarios",
+      "model_rating",
+      "model_confidence",
+      "model_signal"
+    ],
+    "missing_data": [
+      "research_gaps",
+      "dcf_status",
+      "fair_value_per_share_status",
+      "model_rating_status",
+      "model_rating_unavailable_reasons",
+      "model_confidence_status",
+      "model_signal_status",
+      "model_signal_blocking_reasons"
+    ],
+    "risks_warnings": [
+      "warnings",
+      "dcf_warnings",
+      "fair_value_per_share_warnings",
+      "model_rating_warnings",
+      "model_confidence_warnings",
+      "model_signal_warnings"
+    ]
+  },
+  "section_field_types": {
+    "facts": {
+      "validation_status": "object",
+      "ratio_source_references": "array",
+      "dcf_source_references": "array",
+      "fair_value_per_share_source_references": "array",
+      "model_rating_source_references": "array",
+      "model_confidence_source_references": "array"
+    },
+    "assumptions": {
+      "dcf_assumptions": "object_or_null",
+      "dcf_available": "boolean",
+      "fair_value_per_share_assumptions": "object_or_null",
+      "fair_value_per_share_available": "boolean",
+      "model_rating_assumptions": "object_or_null",
+      "model_rating_available": "boolean",
+      "model_rating_status": "string",
+      "model_confidence_available": "boolean",
+      "model_signal_available": "boolean"
+    },
+    "calculated_outputs": {
+      "ratios": "array",
+      "dcf_scenarios": "object",
+      "fair_value_per_share_scenarios": "array",
+      "model_rating": "object_or_null",
+      "model_confidence": "object_or_null",
+      "model_signal": "object_or_null"
+    },
+    "missing_data": {
+      "research_gaps": "array",
+      "dcf_status": "string",
+      "fair_value_per_share_status": "string",
+      "model_rating_status": "string",
+      "model_rating_unavailable_reasons": "array",
+      "model_confidence_status": "string",
+      "model_signal_status": "string",
+      "model_signal_blocking_reasons": "array"
+    },
+    "risks_warnings": {
+      "warnings": "array",
+      "dcf_warnings": "array",
+      "fair_value_per_share_warnings": "array",
+      "model_rating_warnings": "array",
+      "model_confidence_warnings": "array",
+      "model_signal_warnings": "array"
+    }
+  }
+}

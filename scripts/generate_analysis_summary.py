@@ -9,6 +9,7 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_REPORTS_DIR = REPO_ROOT / "reports"
+DEFAULT_OUTPUT_SCHEMA_PATH = REPO_ROOT / "config" / "analysis_summary_output_schema.json"
 PROHIBITED_TERMS = [
     "price target",
     "buy",
@@ -18,6 +19,10 @@ PROHIBITED_TERMS = [
     "investment advice",
     "automated trading",
 ]
+
+
+class AnalysisSummaryError(ValueError):
+    pass
 
 
 def load_json(path: Path) -> Any:
@@ -59,6 +64,7 @@ def generate_analysis_summary(
         generated_at=generated_at,
     )
     assert_no_prohibited_language(summary)
+    validate_analysis_summary_output(summary)
 
     reports_dir.mkdir(parents=True, exist_ok=True)
     output_path = reports_dir / f"{ticker.upper()}_analysis_summary.json"
@@ -153,6 +159,74 @@ def assert_no_prohibited_language(summary: dict[str, Any]) -> None:
     found = [term for term in PROHIBITED_TERMS if term in serialized]
     if found:
         raise ValueError(f"Analysis summary contains prohibited language: {', '.join(found)}.")
+
+
+def validate_analysis_summary_output(
+    output: dict[str, Any],
+    schema: dict[str, Any] | None = None,
+) -> list[str]:
+    schema = schema or load_json(DEFAULT_OUTPUT_SCHEMA_PATH)
+    errors: list[str] = []
+
+    if not isinstance(output, dict):
+        raise AnalysisSummaryError("Analysis summary output must be a JSON object.")
+
+    for field in schema.get("required_fields", []):
+        errors.extend(_validate_required_field(output, field, schema.get("field_types", {})))
+
+    section_required_fields = schema.get("section_required_fields", {})
+    section_field_types = schema.get("section_field_types", {})
+    for section, required_fields in section_required_fields.items():
+        section_value = output.get(section)
+        if not isinstance(section_value, dict):
+            continue
+        for field in required_fields:
+            errors.extend(
+                _validate_required_field(
+                    section_value,
+                    field,
+                    section_field_types.get(section, {}),
+                    prefix=f"{section}.",
+                )
+            )
+
+    if errors:
+        raise AnalysisSummaryError("; ".join(errors))
+
+    return []
+
+
+def _validate_required_field(
+    payload: dict[str, Any],
+    field: str,
+    field_types: dict[str, str],
+    prefix: str = "",
+) -> list[str]:
+    expected_type = field_types.get(field)
+    if field not in payload or payload[field] == "" or (payload[field] is None and expected_type != "object_or_null"):
+        return [f"{prefix}missing required field: {field}."]
+
+    if expected_type:
+        return _validate_contract_type(f"{prefix}{field}", payload[field], expected_type)
+
+    return []
+
+
+def _validate_contract_type(field: str, value: Any, expected_type: str) -> list[str]:
+    errors: list[str] = []
+
+    if expected_type == "string" and not isinstance(value, str):
+        errors.append(f"{field} must be a string.")
+    elif expected_type == "boolean" and not isinstance(value, bool):
+        errors.append(f"{field} must be a boolean.")
+    elif expected_type == "array" and not isinstance(value, list):
+        errors.append(f"{field} must be an array.")
+    elif expected_type == "object" and not isinstance(value, dict):
+        errors.append(f"{field} must be an object.")
+    elif expected_type == "object_or_null" and not (isinstance(value, dict) or value is None):
+        errors.append(f"{field} must be an object or null.")
+
+    return errors
 
 
 def _ratio_source_references(ratio_outputs: list[dict[str, Any]]) -> list[dict[str, Any]]:

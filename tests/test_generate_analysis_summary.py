@@ -216,6 +216,84 @@ class GenerateAnalysisSummaryTests(unittest.TestCase):
         self.assertIn("dcf_assumptions", summary["assumptions"])
         self.assertIn("ratios", summary["calculated_outputs"])
 
+    def test_summary_output_satisfies_contract(self) -> None:
+        summary = generate_analysis_summary.build_analysis_summary(
+            ticker="NVDA",
+            validation_status={"valid": True, "errors": []},
+            research_gaps=[],
+            ratio_outputs=[ratio_output()],
+            audit_log_reference="audit_log.jsonl:1",
+            dcf_output=dcf_output(),
+            fair_value_per_share_output=fair_value_output(),
+            model_rating_output=model_rating_output(),
+            model_confidence_output=model_confidence_output(),
+            model_signal_output=model_signal_output(),
+            warnings=["Source freshness checked."],
+            generated_at="2026-05-23T12:00:00Z",
+        )
+
+        self.assertEqual(generate_analysis_summary.validate_analysis_summary_output(summary), [])
+
+    def test_summary_contract_rejects_missing_required_top_level_field(self) -> None:
+        summary = generate_analysis_summary.build_analysis_summary(
+            ticker="NVDA",
+            validation_status={"valid": True, "errors": []},
+            research_gaps=[],
+            ratio_outputs=[ratio_output()],
+            audit_log_reference="audit_log.jsonl:1",
+            generated_at="2026-05-23T12:00:00Z",
+        )
+        del summary["facts"]
+
+        with self.assertRaisesRegex(generate_analysis_summary.AnalysisSummaryError, "missing required field: facts"):
+            generate_analysis_summary.validate_analysis_summary_output(summary)
+
+    def test_summary_contract_rejects_invalid_top_level_field_type(self) -> None:
+        summary = generate_analysis_summary.build_analysis_summary(
+            ticker="NVDA",
+            validation_status={"valid": True, "errors": []},
+            research_gaps=[],
+            ratio_outputs=[ratio_output()],
+            audit_log_reference="audit_log.jsonl:1",
+            generated_at="2026-05-23T12:00:00Z",
+        )
+        summary["generated_at"] = ["2026-05-23T12:00:00Z"]
+
+        with self.assertRaisesRegex(generate_analysis_summary.AnalysisSummaryError, "generated_at must be a string"):
+            generate_analysis_summary.validate_analysis_summary_output(summary)
+
+    def test_summary_contract_rejects_missing_required_section_field(self) -> None:
+        summary = generate_analysis_summary.build_analysis_summary(
+            ticker="NVDA",
+            validation_status={"valid": True, "errors": []},
+            research_gaps=[],
+            ratio_outputs=[ratio_output()],
+            audit_log_reference="audit_log.jsonl:1",
+            generated_at="2026-05-23T12:00:00Z",
+        )
+        del summary["risks_warnings"]["warnings"]
+
+        with self.assertRaisesRegex(
+            generate_analysis_summary.AnalysisSummaryError,
+            "risks_warnings.missing required field: warnings",
+        ):
+            generate_analysis_summary.validate_analysis_summary_output(summary)
+
+    def test_summary_contract_keeps_optional_upstream_outputs_nullable(self) -> None:
+        summary = generate_analysis_summary.build_analysis_summary(
+            ticker="NVDA",
+            validation_status={"valid": True, "errors": []},
+            research_gaps=[],
+            ratio_outputs=[ratio_output()],
+            audit_log_reference="audit_log.jsonl:1",
+            generated_at="2026-05-23T12:00:00Z",
+        )
+
+        self.assertIsNone(summary["calculated_outputs"]["model_rating"])
+        self.assertIsNone(summary["calculated_outputs"]["model_confidence"])
+        self.assertIsNone(summary["calculated_outputs"]["model_signal"])
+        self.assertEqual(generate_analysis_summary.validate_analysis_summary_output(summary), [])
+
     def test_dcf_included_when_available(self) -> None:
         summary = generate_analysis_summary.build_analysis_summary(
             ticker="NVDA",

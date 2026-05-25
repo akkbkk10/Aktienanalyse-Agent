@@ -2,8 +2,17 @@
 
 This assessment reviews the current generated `analysis_summary.json` artifact
 and recommends whether a standalone analysis summary schema/contract is needed.
-It is documentation-only and does not implement a schema, change runtime
-behavior, change tests, change CI, or change generated report wording.
+It was originally created as a documentation-only assessment and did not
+implement a schema, change runtime behavior, change tests, change CI, or change
+generated report wording.
+
+Implementation status: implemented for the current generated analysis summary
+artifact. `config/analysis_summary_output_schema.json` now defines the
+standalone contract and `scripts/generate_analysis_summary.py` validates
+generated summaries against it before writing. The implementation protects the
+report-facing envelope and section field types only; embedded upstream output
+internals, warnings, source-reference details, research-gap details, timestamps,
+paths, and audit references remain flexible.
 
 ## Source Files And Artifacts Inspected
 
@@ -275,25 +284,28 @@ schema inside the summary schema.
 
 ## Recommendation
 
-Recommended next step: implement a narrow analysis summary schema/contract.
+Recommended next step: completed for the current generated analysis summary
+artifact.
 
-The current analysis summary shape is stable enough for narrow hardening because
-NVDA, AMD, and TSMC generated summaries share the same top-level envelope and
-section fields, and lower-level generated outputs now have their own contracts.
-A standalone schema would reduce regression risk for a required per-ticker
-report artifact by protecting the summary envelope, section separation, and
-broad field types.
+The current analysis summary shape was stable enough for narrow hardening
+because NVDA, AMD, and TSMC generated summaries share the same top-level
+envelope and section fields, and lower-level generated outputs already have
+their own contracts. The implemented standalone schema reduces regression risk
+for a required per-ticker report artifact by protecting the summary envelope,
+section separation, and broad field types.
 
-Safe next implementation scope:
+Implemented scope:
 
-- add a standalone `config/analysis_summary_schema.json`
-- validate generated analysis summary artifacts against the schema
-- require the stable top-level fields and section fields listed above
+- `config/analysis_summary_output_schema.json` defines the standalone
+  analysis summary output contract
+- `scripts/generate_analysis_summary.py` validates generated analysis summary
+  artifacts against the schema
+- the stable top-level fields and section fields listed above are required
 - keep embedded output details flexible or defer to their own existing schemas
 - keep source references, warnings, research gaps, blocker text, timestamps,
   paths, and audit references flexible
-- validate generated NVDA, AMD, and TSMC demo summaries
-- add focused negative tests for missing required fields and invalid required
+- generated NVDA, AMD, and TSMC demo summaries validate against the contract
+- focused negative tests cover missing required fields and invalid required
   field types
 
 Do not include:
