@@ -15,6 +15,7 @@ CI.
 - `docs/SCHEMA_FIELD_REFERENCE.md`
 - `docs/GENERATED_OUTPUT_REVIEW_GUIDE.md`
 - `docs/ARCHITECTURE_GOVERNANCE_INDEX.md`
+- `docs/FACT_REPORT_CONTRACT_NEED_ASSESSMENT.md`
 - `docs/ANALYSIS_SUMMARY_SCHEMA_NEED_ASSESSMENT.md`
 - `docs/AUDIT_LOG_EXPECTATIONS.md`
 - `docs/AUDIT_LOG_SCHEMA_NEED_ASSESSMENT.md`
@@ -238,19 +239,36 @@ types only. It does not duplicate the nested DCF, fair value per share, model
 rating, model confidence, or model signal contracts inside the summary schema.
 It also does not add schemas for audit log or fact report artifacts.
 
+## Fact Report Contract Need Assessment Status
+
+`docs/FACT_REPORT_CONTRACT_NEED_ASSESSMENT.md` now reviews generated NVDA, AMD,
+and TSMC fact report Markdown artifacts, stable report headings, flexible prose
+and diagnostic sections, guardrail coverage, and compatibility risks of
+parser-backed Markdown validation.
+
+The assessment recommends a narrow fact report expectations document rather
+than a Markdown parser, schema, or validator. The expectations document should
+document required report-level sections, optional calculation/model sections,
+flexible wording areas, and no-advice guardrails while leaving machine-readable
+contracts to the lower-level JSON artifacts.
+
 ## Recommended Next Implementation PR
 
 Recommend exactly one next implementation target:
 
-**Fact report Markdown schema need assessment.**
+**Fact report expectations document.**
 
 Small safe scope for the future implementation PR:
 
-- Review the current fact report Markdown artifact now that generated JSON
-  report artifacts have contract protection or documented expectations.
-- Keep the first pass assessment-only because Markdown report content is
-  user-facing prose and should not be schema-hardened without confirming the
-  stable contract boundary.
+- Document the current generated fact report Markdown role and path pattern.
+- Document stable report sections such as facts, missing data, warnings, and
+  boundary.
+- Document optional DCF, fair value per share, model rating, model confidence,
+  and model signal sections when upstream artifacts are available.
+- Keep exact wording, source details, warnings, reasons, blocker text,
+  timestamps, paths, and financial values flexible.
+- Do not add a Markdown parser, schema, validator, runtime behavior change, or
+  test change.
 - Do not change fact report wording, analysis summary behavior, audit log
   behavior, model signal
   behavior, model confidence behavior, model rating behavior, fair value
@@ -264,9 +282,9 @@ Why this should be next:
 - The audit log assessment found that existing validator coverage is sufficient
   for now and that nested diagnostic payloads should stay flexible.
 - Fact report Markdown is the remaining report-facing generated artifact that
-  is documentation-reviewed only. It should be assessed before any schema or
-  structured-contract work because it is prose-heavy and protected today by
-  generated-output review and forbidden-output tests.
+  is documentation-reviewed only. The assessment found that an expectations
+  document is the smallest useful next step because the stable boundary is the
+  section map, while exact prose should remain flexible.
 
 ## Keep For Later
 
@@ -274,7 +292,8 @@ Do not harden these in the next implementation PR:
 
 - all generated JSON outputs at once
 - analysis summary nested upstream-output internals beyond broad type checks
-- fact report Markdown schema implementation before assessment
+- fact report Markdown parser or schema implementation before expectations are
+  documented and proven insufficient
 - audit log schema implementation unless the assessment identifies a concrete
   need
 - generated artifact manifest
