@@ -16,6 +16,7 @@ CI.
 - `docs/GENERATED_OUTPUT_REVIEW_GUIDE.md`
 - `docs/ARCHITECTURE_GOVERNANCE_INDEX.md`
 - `docs/MODEL_CONFIDENCE_OUTPUT_SCHEMA_ASSESSMENT.md`
+- `docs/MODEL_SIGNAL_OUTPUT_SCHEMA_ASSESSMENT.md`
 - `scripts/run_v1_0_demo.py`
 - `scripts/run_analysis.py`
 - `scripts/run_batch_analysis.py`
@@ -145,19 +146,37 @@ model signal, audit log, analysis summary, or fact report artifacts. It also
 does not define a durable blocked or unavailable model confidence artifact
 contract because the current artifact layout does not generate one.
 
+## Model Signal Schema Assessment Status
+
+`docs/MODEL_SIGNAL_OUTPUT_SCHEMA_ASSESSMENT.md` now reviews the current model
+signal output shape, observed generated demo artifacts, guardrail-sensitive
+fields, available/unavailable state coverage, investment-advice boundaries, and
+likely tests for a future implementation PR.
+
+The assessment found that a narrow model signal output contract is safe if it
+validates only the normal generated signal object shape, current non-advice
+signal enum values, nullable upstream-output summaries, guardrail disclaimer,
+and string-array reason fields. It should not freeze exact reason text, change
+signal behavior, introduce new signal labels, or add buy/sell/hold,
+recommendation, price target, or investment-advice wording.
+
 ## Recommended Next Implementation PR
 
 Recommend exactly one next implementation target:
 
-**Model signal output schema assessment.**
+**Narrow model signal output schema/contract.**
 
 Small safe scope for the future implementation PR:
 
-- Review the current model signal JSON artifact now that DCF output, fair value
-  per share output, model rating output, and model confidence output have
-  contract protection.
-- Keep the first pass assessment-only unless a concrete missing guardrail is
-  found.
+- Add a standalone `config/model_signal_output_schema.json`.
+- Validate the normal generated model signal object, including `unavailable`
+  outputs.
+- Require stable top-level fields, current non-advice signal enum values, and
+  nested upstream-output summary shapes.
+- Allow `model_rating_used` and `model_confidence_used` to be `null` when
+  upstream outputs are unavailable.
+- Keep `reasons`, `blocking_reasons`, `warnings`, and upstream label text
+  flexible.
 - Do not change model signal behavior, model confidence behavior, model rating
   behavior, fair value calculations, DCF math, report wording, CLI behavior, or
   CI.
@@ -166,10 +185,11 @@ Why this should be next:
 
 - Model signal is the next downstream user-facing generated JSON artifact after
   model confidence.
-- It is narrower than full analysis summary hardening.
-- Assessment-first keeps guardrail-sensitive signal availability, blocking
-  reasons, and no-recommendation boundaries from being over-constrained too
-  early.
+- DCF output, fair value per share output, model rating output, and model
+  confidence output already have contract protection.
+- The dedicated model signal assessment found the shape stable enough for a
+  narrow contract while preserving behavioral guardrail tests and flexible
+  explainability text.
 
 ## Keep For Later
 
@@ -178,7 +198,6 @@ Do not harden these in the next implementation PR:
 - all generated JSON outputs at once
 - analysis summary schema
 - fact report Markdown schema
-- model signal schema
 - audit log schema unless a concrete JSONL consumer needs it
 - generated artifact manifest
 
