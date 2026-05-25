@@ -1,0 +1,19 @@
+# Public repository ownership routing.
+# Maintainers must still verify GitHub branch protection and required review
+# settings before relying on CODEOWNERS as an enforced merge control.
+
+* @akkbkk10
+
+/.github/ @akkbkk10
+/.github/CODEOWNERS @akkbkk10
+
+/AGENTS.md @akkbkk10
+/README.md @akkbkk10
+/SECURITY.md @akkbkk10
+/CONTRIBUTING.md @akkbkk10
+/CODE_OF_CONDUCT.md @akkbkk10
+
+/config/ @akkbkk10
+/scripts/ @akkbkk10
+/tests/ @akkbkk10
+/docs/ @akkbkk10
