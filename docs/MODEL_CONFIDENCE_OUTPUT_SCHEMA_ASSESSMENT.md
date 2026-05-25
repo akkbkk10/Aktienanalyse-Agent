@@ -5,6 +5,11 @@ recommends whether a narrow schema/contract implementation is safe. It is
 documentation-only and does not implement a schema, change runtime behavior,
 change tests, change CI, or change generated report wording.
 
+Implementation status: partially implemented. `config/model_confidence_output_schema.json`
+now defines the successful-output contract and `scripts/model_confidence.py`
+validates successful generated model confidence outputs against it. This does
+not add a blocked or unavailable model confidence artifact contract.
+
 ## Source Files And Artifacts Inspected
 
 - `AGENTS.md`
@@ -209,21 +214,21 @@ error output should remain outside the stable per-ticker artifact contract.
 
 ## Recommendation
 
-Recommended next step: implement a narrow model confidence output
-schema/contract.
+Recommended next step: completed for successful generated outputs. The narrow
+model confidence output schema/contract has been implemented for successful
+artifacts only.
 
 Safe implementation scope:
 
-- Add a standalone `config/model_confidence_output_schema.json`.
-- Add validation helper logic in `scripts/model_confidence.py`.
-- Validate successful generated model confidence outputs only.
-- Require stable top-level fields and carefully typed nested structures.
-- Require base source-reference traceability fields.
-- Require market price timestamp/provider fields only for market price source
-  references.
-- Keep `reasons`, `warnings`, labels, and matched terms flexible as arrays or
+- `config/model_confidence_output_schema.json` defines the standalone contract.
+- `scripts/model_confidence.py` validates successful generated outputs.
+- Stable top-level fields and carefully typed nested structures are required.
+- Base source-reference traceability fields are required.
+- Market price timestamp/provider fields are required only for market price
+  source references.
+- `reasons`, `warnings`, labels, and matched terms remain flexible as arrays or
   strings rather than exact text.
-- Add focused contract tests and v1.0 demo artifact validation.
+- Focused contract tests and v1.0 demo artifact validation protect the contract.
 
 Do not include:
 
