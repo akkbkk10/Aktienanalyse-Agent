@@ -69,6 +69,7 @@ Adapter and architecture governance:
 
 Maintainer and release workflow:
 
+- `docs/RELEASE_AND_TAG_GOVERNANCE.md` - public release and tag governance rules and manual GitHub setting checks.
 - `docs/V1_0_X_PATCH_RELEASE_CHECKLIST.md` - v1.0.x patch release workflow.
 - `docs/V1_0_RELEASE_NOTES.md` - v1.0.0 release notes.
 - `docs/V1_0_1_RELEASE_NOTES.md` - v1.0.1 release notes.

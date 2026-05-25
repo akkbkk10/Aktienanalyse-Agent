@@ -27,6 +27,7 @@ requirements.
 | Propose a schema, source-schema, snapshot, or adapter contract change | `.github/ISSUE_TEMPLATE/schema_change_proposal.md` | Captures the proposal before implementation, including affected stages, metadata, audit impact, and required tests. |
 | Track adapter risks | `docs/ADAPTER_RISK_REGISTER_TEMPLATE.md` | Documents risk categories, mitigations, tests, and review evidence. |
 | Record an adapter decision | `docs/ADAPTER_DECISION_RECORD_TEMPLATE.md` | Records accepted, rejected, deferred, or superseded adapter proposals and their rationale. |
+| Govern public releases and tags | `docs/RELEASE_AND_TAG_GOVERNANCE.md` | Documents release-note PR rules, tag timing, tag naming, generated-artifact exclusions, and manual GitHub setting checks. |
 | Prepare a v1.0.x patch release | `docs/V1_0_X_PATCH_RELEASE_CHECKLIST.md` | Provides release validation, generated-artifact, tag, GitHub Release, and troubleshooting steps. |
 
 ## Future Adapter Work Order
