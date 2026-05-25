@@ -1,0 +1,70 @@
+{
+  "schema_version": "0.1.0",
+  "type": "object",
+  "required_fields": [
+    "ticker",
+    "model_signal",
+    "reasons",
+    "blocking_reasons",
+    "model_rating_used",
+    "model_confidence_used",
+    "rules_version",
+    "warnings",
+    "disclaimer"
+  ],
+  "field_types": {
+    "ticker": "string",
+    "model_signal": "string",
+    "reasons": "array",
+    "blocking_reasons": "array",
+    "model_rating_used": "object_or_null",
+    "model_confidence_used": "object_or_null",
+    "rules_version": "string",
+    "warnings": "array",
+    "disclaimer": "string"
+  },
+  "signal_values": [
+    "unavailable",
+    "model_positive",
+    "model_neutral",
+    "model_negative"
+  ],
+  "model_rating_used_required_fields": [
+    "model_rating",
+    "rating_label",
+    "valuation_gap_percent",
+    "rules_version"
+  ],
+  "model_rating_used_field_types": {
+    "model_rating": "number",
+    "rating_label": "string",
+    "valuation_gap_percent": "number",
+    "rules_version": "string"
+  },
+  "model_confidence_used_required_fields": [
+    "model_confidence",
+    "confidence_label",
+    "confidence_score",
+    "assumption_quality",
+    "rules_version"
+  ],
+  "model_confidence_used_field_types": {
+    "model_confidence": "string",
+    "confidence_label": "string",
+    "confidence_score": "number",
+    "assumption_quality": "object",
+    "rules_version": "string"
+  },
+  "assumption_quality_required_fields": [
+    "status",
+    "active_signal_allowed",
+    "matched_terms",
+    "blocking_reasons"
+  ],
+  "assumption_quality_field_types": {
+    "status": "string",
+    "active_signal_allowed": "boolean",
+    "matched_terms": "array",
+    "blocking_reasons": "array"
+  }
+}

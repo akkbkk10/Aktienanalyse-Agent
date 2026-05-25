@@ -38,6 +38,12 @@ model_confidence = importlib.util.module_from_spec(model_confidence_spec)
 assert model_confidence_spec.loader is not None
 model_confidence_spec.loader.exec_module(model_confidence)
 
+MODEL_SIGNAL_PATH = REPO_ROOT / "scripts" / "model_signal.py"
+model_signal_spec = importlib.util.spec_from_file_location("model_signal", MODEL_SIGNAL_PATH)
+model_signal = importlib.util.module_from_spec(model_signal_spec)
+assert model_signal_spec.loader is not None
+model_signal_spec.loader.exec_module(model_signal)
+
 
 class RunV10DemoTests(unittest.TestCase):
     def test_demo_runs_supported_sample_tickers(self) -> None:
@@ -163,6 +169,19 @@ class RunV10DemoTests(unittest.TestCase):
                     )
 
                     self.assertEqual(model_confidence.validate_model_confidence_output(confidence_output), [])
+
+    def test_demo_model_signal_outputs_satisfy_contract(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            result = run_v1_0_demo.run_demo(reports_dir=Path(temp_dir) / "reports")
+            output_paths = result["generated_file_paths"]["output_paths_by_ticker"]
+
+            for ticker in ["NVDA", "AMD", "TSMC"]:
+                with self.subTest(ticker=ticker):
+                    signal_output = json.loads(
+                        Path(output_paths[ticker]["model_signal_output_path"]).read_text(encoding="utf-8")
+                    )
+
+                    self.assertEqual(model_signal.validate_model_signal_output(signal_output), [])
 
     def test_demo_points_to_manual_review_checklist(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

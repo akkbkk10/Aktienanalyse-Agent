@@ -5,6 +5,12 @@ recommends whether a narrow schema/contract implementation is safe. It is
 documentation-only and does not implement a schema, change runtime behavior,
 change tests, change CI, or change generated report wording.
 
+Implementation status: implemented for the normal generated model signal
+object. `config/model_signal_output_schema.json` now defines the contract and
+`scripts/model_signal.py` validates generated model signal outputs against it.
+This does not add a separate CLI error artifact contract or change signal
+behavior.
+
 ## Source Files And Artifacts Inspected
 
 - `AGENTS.md`
@@ -247,22 +253,26 @@ the normal generated output object.
 
 ## Recommendation
 
-Recommended next step: implement a narrow model signal output schema/contract.
+Recommended next step: completed for the normal generated model signal object.
+The narrow model signal output schema/contract has been implemented for current
+generated artifacts and existing tested signal states.
 
-Safe implementation scope:
+Implemented scope:
 
-- Add a standalone `config/model_signal_output_schema.json`.
-- Add validation helper logic in `scripts/model_signal.py`.
-- Validate the normal generated model signal object, including `unavailable`
+- `config/model_signal_output_schema.json` defines the standalone contract.
+- `scripts/model_signal.py` validates the normal generated model signal object,
+  including `unavailable`
   outputs.
-- Require stable top-level fields and carefully typed nested upstream-output
+- Stable top-level fields and carefully typed nested upstream-output
   summaries.
-- Require `model_signal` to remain one of the current non-advice enum values.
-- Allow `model_rating_used` and `model_confidence_used` to be `null` when
+- `model_signal` is required to remain one of the current non-advice enum
+  values.
+- `model_rating_used` and `model_confidence_used` are allowed to be `null` when
   upstream outputs are unavailable.
-- Keep `reasons`, `blocking_reasons`, `warnings`, and upstream label text
+- `reasons`, `blocking_reasons`, `warnings`, and upstream label text remain
   flexible as strings or arrays of strings rather than exact text.
-- Add focused contract tests and v1.0 demo artifact validation.
+- Focused contract tests and v1.0 demo artifact validation protect the
+  contract.
 
 Do not include:
 
