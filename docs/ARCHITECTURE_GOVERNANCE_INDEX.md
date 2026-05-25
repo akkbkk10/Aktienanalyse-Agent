@@ -19,6 +19,7 @@ requirements.
 | Validate DCF output contract expectations | `config/dcf_output_schema.json` | Defines the standalone contract for generated `*_dcf_output.json` artifacts. |
 | Validate fair value per share output contract expectations | `config/fair_value_per_share_output_schema.json` | Defines the standalone contract for generated `*_fair_value_per_share_output.json` artifacts. |
 | Validate model rating output contract expectations | `config/model_rating_output_schema.json` | Defines the standalone contract for generated `*_model_rating_output.json` artifacts. |
+| Validate model confidence output contract expectations | `config/model_confidence_output_schema.json` | Defines the standalone contract for successful generated `*_model_confidence_output.json` artifacts. |
 | Review generated output before merging | `docs/GENERATED_OUTPUT_REVIEW_GUIDE.md` | Helps inspect reports, summaries, model outputs, and audit logs for unsafe wording or traceability issues. |
 | Assess public repository security and governance posture | `docs/PUBLIC_REPOSITORY_SECURITY_GOVERNANCE_ASSESSMENT.md` | Separates file-based governance findings from GitHub settings that require manual verification before more schema work. |
 | Check secret hygiene before public contribution | `docs/SECRET_HYGIENE_CHECKLIST.md` | Lists files, tokens, generated artifacts, and private data that must not be posted or committed. |

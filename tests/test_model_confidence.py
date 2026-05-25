@@ -184,6 +184,58 @@ class ModelConfidenceTests(unittest.TestCase):
         for term in ["buy", "sell", "hold", "recommendation", "investment advice", "model signal"]:
             self.assertNotIn(term, serialized)
 
+    def test_valid_model_confidence_output_satisfies_contract(self) -> None:
+        result = calculate_confidence_for_test([revenue_metric(), market_price_metric()])
+
+        self.assertEqual(model_confidence.validate_model_confidence_output(result), [])
+
+    def test_manual_review_model_confidence_output_satisfies_contract(self) -> None:
+        result = calculate_confidence_for_test(
+            [revenue_metric(), market_price_metric()],
+            assumptions_payload=example_assumptions(),
+        )
+
+        self.assertEqual(result["assumption_quality"]["status"], "manual_review_required")
+        self.assertEqual(model_confidence.validate_model_confidence_output(result), [])
+
+    def test_missing_required_model_confidence_output_field_fails_contract(self) -> None:
+        result = calculate_confidence_for_test([revenue_metric(), market_price_metric()])
+        del result["rules_version"]
+
+        with self.assertRaisesRegex(model_confidence.ModelConfidenceError, "missing required field: rules_version"):
+            model_confidence.validate_model_confidence_output(result)
+
+    def test_invalid_model_confidence_output_type_fails_contract(self) -> None:
+        result = calculate_confidence_for_test([revenue_metric(), market_price_metric()])
+        result["confidence_score"] = "100"
+
+        with self.assertRaisesRegex(model_confidence.ModelConfidenceError, "confidence_score must be a number"):
+            model_confidence.validate_model_confidence_output(result)
+
+    def test_invalid_model_confidence_enum_fails_contract(self) -> None:
+        result = calculate_confidence_for_test([revenue_metric(), market_price_metric()])
+        result["model_confidence"] = "E"
+
+        with self.assertRaisesRegex(model_confidence.ModelConfidenceError, "model_confidence must be one of"):
+            model_confidence.validate_model_confidence_output(result)
+
+    def test_missing_assumption_quality_field_fails_contract(self) -> None:
+        result = calculate_confidence_for_test([revenue_metric(), market_price_metric()])
+        del result["assumption_quality"]["active_signal_allowed"]
+
+        with self.assertRaisesRegex(
+            model_confidence.ModelConfidenceError,
+            "assumption_quality.missing required field: active_signal_allowed",
+        ):
+            model_confidence.validate_model_confidence_output(result)
+
+    def test_missing_source_reference_metadata_fails_contract(self) -> None:
+        result = calculate_confidence_for_test([revenue_metric(), market_price_metric()])
+        del result["source_references"][0]["source_url"]
+
+        with self.assertRaisesRegex(model_confidence.ModelConfidenceError, "missing required field: source_url"):
+            model_confidence.validate_model_confidence_output(result)
+
 
 def calculate_confidence_for_test(
     metrics: list[dict],

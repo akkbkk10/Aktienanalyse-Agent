@@ -125,32 +125,51 @@ The model rating output recommendation has been partially implemented:
 This covers model rating output only. It does not add schemas for model
 confidence, model signal, audit log, analysis summary, or fact report artifacts.
 
+## Model Confidence Schema Hardening Status
+
+The model confidence output recommendation has been partially implemented:
+
+- `config/model_confidence_output_schema.json` defines the standalone model
+  confidence output contract for successful generated artifacts.
+- `scripts/model_confidence.py` validates generated model confidence outputs
+  against the contract.
+- Model confidence tests cover valid output, manual-review assumption quality,
+  missing required fields, invalid field types, invalid confidence enum values,
+  missing assumption-quality fields, missing source-reference metadata, and
+  prohibited-language boundaries.
+- v1.0 demo tests validate generated NVDA, AMD, and TSMC model confidence output
+  artifacts against the contract.
+
+This covers successful model confidence output only. It does not add schemas for
+model signal, audit log, analysis summary, or fact report artifacts. It also
+does not define a durable blocked or unavailable model confidence artifact
+contract because the current artifact layout does not generate one.
+
 ## Recommended Next Implementation PR
 
 Recommend exactly one next implementation target:
 
-**Narrow model confidence output schema/contract.**
+**Model signal output schema assessment.**
 
 Small safe scope for the future implementation PR:
 
-- Add a standalone `config/model_confidence_output_schema.json`.
-- Validate successful generated model confidence outputs only.
-- Require stable top-level fields, assumption-quality structure, source
-  references, and the model-quality disclaimer.
-- Keep reasons, warnings, labels, and matched terms flexible enough for
-  guardrail wording to evolve.
-- Do not change model confidence behavior, assumption-quality rules, model
-  rating behavior, fair value calculations, DCF math, report wording, CLI
-  behavior, or CI.
+- Review the current model signal JSON artifact now that DCF output, fair value
+  per share output, model rating output, and model confidence output have
+  contract protection.
+- Keep the first pass assessment-only unless a concrete missing guardrail is
+  found.
+- Do not change model signal behavior, model confidence behavior, model rating
+  behavior, fair value calculations, DCF math, report wording, CLI behavior, or
+  CI.
 
 Why this should be next:
 
-- Model confidence is the next upstream input to model signal after model
-  rating.
-- It is narrower than model signal or full analysis summary hardening.
-- `docs/MODEL_CONFIDENCE_OUTPUT_SCHEMA_ASSESSMENT.md` found the current
-  successful artifact shape stable enough for a narrow contract, while keeping
-  blocked CLI error output out of the durable per-ticker artifact contract.
+- Model signal is the next downstream user-facing generated JSON artifact after
+  model confidence.
+- It is narrower than full analysis summary hardening.
+- Assessment-first keeps guardrail-sensitive signal availability, blocking
+  reasons, and no-recommendation boundaries from being over-constrained too
+  early.
 
 ## Keep For Later
 

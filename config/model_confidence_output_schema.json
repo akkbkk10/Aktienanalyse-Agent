@@ -1,0 +1,94 @@
+{
+  "schema_version": "0.1.0",
+  "type": "object",
+  "required_fields": [
+    "ticker",
+    "model_confidence",
+    "confidence_label",
+    "confidence_score",
+    "reasons",
+    "warnings",
+    "rules_version",
+    "assumption_quality",
+    "source_references",
+    "disclaimer"
+  ],
+  "field_types": {
+    "ticker": "string",
+    "model_confidence": "string",
+    "confidence_label": "string",
+    "confidence_score": "number",
+    "reasons": "array",
+    "warnings": "array",
+    "rules_version": "string",
+    "assumption_quality": "object",
+    "source_references": "array",
+    "disclaimer": "string"
+  },
+  "confidence_values": [
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "assumption_quality_required_fields": [
+    "status",
+    "active_signal_allowed",
+    "matched_terms",
+    "blocking_reasons"
+  ],
+  "assumption_quality_field_types": {
+    "status": "string",
+    "active_signal_allowed": "boolean",
+    "matched_terms": "array",
+    "blocking_reasons": "array"
+  },
+  "assumption_quality_status_values": [
+    "sufficient",
+    "manual_review_required",
+    "incomplete",
+    "missing_or_unreadable"
+  ],
+  "source_reference_required_fields": [
+    "metric_id",
+    "metric_name",
+    "metric_category",
+    "period",
+    "unit",
+    "source_url",
+    "source_type",
+    "source_date",
+    "last_verified",
+    "confidence"
+  ],
+  "source_reference_field_types": {
+    "metric_id": "string",
+    "metric_name": "string",
+    "metric_category": "string_or_null",
+    "period": "string",
+    "unit": "string",
+    "source_url": "string",
+    "source_type": "string",
+    "source_date": "date",
+    "last_verified": "date",
+    "confidence": "string"
+  },
+  "market_price_source_reference_required_fields": [
+    "currency",
+    "exchange",
+    "price_type",
+    "as_of_datetime",
+    "fetched_at",
+    "provider",
+    "retrieval_method"
+  ],
+  "market_price_source_reference_field_types": {
+    "currency": "string",
+    "exchange": "string",
+    "price_type": "string",
+    "as_of_datetime": "datetime",
+    "fetched_at": "datetime",
+    "provider": "string",
+    "retrieval_method": "string"
+  }
+}
