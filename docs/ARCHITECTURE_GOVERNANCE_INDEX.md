@@ -12,6 +12,7 @@ requirements.
 | Check current data fields and output structures | `docs/SCHEMA_FIELD_REFERENCE.md` | Lists current schema fields and observed output structures. |
 | Check generated artifact paths and required files | `docs/REPORT_ARTIFACT_CONTRACT.md` | Documents the current reports directory layout, shared audit log, and required per-ticker v1.0 demo artifacts. |
 | Assess generated JSON schema priorities | `docs/GENERATED_OUTPUT_SCHEMA_ASSESSMENT.md` | Compares generated artifact schema candidates and recommends the next narrow hardening target. |
+| Assess model confidence output schema readiness | `docs/MODEL_CONFIDENCE_OUTPUT_SCHEMA_ASSESSMENT.md` | Reviews actual model confidence artifacts and recommends a narrow future contract scope. |
 | Plan the next v1.1.x implementation block | `docs/V1_1_X_NEXT_CANDIDATE_PLAN.md` | Summarizes the v1.1.0 contract baseline and recommends the next narrow generated-output contract PR. |
 | Assess data-contract hardening priorities | `docs/DATA_CONTRACT_SCHEMA_HARDENING_ASSESSMENT.md` | Reviews current schema protections and identifies the next small data-contract hardening candidate. |
 | Validate company context contract expectations | `config/company_context_schema.json` | Defines the standalone contract for persistent `data/companies/<TICKER>/context.json` files. |

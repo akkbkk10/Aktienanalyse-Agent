@@ -57,6 +57,7 @@ Generated-output review:
 
 - `docs/REPORT_ARTIFACT_CONTRACT.md` - current generated artifact layout and required v1.0 demo outputs.
 - `docs/GENERATED_OUTPUT_SCHEMA_ASSESSMENT.md` - assessment of generated JSON artifact schema hardening candidates.
+- `docs/MODEL_CONFIDENCE_OUTPUT_SCHEMA_ASSESSMENT.md` - assessment of model confidence output schema readiness and narrow contract scope.
 - `docs/V1_1_X_NEXT_CANDIDATE_PLAN.md` - post-v1.1.0 planning assessment and next implementation recommendation.
 - `docs/GENERATED_OUTPUT_REVIEW_GUIDE.md` - review guide for generated reports, summaries, model outputs, and audit logs.
 

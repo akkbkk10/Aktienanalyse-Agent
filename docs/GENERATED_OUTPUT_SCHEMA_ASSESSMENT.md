@@ -15,6 +15,7 @@ CI.
 - `docs/SCHEMA_FIELD_REFERENCE.md`
 - `docs/GENERATED_OUTPUT_REVIEW_GUIDE.md`
 - `docs/ARCHITECTURE_GOVERNANCE_INDEX.md`
+- `docs/MODEL_CONFIDENCE_OUTPUT_SCHEMA_ASSESSMENT.md`
 - `scripts/run_v1_0_demo.py`
 - `scripts/run_analysis.py`
 - `scripts/run_batch_analysis.py`
@@ -128,14 +129,16 @@ confidence, model signal, audit log, analysis summary, or fact report artifacts.
 
 Recommend exactly one next implementation target:
 
-**Model confidence output schema assessment.**
+**Narrow model confidence output schema/contract.**
 
 Small safe scope for the future implementation PR:
 
-- Review the current model confidence JSON artifact now that DCF output, fair
-  value per share output, and model rating output have contract protection.
-- Keep the first pass assessment-only unless a concrete missing guardrail is
-  found.
+- Add a standalone `config/model_confidence_output_schema.json`.
+- Validate successful generated model confidence outputs only.
+- Require stable top-level fields, assumption-quality structure, source
+  references, and the model-quality disclaimer.
+- Keep reasons, warnings, labels, and matched terms flexible enough for
+  guardrail wording to evolve.
 - Do not change model confidence behavior, assumption-quality rules, model
   rating behavior, fair value calculations, DCF math, report wording, CLI
   behavior, or CI.
@@ -145,8 +148,9 @@ Why this should be next:
 - Model confidence is the next upstream input to model signal after model
   rating.
 - It is narrower than model signal or full analysis summary hardening.
-- Assessment-first keeps the project from broadening into every generated JSON
-  artifact at once.
+- `docs/MODEL_CONFIDENCE_OUTPUT_SCHEMA_ASSESSMENT.md` found the current
+  successful artifact shape stable enough for a narrow contract, while keeping
+  blocked CLI error output out of the durable per-ticker artifact contract.
 
 ## Keep For Later
 
@@ -155,7 +159,7 @@ Do not harden these in the next implementation PR:
 - all generated JSON outputs at once
 - analysis summary schema
 - fact report Markdown schema
-- model confidence or signal schemas
+- model signal schema
 - audit log schema unless a concrete JSONL consumer needs it
 - generated artifact manifest
 
