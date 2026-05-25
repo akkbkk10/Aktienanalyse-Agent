@@ -160,36 +160,51 @@ and string-array reason fields. It should not freeze exact reason text, change
 signal behavior, introduce new signal labels, or add buy/sell/hold,
 recommendation, price target, or investment-advice wording.
 
+## Model Signal Schema Hardening Status
+
+The model signal output recommendation has been implemented for the normal
+generated model signal object:
+
+- `config/model_signal_output_schema.json` defines the standalone model signal
+  output contract.
+- `scripts/model_signal.py` validates generated model signal outputs against
+  the contract.
+- Model signal tests cover active `model_positive`, `model_neutral`, and
+  `model_negative` outputs, unavailable outputs, nullable upstream summaries,
+  missing required fields, invalid field types, invalid signal enum values,
+  missing nested upstream fields, and prohibited-language boundaries.
+- v1.0 demo tests validate generated NVDA, AMD, and TSMC model signal output
+  artifacts against the contract.
+
+This covers the normal generated model signal object only. It does not add
+schemas for audit log, analysis summary, or fact report artifacts. It also does
+not define a separate durable CLI error artifact contract.
+
 ## Recommended Next Implementation PR
 
 Recommend exactly one next implementation target:
 
-**Narrow model signal output schema/contract.**
+**Audit log schema need assessment.**
 
 Small safe scope for the future implementation PR:
 
-- Add a standalone `config/model_signal_output_schema.json`.
-- Validate the normal generated model signal object, including `unavailable`
-  outputs.
-- Require stable top-level fields, current non-advice signal enum values, and
-  nested upstream-output summary shapes.
-- Allow `model_rating_used` and `model_confidence_used` to be `null` when
-  upstream outputs are unavailable.
-- Keep `reasons`, `blocking_reasons`, `warnings`, and upstream label text
-  flexible.
-- Do not change model signal behavior, model confidence behavior, model rating
-  behavior, fair value calculations, DCF math, report wording, CLI behavior, or
-  CI.
+- Review whether the existing JSONL audit log validator is sufficient or
+  whether a standalone config contract would help future consumers.
+- Keep the first pass assessment-only unless a concrete missing guardrail is
+  found.
+- Do not change audit log behavior, model signal behavior, model confidence
+  behavior, model rating behavior, fair value calculations, DCF math, report
+  wording, CLI behavior, or CI.
 
 Why this should be next:
 
-- Model signal is the next downstream user-facing generated JSON artifact after
-  model confidence.
-- DCF output, fair value per share output, model rating output, and model
-  confidence output already have contract protection.
-- The dedicated model signal assessment found the shape stable enough for a
-  narrow contract while preserving behavioral guardrail tests and flexible
-  explainability text.
+- DCF output, fair value per share output, model rating output, model
+  confidence output, and model signal output now have contract protection.
+- The audit log already has direct validator coverage, so assessment-first can
+  determine whether a standalone schema would add value or merely duplicate
+  existing tests.
+- This is narrower than analysis summary hardening and avoids broad aggregate
+  schema work until lower-level output contracts are complete.
 
 ## Keep For Later
 
@@ -198,7 +213,8 @@ Do not harden these in the next implementation PR:
 - all generated JSON outputs at once
 - analysis summary schema
 - fact report Markdown schema
-- audit log schema unless a concrete JSONL consumer needs it
+- audit log schema implementation unless the assessment identifies a concrete
+  need
 - generated artifact manifest
 
 Do not add:

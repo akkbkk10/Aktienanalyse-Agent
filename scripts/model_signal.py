@@ -10,6 +10,7 @@ from typing import Any
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_RULES_PATH = REPO_ROOT / "config" / "model_signal_rules.json"
 DEFAULT_SOURCE_RULES_PATH = REPO_ROOT / "config" / "source_rules.json"
+DEFAULT_OUTPUT_SCHEMA_PATH = REPO_ROOT / "config" / "model_signal_output_schema.json"
 DISCLAIMER = "non-personalized model output, not investment advice."
 PROHIBITED_OUTPUT_TERMS = [
     "price target",
@@ -104,7 +105,80 @@ def calculate_model_signal(
     }
     _validate_allowed_signal(result, rules)
     _assert_no_prohibited_language(result)
+    validate_model_signal_output(result)
     return result
+
+
+def validate_model_signal_output(
+    output: dict[str, Any],
+    schema: dict[str, Any] | None = None,
+) -> list[str]:
+    schema = schema or load_json(DEFAULT_OUTPUT_SCHEMA_PATH)
+    errors: list[str] = []
+
+    if not isinstance(output, dict):
+        raise ModelSignalError("Model signal output must be a JSON object.")
+
+    for field in schema.get("required_fields", []):
+        errors.extend(_validate_required_field(output, field, schema.get("field_types", {})))
+
+    model_signal = output.get("model_signal")
+    if isinstance(model_signal, str) and model_signal not in schema.get("signal_values", []):
+        errors.append("model_signal must be one of: unavailable, model_positive, model_neutral, model_negative.")
+
+    for array_field in ["reasons", "blocking_reasons", "warnings"]:
+        value = output.get(array_field)
+        if isinstance(value, list):
+            errors.extend(_validate_string_array(array_field, value))
+
+    model_rating_used = output.get("model_rating_used")
+    if isinstance(model_rating_used, dict):
+        for field in schema.get("model_rating_used_required_fields", []):
+            errors.extend(
+                _validate_required_field(
+                    model_rating_used,
+                    field,
+                    schema.get("model_rating_used_field_types", {}),
+                    prefix="model_rating_used.",
+                )
+            )
+
+    model_confidence_used = output.get("model_confidence_used")
+    if isinstance(model_confidence_used, dict):
+        for field in schema.get("model_confidence_used_required_fields", []):
+            errors.extend(
+                _validate_required_field(
+                    model_confidence_used,
+                    field,
+                    schema.get("model_confidence_used_field_types", {}),
+                    prefix="model_confidence_used.",
+                )
+            )
+        assumption_quality = model_confidence_used.get("assumption_quality")
+        if isinstance(assumption_quality, dict):
+            for field in schema.get("assumption_quality_required_fields", []):
+                errors.extend(
+                    _validate_required_field(
+                        assumption_quality,
+                        field,
+                        schema.get("assumption_quality_field_types", {}),
+                        prefix="model_confidence_used.assumption_quality.",
+                    )
+                )
+            for array_field in ["matched_terms", "blocking_reasons"]:
+                value = assumption_quality.get(array_field)
+                if isinstance(value, list):
+                    errors.extend(
+                        _validate_string_array(
+                            f"model_confidence_used.assumption_quality.{array_field}",
+                            value,
+                        )
+                    )
+
+    if errors:
+        raise ModelSignalError("; ".join(errors))
+
+    return []
 
 
 def _matches_positive(model_rating: Any, model_confidence: Any, valuation_gap: Any, rules: dict[str, Any]) -> bool:
@@ -212,6 +286,49 @@ def _assert_no_prohibited_language(result: dict[str, Any]) -> None:
     found = [term for term in PROHIBITED_OUTPUT_TERMS if term in serialized]
     if found:
         raise ModelSignalError(f"Model signal output contains prohibited language: {', '.join(found)}.")
+
+
+def _validate_required_field(
+    payload: dict[str, Any],
+    field: str,
+    field_types: dict[str, str],
+    prefix: str = "",
+) -> list[str]:
+    expected_type = field_types.get(field)
+    if field not in payload or payload[field] == "" or (payload[field] is None and expected_type != "object_or_null"):
+        return [f"{prefix}missing required field: {field}."]
+
+    if expected_type:
+        return _validate_contract_type(f"{prefix}{field}", payload[field], expected_type)
+
+    return []
+
+
+def _validate_contract_type(field: str, value: Any, expected_type: str) -> list[str]:
+    errors: list[str] = []
+
+    if expected_type == "string" and not isinstance(value, str):
+        errors.append(f"{field} must be a string.")
+    elif expected_type == "boolean" and not isinstance(value, bool):
+        errors.append(f"{field} must be a boolean.")
+    elif expected_type == "array" and not isinstance(value, list):
+        errors.append(f"{field} must be an array.")
+    elif expected_type == "object" and not isinstance(value, dict):
+        errors.append(f"{field} must be an object.")
+    elif expected_type == "object_or_null" and not (isinstance(value, dict) or value is None):
+        errors.append(f"{field} must be an object or null.")
+    elif expected_type == "number" and not _is_number(value):
+        errors.append(f"{field} must be a number.")
+
+    return errors
+
+
+def _validate_string_array(field: str, values: list[Any]) -> list[str]:
+    errors = []
+    for index, value in enumerate(values):
+        if not isinstance(value, str):
+            errors.append(f"{field} item {index} must be a string.")
+    return errors
 
 
 def _parse_iso_datetime(value: str) -> datetime | None:
