@@ -252,27 +252,27 @@ document required report-level sections, optional calculation/model sections,
 flexible wording areas, and no-advice guardrails while leaving machine-readable
 contracts to the lower-level JSON artifacts.
 
+`docs/FACT_REPORT_EXPECTATIONS.md` now documents the generated fact report
+Markdown role, stable sections, optional calculation/model sections, flexible
+content, guardrail expectations, why no parser/schema/validator is added yet,
+and when a future heading-level contract could become justified.
+
 ## Recommended Next Implementation PR
 
 Recommend exactly one next implementation target:
 
-**Fact report expectations document.**
+**Generated artifact manifest assessment.**
 
 Small safe scope for the future implementation PR:
 
-- Document the current generated fact report Markdown role and path pattern.
-- Document stable report sections such as facts, missing data, warnings, and
-  boundary.
-- Document optional DCF, fair value per share, model rating, model confidence,
-  and model signal sections when upstream artifacts are available.
-- Keep exact wording, source details, warnings, reasons, blocker text,
-  timestamps, paths, and financial values flexible.
-- Do not add a Markdown parser, schema, validator, runtime behavior change, or
-  test change.
-- Do not change fact report wording, analysis summary behavior, audit log
-  behavior, model signal
-  behavior, model confidence behavior, model rating behavior, fair value
-  calculations, DCF math, report wording, CLI behavior, or CI.
+- Assess whether the generated report bundle needs a lightweight manifest that
+  records expected artifact paths and generated artifact presence.
+- Keep the first pass assessment-only because report artifact paths are already
+  documented in `docs/REPORT_ARTIFACT_CONTRACT.md` and protected by demo tests.
+- Compare potential manifest value against existing path tests, report artifact
+  documentation, and generated-output review guidance.
+- Do not add a manifest implementation, runtime behavior change, test change,
+  CI change, report wording change, or generated reports.
 
 Why this should be next:
 
@@ -281,10 +281,11 @@ Why this should be next:
   contract protection.
 - The audit log assessment found that existing validator coverage is sufficient
   for now and that nested diagnostic payloads should stay flexible.
-- Fact report Markdown is the remaining report-facing generated artifact that
-  is documentation-reviewed only. The assessment found that an expectations
-  document is the smallest useful next step because the stable boundary is the
-  section map, while exact prose should remain flexible.
+- Fact report Markdown now has expectations documentation without parser-backed
+  validation, matching its prose-heavy and user-facing nature.
+- A generated artifact manifest is the remaining candidate called out for later
+  work, but it should be assessed before implementation because current report
+  artifact path tests may already provide enough protection.
 
 ## Keep For Later
 
@@ -296,7 +297,7 @@ Do not harden these in the next implementation PR:
   documented and proven insufficient
 - audit log schema implementation unless the assessment identifies a concrete
   need
-- generated artifact manifest
+- generated artifact manifest implementation before assessment
 
 Do not add:
 

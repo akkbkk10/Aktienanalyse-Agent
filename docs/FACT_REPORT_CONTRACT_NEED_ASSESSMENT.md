@@ -5,6 +5,11 @@ recommends whether it needs a contract, schema, or expectations document. It is
 documentation-only and does not implement a Markdown parser, schema, validator,
 runtime change, test change, CI change, or report wording change.
 
+Implementation status: implemented as expectations documentation.
+`docs/FACT_REPORT_EXPECTATIONS.md` now documents the stable fact report role,
+sections, flexible content, guardrails, and why no Markdown parser, schema, or
+validator is added yet.
+
 ## Source Files And Artifacts Inspected
 
 - `AGENTS.md`
@@ -229,21 +234,23 @@ the exact prose under every heading.
 
 ## Recommendation
 
-Recommended next step: implement a narrow fact report expectations document.
+Recommended next step: completed as a narrow fact report expectations document.
 
-The expectations document should:
+Implemented scope:
 
-- document the current generated Markdown report role and path pattern
-- list stable required sections such as facts, missing data, warnings, and
+- `docs/FACT_REPORT_EXPECTATIONS.md` documents the current generated Markdown
+  report role and path pattern
+- stable sections such as facts, missing data, warnings, and
   boundary
-- list optional calculation/model sections that appear when upstream artifacts
+- optional calculation/model sections that appear when upstream artifacts
   are available
-- keep exact wording, source details, warnings, reasons, blocker text,
+- exact wording, source details, warnings, reasons, blocker text,
   timestamps, paths, and financial values flexible
-- state that lower-level JSON artifacts remain the source of truth for
+- lower-level JSON artifacts remain the source of truth for
   machine-readable contracts
-- preserve guardrails against price targets, buy/sell/hold recommendations,
+- guardrails against price targets, buy/sell/hold recommendations,
   investment advice, live fetching, broker/order behavior, and trading logic
+  are documented
 
 Do not implement a Markdown parser, schema, or validator yet. A heading-level
 contract can be reconsidered later if the expectations document and existing
