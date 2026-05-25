@@ -15,6 +15,7 @@ CI.
 - `docs/SCHEMA_FIELD_REFERENCE.md`
 - `docs/GENERATED_OUTPUT_REVIEW_GUIDE.md`
 - `docs/ARCHITECTURE_GOVERNANCE_INDEX.md`
+- `docs/ANALYSIS_SUMMARY_SCHEMA_NEED_ASSESSMENT.md`
 - `docs/AUDIT_LOG_EXPECTATIONS.md`
 - `docs/AUDIT_LOG_SCHEMA_NEED_ASSESSMENT.md`
 - `docs/MODEL_CONFIDENCE_OUTPUT_SCHEMA_ASSESSMENT.md`
@@ -201,19 +202,39 @@ consumer requires stricter machine-readable validation.
 intentionally flexible diagnostic content, why no standalone schema is enforced
 yet, and conditions that could justify a future schema.
 
+## Analysis Summary Schema Need Assessment Status
+
+`docs/ANALYSIS_SUMMARY_SCHEMA_NEED_ASSESSMENT.md` now reviews generated
+NVDA, AMD, and TSMC `analysis_summary.json` artifacts, the stable report-facing
+envelope, flexible explanatory and diagnostic fields, report artifact contract
+boundary, compatibility risks, and likely tests for a future implementation PR.
+
+The assessment recommends a narrow standalone analysis summary schema/contract.
+The schema should protect the required top-level fields, named section groups,
+section field presence, and broad field types while leaving embedded output
+details, source references, warnings, research gaps, blocker text, timestamps,
+paths, and audit references flexible. Embedded DCF, fair value per share, model
+rating, model confidence, and model signal details should continue to rely on
+their own contracts rather than being duplicated wholesale inside the analysis
+summary schema.
+
 ## Recommended Next Implementation PR
 
 Recommend exactly one next implementation target:
 
-**Analysis summary schema assessment.**
+**Narrow analysis summary schema/contract.**
 
 Small safe scope for the future implementation PR:
 
-- Review the current analysis summary JSON artifact now that lower-level
-  generated output contracts are in place and audit log schema enforcement has
-  been deferred.
-- Keep the first pass assessment-only because analysis summary aggregates many
-  upstream artifacts and is broader than the lower-level contracts.
+- Add `config/analysis_summary_schema.json`.
+- Validate the current generated analysis summary artifact against the schema.
+- Protect the required top-level summary envelope, named section groups, and
+  broad field types.
+- Keep embedded upstream outputs, source references, warnings, research gaps,
+  blocker text, timestamps, paths, and audit references flexible.
+- Validate generated NVDA, AMD, and TSMC demo summaries.
+- Add focused negative tests for missing required fields and invalid required
+  field types.
 - Do not change analysis summary behavior, audit log behavior, model signal
   behavior, model confidence behavior, model rating behavior, fair value
   calculations, DCF math, report wording, CLI behavior, or CI.
@@ -225,15 +246,15 @@ Why this should be next:
 - The audit log assessment found that existing validator coverage is sufficient
   for now and that nested diagnostic payloads should stay flexible.
 - Analysis summary is the next generated JSON artifact that remains
-  documentation-reviewed only, but it should be assessed before any schema work
-  because it aggregates many upstream outputs.
+  documentation-reviewed only, and the assessment found a stable envelope across
+  generated NVDA, AMD, and TSMC summaries.
 
 ## Keep For Later
 
 Do not harden these in the next implementation PR:
 
 - all generated JSON outputs at once
-- analysis summary schema implementation before assessment
+- analysis summary nested upstream-output internals beyond broad type checks
 - fact report Markdown schema
 - audit log schema implementation unless the assessment identifies a concrete
   need
