@@ -21,6 +21,8 @@ assessment has been partially implemented in repository files:
   checklist for secrets, private data, and generated artifacts.
 - `SECURITY.md` and `CONTRIBUTING.md` now reference the public-repository
   reporting, owner-review, and secret-hygiene flow more clearly.
+- `.github/workflows/tests.yml` now declares explicit read-only repository
+  contents permission for the test-only CI workflow.
 
 This assessment finds several file-based controls already present, but the most
 important public-repository controls for `main` are not verifiable from
@@ -29,9 +31,8 @@ conversation resolution, force-push protection, branch deletion protection,
 secret scanning, push protection, dependency graph, Dependabot, and private
 vulnerability reporting require manual verification in GitHub.
 
-Recommended next PR: GitHub Actions least-privilege hardening. Keep it narrowly
-scoped to explicit workflow token permissions and do not mix it with model-output
-schema work.
+Recommended next PR: release and tag governance documentation. Keep it
+documentation-only and do not mix it with model-output schema work.
 
 ## 2. Current Public-Repository Posture
 
@@ -54,7 +55,7 @@ File-based posture is stronger than a bare public repository:
   features, guardrail/security review, release tracking, and schema proposals.
 - `.github/workflows/tests.yml` runs the unit suite, targeted guardrail tests,
   validation commands, workflow smoke tests, demo workflow, and JSON validation
-  on pull requests.
+  on pull requests with explicit read-only repository contents permission.
 - `.gitignore` excludes generated reports, JSON outputs, JSONL logs, caches,
   virtual environments, and `.env` files.
 
@@ -65,9 +66,9 @@ Current public-repository posture still has important unknowns:
 - GitHub security settings are not stored in the repository.
 - `CODEOWNERS` is present, but enforcement depends on GitHub branch protection
   or ruleset settings that are not stored in repository files.
-- The workflow does not declare top-level or job-level `permissions:`, so the
-  default `GITHUB_TOKEN` permission posture depends on repository or
-  organization settings.
+- The workflow declares `permissions: contents: read`. The repository or
+  organization default Actions token permission setting still requires manual
+  verification in GitHub.
 
 ## 3. File-Based Findings
 
@@ -78,7 +79,7 @@ Current public-repository posture still has important unknowns:
 | Pull request review requirements | not verifiable from repository files | `AGENTS.md` requires a pull request for every change, and the PR template supports review, but repository files do not prove review approval is required. | recommended now: require at least one approving review for `main`. |
 | Conversation resolution before merge | not verifiable from repository files | No repository file can prove this GitHub setting is enabled. | recommended now: enable required conversation resolution for `main`. |
 | Force-push and branch deletion protection | not verifiable from repository files | No repository file can prove these protections are enabled. | recommended now: block force pushes and deletion on `main`. |
-| GitHub Actions token permissions / least privilege | missing from repository | `.github/workflows/tests.yml` has no explicit `permissions:` block. The workflow appears read/test-only and does not need write access. | recommended now: in a later CI hardening PR, set least-privilege permissions such as read-only contents access. |
+| GitHub Actions token permissions / least privilege | present in repository | `.github/workflows/tests.yml` declares `permissions: contents: read` for the pull-request test workflow. The workflow only needs checkout/read access and does not need write permissions. | recommended now: manually verify the repository or organization default Actions token permission setting in GitHub. |
 | CODEOWNERS need and ownership boundaries | present in repository | `.github/CODEOWNERS` routes all files, GitHub metadata, governance files, config, scripts, tests, and docs to `@akkbkk10`. Enforcement still depends on GitHub settings. | recommended now: manually verify CODEOWNERS review enforcement for `main`. |
 | `SECURITY.md` / vulnerability reporting need | present in repository | `SECURITY.md` exists and tells reporters to use GitHub private vulnerability reporting if available, with a public-issue fallback that avoids sensitive details. It now clarifies public reporting boundaries and manual settings verification. | recommended now: verify whether private vulnerability reporting is enabled. |
 | `CONTRIBUTING.md` / external contribution workflow need | present in repository | `CONTRIBUTING.md` covers narrow PRs, tests, generated artifacts, guardrails, secret hygiene, and owner-review expectations. | recommended later: expand only after verifying required checks and review rules. |
@@ -131,8 +132,6 @@ This document intentionally does not claim any of these settings are enabled.
 
 The remaining concrete gaps are:
 
-- `.github/workflows/tests.yml` does not declare explicit least-privilege
-  `permissions:`.
 - Public-issue fallback is documented in `SECURITY.md`, but the preferred
   vulnerability channel depends on whether GitHub private vulnerability
   reporting is enabled.
@@ -150,26 +149,22 @@ output wording can be copied outside the maintainer context.
 
 ## 6. Recommended Next PR
 
-Recommended next PR: GitHub Actions least-privilege hardening.
+Recommended next PR: release and tag governance documentation.
 
 Scope:
 
-- Add explicit least-privilege `permissions:` to `.github/workflows/tests.yml`.
-- Preserve the existing test and smoke-test behavior.
-- Do not change runtime code, schemas, financial behavior, generated-output
-  behavior, or model logic.
+- Document who can create release tags.
+- Document whether tag protection or rulesets are expected.
+- Document how release notes should state no financial behavior changes.
+- Do not create tags or change release workflow behavior.
 
 ## 7. Suggested Next 2-4 PR Sequence
 
-1. GitHub Actions least-privilege hardening.
-   Add explicit workflow token permissions and keep CI behavior otherwise
-   unchanged. Verify the same test count and workflow behavior.
-
-2. Release and tag governance documentation.
+1. Release and tag governance documentation.
    Document who can create release tags, whether tag protection or rulesets are
    expected, and how release notes should state no financial behavior changes.
 
-3. Resume generated-output schema hardening.
+2. Resume generated-output schema hardening.
    Continue with the next model-output schema candidate only after the public
    repository settings and governance docs are checked.
 
