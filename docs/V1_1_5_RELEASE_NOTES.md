@@ -2,18 +2,16 @@
 
 ## Status
 
-These notes prepare v1.1.5 as a generated-output governance and demo-stability
-maintenance release for the deterministic Aktienanalyse-Agent core. They
-document the generated artifact manifest assessment and the v1.0 demo
-freshness-date stabilization merged in PR #102.
+v1.1.5 is a generated-output governance and demo-stability maintenance
+release for the deterministic Aktienanalyse-Agent core. It documents the
+generated artifact manifest assessment and the v1.0 demo freshness-date
+stabilization merged in PR #102.
 
-Publication status: v1.1.5 has not been tagged or published yet. The latest
-published release remains v1.1.4 until maintainers complete the manual
-validation, tag, and GitHub Release steps.
+Publication status: v1.1.5 has been tagged and published from commit
+`a3f702e`.
 
-These prepared release notes do not add a generated artifact manifest,
-manifest schema, manifest validator, CLI option, GitHub Release, release tag,
-or committed generated reports.
+This release does not add a generated artifact manifest, manifest schema,
+manifest validator, CLI option, or committed generated reports.
 
 The deterministic workflow remains focused on NVDA, AMD, and TSMC sample data
 with source validation, company context generation, research gaps, ratios,
@@ -147,8 +145,7 @@ No data migration is required. Existing v1.1.4 sample inputs remain compatible.
 Generated reports, summaries, audit logs, and model artifacts continue to be
 written under ignored `reports/` paths.
 
-After v1.1.5 is tagged and published, users can upgrade by pulling the v1.1.5
-release and running:
+Users can upgrade by pulling the v1.1.5 release and running:
 
 ```bash
 python -m unittest discover -s tests
@@ -188,8 +185,6 @@ v1.1.5 does not add or change:
 - web UI
 - project naming
 - package publishing
-- release tags
-- GitHub Releases
 - generated reports committed to the repository
 - GitHub UI settings automation
 - price targets
