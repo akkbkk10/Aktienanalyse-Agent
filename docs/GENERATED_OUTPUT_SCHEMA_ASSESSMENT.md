@@ -16,6 +16,7 @@ CI.
 - `docs/GENERATED_OUTPUT_REVIEW_GUIDE.md`
 - `docs/ARCHITECTURE_GOVERNANCE_INDEX.md`
 - `docs/FACT_REPORT_CONTRACT_NEED_ASSESSMENT.md`
+- `docs/GENERATED_ARTIFACT_MANIFEST_ASSESSMENT.md`
 - `docs/ANALYSIS_SUMMARY_SCHEMA_NEED_ASSESSMENT.md`
 - `docs/AUDIT_LOG_EXPECTATIONS.md`
 - `docs/AUDIT_LOG_SCHEMA_NEED_ASSESSMENT.md`
@@ -257,35 +258,36 @@ Markdown role, stable sections, optional calculation/model sections, flexible
 content, guardrail expectations, why no parser/schema/validator is added yet,
 and when a future heading-level contract could become justified.
 
-## Recommended Next Implementation PR
+## Generated Artifact Manifest Assessment Status
 
-Recommend exactly one next implementation target:
+`docs/GENERATED_ARTIFACT_MANIFEST_ASSESSMENT.md` now reviews whether the
+project should introduce a persisted generated artifact manifest for report
+bundles.
 
-**Generated artifact manifest assessment.**
+The assessment classifies a possible manifest as **Run Metadata / Operational
+Artifact**, not as a Report Contract and not as a replacement for the audit
+log. It identifies candidate artifact inventory fields, fields that should
+remain flexible, lifecycle expectations, ownership boundaries, and compatibility
+risks.
 
-Small safe scope for the future implementation PR:
+The assessment recommends **defer**. Current `run_analysis`,
+`run_batch_analysis`, and `run_v1_0_demo` results already expose generated
+artifact paths; `docs/REPORT_ARTIFACT_CONTRACT.md` documents the report bundle
+layout; v1.0 demo tests protect required artifact presence; and audit log and
+fact report expectations document their own artifact roles. A manifest should
+wait until a concrete consumer or review gap exists.
 
-- Assess whether the generated report bundle needs a lightweight manifest that
-  records expected artifact paths and generated artifact presence.
-- Keep the first pass assessment-only because report artifact paths are already
-  documented in `docs/REPORT_ARTIFACT_CONTRACT.md` and protected by demo tests.
-- Compare potential manifest value against existing path tests, report artifact
-  documentation, and generated-output review guidance.
-- Do not add a manifest implementation, runtime behavior change, test change,
-  CI change, report wording change, or generated reports.
+## Recommended Next Step
 
-Why this should be next:
+Recommend exactly one next step:
 
-- DCF output, fair value per share output, model rating output, model
-  confidence output, model signal output, and analysis summary output now have
-  contract protection.
-- The audit log assessment found that existing validator coverage is sufficient
-  for now and that nested diagnostic payloads should stay flexible.
-- Fact report Markdown now has expectations documentation without parser-backed
-  validation, matching its prose-heavy and user-facing nature.
-- A generated artifact manifest is the remaining candidate called out for later
-  work, but it should be assessed before implementation because current report
-  artifact path tests may already provide enough protection.
+**Defer generated artifact manifest implementation.**
+
+Do not open a manifest implementation PR until a concrete consumer, review
+workflow, adapter, packaging workflow, or release validation gap requires a
+persisted manifest. If that need appears, start with a narrow follow-up
+assessment or expectations PR that defines the consumer, manifest lifecycle,
+partial-run semantics, and minimal field set before adding runtime generation.
 
 ## Keep For Later
 
@@ -297,7 +299,8 @@ Do not harden these in the next implementation PR:
   documented and proven insufficient
 - audit log schema implementation unless the assessment identifies a concrete
   need
-- generated artifact manifest implementation before assessment
+- generated artifact manifest implementation until a concrete consumer or
+  review gap requires persisted run metadata
 
 Do not add:
 
