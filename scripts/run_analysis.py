@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -54,6 +55,7 @@ def run_analysis(
     generate_summary: bool = False,
     run_dcf: bool = False,
     dcf_assumptions_path: Path | None = None,
+    today: date | None = None,
 ) -> dict[str, Any]:
     normalized_ticker = ticker.upper()
     warnings: list[str] = []
@@ -182,6 +184,7 @@ def run_analysis(
                         ticker=normalized_ticker,
                         fair_value_per_share_output=fair_value_result,
                         context_root=context_root,
+                        today=today,
                     )
                     model_rating_output_path = str(
                         _write_model_rating_output(normalized_ticker, model_rating_result, reports_dir)
@@ -204,6 +207,7 @@ def run_analysis(
         research_gaps=gap_result["gaps"],
         context_root=context_root,
         dcf_assumptions_path=assumptions_path,
+        today=today,
     )
     model_confidence_output_path = str(
         _write_model_confidence_output(normalized_ticker, model_confidence_result, reports_dir)
@@ -213,6 +217,7 @@ def run_analysis(
         model_rating_output=model_rating_result,
         model_confidence_output=model_confidence_result,
         research_gaps=gap_result["gaps"],
+        today=today,
     )
     model_signal_output_path = str(_write_model_signal_output(normalized_ticker, model_signal_result, reports_dir))
 

@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -31,6 +32,7 @@ def run_batch(
     generate_fact_report: bool = False,
     generate_summary: bool = False,
     run_dcf: bool = False,
+    today: date | None = None,
 ) -> dict[str, Any]:
     normalized_tickers = [ticker.upper() for ticker in tickers]
     source_data_paths = {ticker.upper(): path for ticker, path in (source_data_paths or {}).items()}
@@ -57,6 +59,7 @@ def run_batch(
                 generate_summary=generate_summary,
                 run_dcf=run_dcf,
                 dcf_assumptions_path=dcf_assumptions_path if dcf_assumptions_path.exists() else None,
+                today=today,
             )
         except (OSError, ValueError, json.JSONDecodeError) as exc:
             failed_runs[ticker] = {"error": str(exc)}

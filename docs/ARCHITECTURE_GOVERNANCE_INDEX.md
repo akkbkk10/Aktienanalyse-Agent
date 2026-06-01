@@ -12,6 +12,7 @@ requirements.
 | Check current data fields and output structures | `docs/SCHEMA_FIELD_REFERENCE.md` | Lists current schema fields and observed output structures. |
 | Check generated artifact paths and required files | `docs/REPORT_ARTIFACT_CONTRACT.md` | Documents the current reports directory layout, shared audit log, and required per-ticker v1.0 demo artifacts. |
 | Assess generated JSON schema priorities | `docs/GENERATED_OUTPUT_SCHEMA_ASSESSMENT.md` | Compares generated artifact schema candidates and recommends the next narrow hardening target. |
+| Assess generated artifact manifest need | `docs/GENERATED_ARTIFACT_MANIFEST_ASSESSMENT.md` | Reviews manifest purpose, benefits, risks, candidate fields, lifecycle, and recommends deferring implementation for now. |
 | Check fact report Markdown expectations | `docs/FACT_REPORT_EXPECTATIONS.md` | Documents stable fact report sections, flexible prose/content, guardrails, and why no parser or schema is enforced yet. |
 | Assess fact report Markdown contract need | `docs/FACT_REPORT_CONTRACT_NEED_ASSESSMENT.md` | Reviews generated fact reports, stable headings, flexible prose, guardrails, and recommends an expectations document. |
 | Assess analysis summary schema need | `docs/ANALYSIS_SUMMARY_SCHEMA_NEED_ASSESSMENT.md` | Reviews generated analysis summaries, stable report-facing fields, flexible explanatory content, and recommends narrow schema hardening. |
