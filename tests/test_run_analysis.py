@@ -5,10 +5,12 @@ import json
 import shutil
 import tempfile
 import unittest
+from datetime import date
 from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+DETERMINISTIC_TODAY = date(2026, 5, 24)
 SCRIPT_PATH = REPO_ROOT / "scripts" / "run_analysis.py"
 spec = importlib.util.spec_from_file_location("run_analysis", SCRIPT_PATH)
 run_analysis = importlib.util.module_from_spec(spec)
@@ -27,6 +29,7 @@ class RunAnalysisTests(unittest.TestCase):
                 json_queue_path=paths["json_queue"],
                 audit_log_path=paths["audit_log"],
                 reports_dir=paths["reports_dir"],
+                today=DETERMINISTIC_TODAY,
             )
 
             self.assertEqual(result["ticker"], "NVDA")
@@ -56,6 +59,7 @@ class RunAnalysisTests(unittest.TestCase):
                 json_queue_path=paths["json_queue"],
                 audit_log_path=paths["audit_log"],
                 reports_dir=paths["reports_dir"],
+                today=DETERMINISTIC_TODAY,
                 rebuild_context=False,
             )
 
@@ -78,6 +82,7 @@ class RunAnalysisTests(unittest.TestCase):
                 json_queue_path=paths["json_queue"],
                 audit_log_path=paths["audit_log"],
                 reports_dir=paths["reports_dir"],
+                today=DETERMINISTIC_TODAY,
             )
 
             self.assertFalse(result["validation_status"]["valid"])
@@ -94,6 +99,7 @@ class RunAnalysisTests(unittest.TestCase):
                 json_queue_path=paths["json_queue"],
                 audit_log_path=paths["audit_log"],
                 reports_dir=paths["reports_dir"],
+                today=DETERMINISTIC_TODAY,
             )
 
             lines = paths["audit_log"].read_text(encoding="utf-8").splitlines()
@@ -112,6 +118,7 @@ class RunAnalysisTests(unittest.TestCase):
                 json_queue_path=paths["json_queue"],
                 audit_log_path=paths["audit_log"],
                 reports_dir=paths["reports_dir"],
+                today=DETERMINISTIC_TODAY,
                 generate_fact_report=True,
             )
 
@@ -132,6 +139,7 @@ class RunAnalysisTests(unittest.TestCase):
                 json_queue_path=paths["json_queue"],
                 audit_log_path=paths["audit_log"],
                 reports_dir=paths["reports_dir"],
+                today=DETERMINISTIC_TODAY,
                 generate_fact_report=True,
             )
 
@@ -148,6 +156,7 @@ class RunAnalysisTests(unittest.TestCase):
                 json_queue_path=paths["json_queue"],
                 audit_log_path=paths["audit_log"],
                 reports_dir=paths["reports_dir"],
+                today=DETERMINISTIC_TODAY,
                 generate_fact_report=False,
             )
 
@@ -165,6 +174,7 @@ class RunAnalysisTests(unittest.TestCase):
                 json_queue_path=paths["json_queue"],
                 audit_log_path=paths["audit_log"],
                 reports_dir=paths["reports_dir"],
+                today=DETERMINISTIC_TODAY,
                 generate_summary=True,
             )
 
@@ -187,6 +197,7 @@ class RunAnalysisTests(unittest.TestCase):
                 json_queue_path=paths["json_queue"],
                 audit_log_path=paths["audit_log"],
                 reports_dir=paths["reports_dir"],
+                today=DETERMINISTIC_TODAY,
                 generate_summary=True,
                 run_dcf=True,
                 dcf_assumptions_path=paths["dcf_assumptions"],
@@ -208,6 +219,7 @@ class RunAnalysisTests(unittest.TestCase):
                 json_queue_path=paths["json_queue"],
                 audit_log_path=paths["audit_log"],
                 reports_dir=paths["reports_dir"],
+                today=DETERMINISTIC_TODAY,
                 generate_summary=True,
             )
 
@@ -224,6 +236,7 @@ class RunAnalysisTests(unittest.TestCase):
                 json_queue_path=paths["json_queue"],
                 audit_log_path=paths["audit_log"],
                 reports_dir=paths["reports_dir"],
+                today=DETERMINISTIC_TODAY,
                 run_dcf=False,
             )
 
@@ -241,6 +254,7 @@ class RunAnalysisTests(unittest.TestCase):
                 json_queue_path=paths["json_queue"],
                 audit_log_path=paths["audit_log"],
                 reports_dir=paths["reports_dir"],
+                today=DETERMINISTIC_TODAY,
                 run_dcf=True,
                 dcf_assumptions_path=paths["dcf_assumptions"],
             )
@@ -278,6 +292,7 @@ class RunAnalysisTests(unittest.TestCase):
                 json_queue_path=paths["json_queue"],
                 audit_log_path=paths["audit_log"],
                 reports_dir=paths["reports_dir"],
+                today=DETERMINISTIC_TODAY,
                 watchlist_path=watchlist_path,
                 run_dcf=True,
                 dcf_assumptions_path=paths["dcf_assumptions"],
@@ -299,6 +314,7 @@ class RunAnalysisTests(unittest.TestCase):
                 json_queue_path=paths["json_queue"],
                 audit_log_path=paths["audit_log"],
                 reports_dir=paths["reports_dir"],
+                today=DETERMINISTIC_TODAY,
                 run_dcf=True,
                 dcf_assumptions_path=paths["dcf_assumptions"],
             )
@@ -323,6 +339,7 @@ class RunAnalysisTests(unittest.TestCase):
                 json_queue_path=paths["json_queue"],
                 audit_log_path=paths["audit_log"],
                 reports_dir=paths["reports_dir"],
+                today=DETERMINISTIC_TODAY,
                 run_dcf=True,
                 dcf_assumptions_path=paths["dcf_assumptions"],
             )
@@ -344,6 +361,7 @@ class RunAnalysisTests(unittest.TestCase):
                 json_queue_path=paths["json_queue"],
                 audit_log_path=paths["audit_log"],
                 reports_dir=paths["reports_dir"],
+                today=DETERMINISTIC_TODAY,
                 run_dcf=True,
                 dcf_assumptions_path=paths["dcf_assumptions"],
             )
@@ -365,6 +383,7 @@ class RunAnalysisTests(unittest.TestCase):
                 json_queue_path=paths["json_queue"],
                 audit_log_path=paths["audit_log"],
                 reports_dir=paths["reports_dir"],
+                today=DETERMINISTIC_TODAY,
                 run_dcf=True,
                 dcf_assumptions_path=paths["dcf_assumptions"],
             )
@@ -387,6 +406,7 @@ class RunAnalysisTests(unittest.TestCase):
                 json_queue_path=paths["json_queue"],
                 audit_log_path=paths["audit_log"],
                 reports_dir=paths["reports_dir"],
+                today=DETERMINISTIC_TODAY,
                 run_dcf=True,
                 dcf_assumptions_path=paths["dcf_assumptions"],
             )
@@ -414,6 +434,7 @@ class RunAnalysisTests(unittest.TestCase):
                 json_queue_path=paths["json_queue"],
                 audit_log_path=paths["audit_log"],
                 reports_dir=paths["reports_dir"],
+                today=DETERMINISTIC_TODAY,
                 generate_fact_report=True,
                 generate_summary=True,
                 run_dcf=True,
@@ -449,6 +470,7 @@ class RunAnalysisTests(unittest.TestCase):
                 json_queue_path=paths["json_queue"],
                 audit_log_path=paths["audit_log"],
                 reports_dir=paths["reports_dir"],
+                today=DETERMINISTIC_TODAY,
                 run_dcf=True,
                 dcf_assumptions_path=paths["dcf_assumptions"],
             )
@@ -467,6 +489,7 @@ class RunAnalysisTests(unittest.TestCase):
                 json_queue_path=paths["json_queue"],
                 audit_log_path=paths["audit_log"],
                 reports_dir=paths["reports_dir"],
+                today=DETERMINISTIC_TODAY,
                 generate_summary=True,
                 run_dcf=True,
                 dcf_assumptions_path=paths["dcf_assumptions"],
@@ -487,6 +510,7 @@ class RunAnalysisTests(unittest.TestCase):
                 json_queue_path=paths["json_queue"],
                 audit_log_path=paths["audit_log"],
                 reports_dir=paths["reports_dir"],
+                today=DETERMINISTIC_TODAY,
                 generate_summary=True,
                 run_dcf=True,
                 dcf_assumptions_path=paths["dcf_assumptions"],
@@ -504,6 +528,7 @@ class RunAnalysisTests(unittest.TestCase):
                 json_queue_path=paths["json_queue"],
                 audit_log_path=paths["audit_log"],
                 reports_dir=paths["reports_dir"],
+                today=DETERMINISTIC_TODAY,
                 generate_fact_report=True,
             )
 
@@ -522,6 +547,7 @@ class RunAnalysisTests(unittest.TestCase):
                 json_queue_path=paths["json_queue"],
                 audit_log_path=paths["audit_log"],
                 reports_dir=paths["reports_dir"],
+                today=DETERMINISTIC_TODAY,
                 generate_fact_report=True,
                 run_dcf=True,
                 dcf_assumptions_path=paths["dcf_assumptions"],

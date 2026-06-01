@@ -3,10 +3,12 @@ from __future__ import annotations
 import importlib.util
 import tempfile
 import unittest
+from datetime import date
 from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+DETERMINISTIC_TODAY = date(2026, 5, 24)
 SCRIPT_PATH = REPO_ROOT / "scripts" / "run_batch_analysis.py"
 spec = importlib.util.spec_from_file_location("run_batch_analysis", SCRIPT_PATH)
 run_batch_analysis = importlib.util.module_from_spec(spec)
@@ -25,6 +27,7 @@ class RunBatchAnalysisTests(unittest.TestCase):
                 generate_fact_report=True,
                 generate_summary=True,
                 run_dcf=True,
+                today=DETERMINISTIC_TODAY,
             )
 
             self.assertEqual(result["tickers_processed"], ["NVDA"])
@@ -46,6 +49,7 @@ class RunBatchAnalysisTests(unittest.TestCase):
                 reports_dir=paths["reports_dir"],
                 audit_log_path=paths["audit_log"],
                 generate_summary=True,
+                today=DETERMINISTIC_TODAY,
             )
 
             self.assertEqual(result["tickers_processed"], ["NVDA", "MSFT"])
@@ -63,6 +67,7 @@ class RunBatchAnalysisTests(unittest.TestCase):
                 generate_fact_report=True,
                 generate_summary=True,
                 run_dcf=True,
+                today=DETERMINISTIC_TODAY,
             )
 
             self.assertEqual(result["tickers_processed"], ["NVDA", "AMD"])
@@ -87,6 +92,7 @@ class RunBatchAnalysisTests(unittest.TestCase):
                 generate_fact_report=True,
                 generate_summary=True,
                 run_dcf=True,
+                today=DETERMINISTIC_TODAY,
             )
 
             self.assertEqual(result["tickers_processed"], ["NVDA", "AMD", "TSMC"])
@@ -109,6 +115,7 @@ class RunBatchAnalysisTests(unittest.TestCase):
                 reports_dir=paths["reports_dir"],
                 audit_log_path=paths["audit_log"],
                 generate_fact_report=False,
+                today=DETERMINISTIC_TODAY,
             )
 
             self.assertEqual(result["successful_runs"], ["NVDA"])
@@ -122,6 +129,7 @@ class RunBatchAnalysisTests(unittest.TestCase):
                 context_root=paths["context_root"],
                 reports_dir=paths["reports_dir"],
                 audit_log_path=paths["audit_log"],
+                today=DETERMINISTIC_TODAY,
             )
 
             self.assertEqual(

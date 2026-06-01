@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -17,6 +18,7 @@ import run_batch_analysis
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_TICKERS = ["NVDA", "AMD", "TSMC"]
 DEFAULT_REPORTS_DIR = REPO_ROOT / "reports" / "v1_0_demo"
+DEMO_REFERENCE_DATE = date(2026, 5, 24)
 REQUIRED_ARTIFACT_KEYS = [
     "report_path",
     "analysis_summary_path",
@@ -32,6 +34,7 @@ REQUIRED_ARTIFACT_KEYS = [
 def run_demo(
     tickers: list[str] | None = None,
     reports_dir: Path = DEFAULT_REPORTS_DIR,
+    today: date | None = DEMO_REFERENCE_DATE,
 ) -> dict[str, Any]:
     normalized_tickers = [ticker.upper() for ticker in (tickers or DEFAULT_TICKERS)]
     reports_dir.mkdir(parents=True, exist_ok=True)
@@ -46,6 +49,7 @@ def run_demo(
         generate_fact_report=True,
         generate_summary=True,
         run_dcf=True,
+        today=today,
     )
     generated_file_paths = _generated_file_paths(batch_result)
 
