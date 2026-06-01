@@ -11,7 +11,7 @@ requirements.
 | Understand the current deterministic core baseline | `docs/CORE_BASELINE_INVENTORY.md` | Maps workflow stages, modules, tests, artifacts, guardrails, and v1.1 readiness gaps. |
 | Check current data fields and output structures | `docs/SCHEMA_FIELD_REFERENCE.md` | Lists current schema fields and observed output structures. |
 | Check generated artifact paths and required files | `docs/REPORT_ARTIFACT_CONTRACT.md` | Documents the current reports directory layout, shared audit log, and required per-ticker v1.0 demo artifacts. |
-| Assess generated JSON schema priorities | `docs/GENERATED_OUTPUT_SCHEMA_ASSESSMENT.md` | Compares generated artifact schema candidates and recommends the next narrow hardening target. |
+| Check generated JSON schema status | `docs/GENERATED_OUTPUT_SCHEMA_ASSESSMENT.md` | Tracks implemented generated-output contracts, expectations-only artifacts, and deferred artifact work. |
 | Assess generated artifact manifest need | `docs/GENERATED_ARTIFACT_MANIFEST_ASSESSMENT.md` | Reviews manifest purpose, benefits, risks, candidate fields, lifecycle, and recommends deferring implementation for now. |
 | Check fact report Markdown expectations | `docs/FACT_REPORT_EXPECTATIONS.md` | Documents stable fact report sections, flexible prose/content, guardrails, and why no parser or schema is enforced yet. |
 | Assess fact report Markdown contract need | `docs/FACT_REPORT_CONTRACT_NEED_ASSESSMENT.md` | Reviews generated fact reports, stable headings, flexible prose, guardrails, and recommends an expectations document. |
@@ -20,7 +20,7 @@ requirements.
 | Assess audit log schema need | `docs/AUDIT_LOG_SCHEMA_NEED_ASSESSMENT.md` | Reviews generated audit log records, stable envelope fields, flexible diagnostics, and recommends documentation without schema enforcement. |
 | Assess model confidence output schema readiness | `docs/MODEL_CONFIDENCE_OUTPUT_SCHEMA_ASSESSMENT.md` | Reviews actual model confidence artifacts and recommends a narrow future contract scope. |
 | Assess model signal output schema readiness | `docs/MODEL_SIGNAL_OUTPUT_SCHEMA_ASSESSMENT.md` | Reviews actual model signal artifacts, no-advice guardrails, and recommends a narrow future contract scope. |
-| Plan the next v1.1.x implementation block | `docs/V1_1_X_NEXT_CANDIDATE_PLAN.md` | Summarizes the v1.1.0 contract baseline and recommends the next narrow generated-output contract PR. |
+| Review historical v1.1.x planning | `docs/V1_1_X_NEXT_CANDIDATE_PLAN.md` | Preserves the post-v1.1.0 planning assessment that was superseded by later v1.1.x contract and governance work. |
 | Assess data-contract hardening priorities | `docs/DATA_CONTRACT_SCHEMA_HARDENING_ASSESSMENT.md` | Reviews current schema protections and identifies the next small data-contract hardening candidate. |
 | Validate company context contract expectations | `config/company_context_schema.json` | Defines the standalone contract for persistent `data/companies/<TICKER>/context.json` files. |
 | Validate DCF output contract expectations | `config/dcf_output_schema.json` | Defines the standalone contract for generated `*_dcf_output.json` artifacts. |

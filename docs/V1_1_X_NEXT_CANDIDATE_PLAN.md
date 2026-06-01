@@ -1,9 +1,21 @@
 # v1.1.x Next Candidate Plan
 
-This document is a planning assessment for the next implementation block after
-the v1.1.0 contract/schema hardening release. It is documentation-only. It does
-not approve runtime behavior changes, schema changes, tests, CI changes,
-release tags, or publishing changes by itself.
+This document is a historical planning assessment for the implementation block
+after the v1.1.0 contract/schema hardening release. It is documentation-only.
+It does not approve runtime behavior changes, schema changes, tests, CI
+changes, release tags, or publishing changes by itself.
+
+## Historical Status
+
+This plan has been superseded by later v1.1.x work through v1.1.5. The model
+rating, model confidence, model signal, audit log expectations, analysis
+summary, fact report expectations, and generated artifact manifest assessment
+work described here has either been implemented, documented as expectations
+only, or explicitly deferred in later docs.
+
+Use `docs/GENERATED_OUTPUT_SCHEMA_ASSESSMENT.md` for current generated-output
+contract and deferral status. Use this document only as historical context for
+why the v1.1.x generated-output sequence started with model rating.
 
 ## Current v1.1.0 Baseline
 
@@ -36,9 +48,10 @@ or model behavior.
 | Adapter RFC preparation | Keeps future Market Data Agent, MCP, A2A, or framework work behind explicit proposal, data-contract, risk, and decision records. | High if it turns into adapter design or implementation before output contracts are stable. | `docs/ADAPTER_PROPOSAL_CHECKLIST.md`, `docs/DATA_CONTRACT_REVIEW_CHECKLIST.md`, `docs/ADAPTER_RISK_REGISTER_TEMPLATE.md`, `docs/ADAPTER_DECISION_RECORD_TEMPLATE.md`. | Docs-only initially; adapter tests only after an approved RFC. | Later. |
 | Open-source readiness cleanup | Improves contributor flow and maintainer ergonomics without touching core behavior. | Low, but lower priority than finishing the current generated-output contract sequence. | `CONTRIBUTING.md`, `SECURITY.md`, `.github/ISSUE_TEMPLATE/`, `.github/pull_request_template.md`, README. | Usually none beyond the full test suite unless templates change expected workflow. | Later. |
 
-## Recommended Next Implementation Block
+## Historical Recommended Implementation Block
 
-PR #83 should implement **model rating output schema/contract hardening**.
+At the time this plan was written, PR #83 was recommended to implement
+**model rating output schema/contract hardening**.
 
 Small safe scope for PR #83:
 

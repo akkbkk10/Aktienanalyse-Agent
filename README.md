@@ -65,7 +65,7 @@ Generated-output review:
 - `docs/AUDIT_LOG_SCHEMA_NEED_ASSESSMENT.md` - assessment of audit log schema need and flexible diagnostic fields.
 - `docs/MODEL_CONFIDENCE_OUTPUT_SCHEMA_ASSESSMENT.md` - assessment of model confidence output schema readiness and narrow contract scope.
 - `docs/MODEL_SIGNAL_OUTPUT_SCHEMA_ASSESSMENT.md` - assessment of model signal output schema readiness and no-advice guardrails.
-- `docs/V1_1_X_NEXT_CANDIDATE_PLAN.md` - post-v1.1.0 planning assessment and next implementation recommendation.
+- `docs/V1_1_X_NEXT_CANDIDATE_PLAN.md` - historical post-v1.1.0 planning assessment superseded by later v1.1.x contract and governance work.
 - `docs/GENERATED_OUTPUT_REVIEW_GUIDE.md` - review guide for generated reports, summaries, model outputs, and audit logs.
 
 Adapter and architecture governance:
