@@ -113,7 +113,9 @@ def main() -> int:
         description="Run the deterministic workflow independently for one or more tickers.",
         epilog=(
             "Each ticker is processed independently. Generated artifacts are written "
-            "under --reports-dir and should remain in ignored reports/ paths."
+            "under --reports-dir and should remain in ignored reports/ paths. The "
+            "batch workflow never fetches live data and does not produce price "
+            "targets, recommendations, investment advice, or trading actions."
         ),
     )
     parser.add_argument("tickers", nargs="+", help="Ticker symbols to process, for example: NVDA AMD TSMC.")

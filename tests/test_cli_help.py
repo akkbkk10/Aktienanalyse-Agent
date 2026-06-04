@@ -20,7 +20,7 @@ class CliHelpSmokeTests(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(result.stderr, "")
-        return result.stdout.lower()
+        return " ".join(result.stdout.lower().split())
 
     def _run_invalid_option(self, script_name: str) -> str:
         result = subprocess.run(
@@ -42,6 +42,10 @@ class CliHelpSmokeTests(unittest.TestCase):
         self.assertIn("amd", output)
         self.assertIn("tsmc", output)
         self.assertIn("deterministic", output)
+        self.assertIn("never fetches live data", output)
+        self.assertIn("does not produce price targets", output)
+        self.assertIn("investment advice", output)
+        self.assertIn("trading actions", output)
 
     def test_run_analysis_help_is_discoverable(self) -> None:
         output = self._run_help("run_analysis.py")
@@ -51,6 +55,10 @@ class CliHelpSmokeTests(unittest.TestCase):
         self.assertIn("reports-dir", output)
         self.assertIn("generate-report", output)
         self.assertIn("run-dcf", output)
+        self.assertIn("never fetches live data", output)
+        self.assertIn("does not produce price targets", output)
+        self.assertIn("investment advice", output)
+        self.assertIn("trading actions", output)
 
     def test_run_batch_analysis_help_is_discoverable(self) -> None:
         output = self._run_help("run_batch_analysis.py")
@@ -60,6 +68,10 @@ class CliHelpSmokeTests(unittest.TestCase):
         self.assertIn("ticker", output)
         self.assertIn("reports-dir", output)
         self.assertIn("independently", output)
+        self.assertIn("never fetches live data", output)
+        self.assertIn("does not produce price targets", output)
+        self.assertIn("investment advice", output)
+        self.assertIn("trading actions", output)
 
     def test_run_v1_0_demo_invalid_option_fails_clearly(self) -> None:
         output = self._run_invalid_option("run_v1_0_demo.py")
