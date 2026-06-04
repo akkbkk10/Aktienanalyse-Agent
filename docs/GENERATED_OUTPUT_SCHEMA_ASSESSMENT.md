@@ -1,10 +1,10 @@
 # Generated Output Schema Assessment
 
-This assessment reviews the generated JSON artifacts produced by the current
-deterministic v1.0/v1.1 baseline and recommends one narrow next artifact type
-for future schema hardening. It is documentation-only. It does not implement
-schemas, change generated outputs, change runtime logic, add tests, or change
-CI.
+This assessment tracks generated JSON artifacts produced by the current
+deterministic v1.0/v1.1 baseline and records which artifacts have contracts,
+which have expectations-only documentation, and which remain deferred. It is
+documentation-only. It does not implement schemas, change generated outputs,
+change runtime logic, add tests, or change CI.
 
 ## Source Files Inspected
 
@@ -55,31 +55,35 @@ The fact report is a Markdown artifact, not a generated JSON artifact:
 
 - `<TICKER>_fact_report.md`
 
-## Classification
+## Current Classification
 
 | Artifact area | Classification | Reason |
 | --- | --- | --- |
-| DCF output | Stable generated contract candidate | It is a core upstream JSON output consumed by fair value per share, reports, and summaries. |
-| Fair value per share output | Stable generated contract candidate | It is a downstream calculated JSON output with source-linked share count inputs. |
-| Model rating output | Stable generated contract candidate | It is a rule-based JSON output using fair value per share and market price snapshots. |
-| Model confidence output | Stable generated contract candidate | It carries guardrail-sensitive assumption quality and confidence reasons. |
-| Model signal output | Stable generated contract candidate | It is guardrail-sensitive and must remain unavailable under manual-review assumptions. |
-| Audit log | Already has direct validator coverage | `scripts/write_audit_log.py` includes `validate_audit_record` and required-field tests. |
+| DCF output | Implemented generated output contract | `config/dcf_output_schema.json` protects calculated and blocked DCF output shape. |
+| Fair value per share output | Implemented generated output contract | `config/fair_value_per_share_output_schema.json` protects the downstream fair value per share artifact. |
+| Model rating output | Implemented generated output contract | `config/model_rating_output_schema.json` protects the market-price-derived model rating artifact. |
+| Model confidence output | Implemented generated output contract | `config/model_confidence_output_schema.json` protects successful generated confidence artifacts while leaving blocked/unavailable shapes undefined until they exist. |
+| Model signal output | Implemented generated output contract | `config/model_signal_output_schema.json` protects the current active and unavailable model signal object shape. |
+| Analysis summary JSON | Implemented generated output contract | `config/analysis_summary_output_schema.json` protects the report-facing summary envelope and broad section field types. |
+| Audit log | Expectations-only operational artifact | `scripts/write_audit_log.py` already validates the stable envelope; `docs/AUDIT_LOG_EXPECTATIONS.md` leaves nested diagnostics flexible. |
 | Runtime company contexts under reports | Internal generated implementation detail | The v1.0 demo may create runtime contexts under the reports directory, but the durable context contract lives in `config/company_context_schema.json`. |
 | Research queues under reports | Internal/generated implementation detail | Batch runs may create queue files; they are not part of the stable per-ticker report artifact contract. |
-| Fact report Markdown | Documentation-reviewed only for now | It is user-facing prose and should remain protected by generated-output review and forbidden-output tests, not a JSON schema. |
-| Analysis summary JSON | Documentation-reviewed only for now | It aggregates several outputs and is broad enough that schema work should wait until lower-level generated outputs are hardened first. |
+| Fact report Markdown | Expectations-only user-facing artifact | It is user-facing prose and is governed by `docs/FACT_REPORT_EXPECTATIONS.md`, generated-output review, and forbidden-output tests rather than a Markdown parser or schema. |
+| Generated artifact manifest | Deferred run metadata / operational artifact | `docs/GENERATED_ARTIFACT_MANIFEST_ASSESSMENT.md` recommends deferring implementation until a concrete consumer or review gap exists. |
 
-## Candidate Assessment
+## Historical Candidate Assessment
 
-| Candidate artifact | Benefit of schema protection | Risk of over-constraining | Affected files in a future PR | Likely tests | Timing |
+This table preserves the original candidate reasoning. The `Current status`
+column reflects post-v1.1.5 state and supersedes the older timing guidance.
+
+| Candidate artifact | Benefit of schema protection | Risk of over-constraining | Affected files in a future PR | Likely tests | Current status |
 | --- | --- | --- | --- | --- | --- |
-| DCF output | Protects an upstream generated contract with formulas, assumptions used, source references, warnings, and bear/base/bull scenario outputs. Helps downstream fair value, reports, summaries, and audits trust the shape of DCF results. | Moderate. A schema must support both calculated outputs and blocked outputs without freezing internal formula text too tightly. | `config/`, `scripts/dcf_model.py`, `tests/test_dcf_model.py`, possibly `docs/SCHEMA_FIELD_REFERENCE.md`. | Valid calculated DCF output, blocked DCF output, missing required field, missing source reference metadata, scenario shape. | Do next. |
-| Fair value per share output | Protects a compact downstream artifact with clear source traceability to share count and DCF output. | Moderate. It depends on DCF output, so hardening it before DCF output leaves its upstream input less formalized. | `config/`, `scripts/fair_value_per_share.py`, `tests/test_fair_value_per_share.py`. | Valid output, missing scenario field, missing share count source reference, disclaimer present. | Later, after DCF output. |
-| Model rating output | Protects market-price-derived model output and source snapshot references. | Moderate. It depends on fair value per share and should not be treated as advice or a price target. | `config/`, `scripts/model_rating.py`, `tests/test_model_rating.py`. | Valid output, unavailable/error paths, market price source reference, no prohibited language. | Later. |
-| Model confidence output | Protects assumption-quality and guardrail-sensitive reasons/warnings. | Higher. Confidence output can evolve as data-quality rules evolve, and an early schema could freeze explainability fields too tightly. | `config/`, `scripts/model_confidence.py`, `tests/test_model_confidence.py`. | A/B/C/D outputs, manual-review assumption quality, stale market price reasons, source references. | Later. |
-| Model signal output | Protects the most user-facing model classification boundary. | Higher. Signal availability depends on rating, confidence, assumptions, and market freshness; schema hardening should follow upstream output contracts. | `config/`, `scripts/model_signal.py`, `tests/test_model_signal.py`. | Positive/neutral/negative/unavailable, blocking reasons, no recommendation language. | Later. |
-| Audit log | Confirms reproducibility fields and append-only records. | Low to moderate. It already has `validate_audit_record`, so a new schema may duplicate existing validation unless a concrete consumer needs it. | `config/`, `scripts/write_audit_log.py`, `tests/test_write_audit_log.py`. | Required fields, type checks, append-only behavior. | Later only if JSONL contract consumers need it. |
+| DCF output | Protects an upstream generated contract with formulas, assumptions used, source references, warnings, and bear/base/bull scenario outputs. Helps downstream fair value, reports, summaries, and audits trust the shape of DCF results. | Moderate. A schema must support both calculated outputs and blocked outputs without freezing internal formula text too tightly. | `config/`, `scripts/dcf_model.py`, `tests/test_dcf_model.py`, possibly `docs/SCHEMA_FIELD_REFERENCE.md`. | Valid calculated DCF output, blocked DCF output, missing required field, missing source reference metadata, scenario shape. | Implemented. |
+| Fair value per share output | Protects a compact downstream artifact with clear source traceability to share count and DCF output. | Moderate. It depends on DCF output, so hardening it before DCF output leaves its upstream input less formalized. | `config/`, `scripts/fair_value_per_share.py`, `tests/test_fair_value_per_share.py`. | Valid output, missing scenario field, missing share count source reference, disclaimer present. | Implemented. |
+| Model rating output | Protects market-price-derived model output and source snapshot references. | Moderate. It depends on fair value per share and should not be treated as advice or a price target. | `config/`, `scripts/model_rating.py`, `tests/test_model_rating.py`. | Valid output, unavailable/error paths, market price source reference, no prohibited language. | Implemented. |
+| Model confidence output | Protects assumption-quality and guardrail-sensitive reasons/warnings. | Higher. Confidence output can evolve as data-quality rules evolve, and an early schema could freeze explainability fields too tightly. | `config/`, `scripts/model_confidence.py`, `tests/test_model_confidence.py`. | A/B/C/D outputs, manual-review assumption quality, stale market price reasons, source references. | Implemented for successful generated artifacts. |
+| Model signal output | Protects the most user-facing model classification boundary. | Higher. Signal availability depends on rating, confidence, assumptions, and market freshness; schema hardening should follow upstream output contracts. | `config/`, `scripts/model_signal.py`, `tests/test_model_signal.py`. | Positive/neutral/negative/unavailable, blocking reasons, no recommendation language. | Implemented for the current generated signal object. |
+| Audit log | Confirms reproducibility fields and append-only records. | Low to moderate. It already has `validate_audit_record`, so a new schema may duplicate existing validation unless a concrete consumer needs it. | `config/`, `scripts/write_audit_log.py`, `tests/test_write_audit_log.py`. | Required fields, type checks, append-only behavior. | Expectations-only; standalone schema deferred unless a concrete consumer needs it. |
 
 ## DCF Output Schema Hardening Status
 
@@ -291,7 +295,7 @@ partial-run semantics, and minimal field set before adding runtime generation.
 
 ## Keep For Later
 
-Do not harden these in the next implementation PR:
+Do not reopen these without a fresh concrete need:
 
 - all generated JSON outputs at once
 - analysis summary nested upstream-output internals beyond broad type checks
