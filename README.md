@@ -71,6 +71,7 @@ Generated-output review:
 Adapter and architecture governance:
 
 - `docs/ARCHITECTURE_GOVERNANCE_INDEX.md` - navigation index for architecture-governance docs and templates.
+- `docs/ADAPTER_MARKET_DATA_BOUNDARY_RFC.md` - docs-only RFC for the future Market Data Agent and adapter boundary around the deterministic core.
 - `docs/ADAPTER_PROPOSAL_CHECKLIST.md` - pre-implementation checklist for future adapter and framework proposals.
 - `docs/ADAPTER_RISK_REGISTER_TEMPLATE.md` - risk register template for future adapter proposals.
 - `docs/ADAPTER_DECISION_RECORD_TEMPLATE.md` - decision record template for accepted, rejected, or deferred adapter proposals.

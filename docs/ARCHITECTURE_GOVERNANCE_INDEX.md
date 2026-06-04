@@ -33,6 +33,7 @@ requirements.
 | Assess public repository security and governance posture | `docs/PUBLIC_REPOSITORY_SECURITY_GOVERNANCE_ASSESSMENT.md` | Separates file-based governance findings from GitHub settings that require manual verification before more schema work. |
 | Check secret hygiene before public contribution | `docs/SECRET_HYGIENE_CHECKLIST.md` | Lists files, tokens, generated artifacts, and private data that must not be posted or committed. |
 | Confirm guardrails for core or adapter work | `docs/GUARDRAIL_SECURITY_TEST_PLAN.md` | Defines prohibited behaviors, allowed behaviors, module/test mappings, and security review prompts. |
+| Clarify the future Market Data Agent and adapter boundary | `docs/ADAPTER_MARKET_DATA_BOUNDARY_RFC.md` | Defines the stable-core-first boundary, snapshot expectations, implementation prerequisites, and why live fetching stays out of core modules. |
 | Propose a future adapter or framework evaluation | `docs/ADAPTER_PROPOSAL_CHECKLIST.md` | Frames adapter boundaries, required questions, tests, and review artifacts before implementation. |
 | Review field-level data contract expectations | `docs/DATA_CONTRACT_REVIEW_CHECKLIST.md` | Covers required metadata, separation of facts/assumptions/calculations, snapshot expectations, and prohibited shortcuts. |
 | Propose a schema, source-schema, snapshot, or adapter contract change | `.github/ISSUE_TEMPLATE/schema_change_proposal.md` | Captures the proposal before implementation, including affected stages, metadata, audit impact, and required tests. |
@@ -46,13 +47,14 @@ requirements.
 For Market Data Agent, MCP, A2A, LangGraph/framework, NVIDIA/GPU tooling, or
 similar adapter proposals, use this order:
 
-1. Start with `docs/ADAPTER_PROPOSAL_CHECKLIST.md`.
-2. Review data contracts with `docs/DATA_CONTRACT_REVIEW_CHECKLIST.md`.
-3. Open `.github/ISSUE_TEMPLATE/schema_change_proposal.md` if schema,
+1. Review the boundary in `docs/ADAPTER_MARKET_DATA_BOUNDARY_RFC.md`.
+2. Start with `docs/ADAPTER_PROPOSAL_CHECKLIST.md`.
+3. Review data contracts with `docs/DATA_CONTRACT_REVIEW_CHECKLIST.md`.
+4. Open `.github/ISSUE_TEMPLATE/schema_change_proposal.md` if schema,
    source-schema, snapshot-format, or adapter data-contract changes are needed.
-4. Fill out `docs/ADAPTER_RISK_REGISTER_TEMPLATE.md`.
-5. Record the decision with `docs/ADAPTER_DECISION_RECORD_TEMPLATE.md`.
-6. Open an implementation PR only after the proposal is reviewed and approved.
+5. Fill out `docs/ADAPTER_RISK_REGISTER_TEMPLATE.md`.
+6. Record the decision with `docs/ADAPTER_DECISION_RECORD_TEMPLATE.md`.
+7. Open an implementation PR only after the proposal is reviewed and approved.
 
 Adapter implementation remains out of scope until a proposal, data-contract
 review, risk review, and decision record are complete.
