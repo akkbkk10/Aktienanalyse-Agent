@@ -73,9 +73,10 @@ python scripts/run_v1_0_demo.py --reports-dir reports/tmp_guardrail_security_pla
 ```
 
 The forbidden-output regression test runs the v1.0 demo in a temporary reports
-directory and scans generated reports, summaries, fair value per share outputs,
-model rating outputs, model confidence outputs, and model signal outputs for
-explicit recommendation, advice, live-data, order, or invented-source phrases.
+directory and scans generated reports, summaries, DCF outputs, fair value per
+share outputs, model rating outputs, model confidence outputs, and model signal
+outputs for explicit recommendation, advice, live-data, order, trading,
+portfolio-automation, fabricated-data, or invented-source phrases.
 Use `docs/GENERATED_OUTPUT_REVIEW_GUIDE.md` for manual review of generated
 artifact diffs.
 
