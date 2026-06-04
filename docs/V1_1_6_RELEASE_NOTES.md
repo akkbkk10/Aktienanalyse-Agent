@@ -2,14 +2,12 @@
 
 ## Status
 
-v1.1.6 is a prepared release-notes candidate for the post-v1.1.5
-documentation and governance cleanup block.
+v1.1.6 is a documentation and governance release for the deterministic
+Aktienanalyse-Agent core. It finalizes the post-v1.1.5 roadmap/status cleanup,
+adapter boundary, methodology configuration boundary, and release-note
+preparation block.
 
-Publication status: v1.1.6 has not been tagged or published yet. Latest
-published release remains v1.1.5 until maintainers manually tag and publish a
-future release.
-
-This release-note candidate covers PR #106 through PR #109. It does not add
+This release covers PR #106 through PR #110. It does not add
 runtime code, schemas, CLI behavior, config changes, generated reports,
 adapters, live data, methodology configuration implementation, generated
 artifact manifest implementation, financial logic, valuation formula changes,
@@ -62,9 +60,19 @@ or portfolio automation.
 - Kept the current roadmap aligned with the completed v1.1.x contract,
   expectations, governance, and deferral work.
 
+### PR #110: v1.1.6 Release Notes Candidate
+
+- Added `docs/V1_1_6_RELEASE_NOTES.md`.
+- Summarized the completed docs/governance block from PR #106 through PR #109.
+- Added the v1.1.6 release-note entry to the README documentation map.
+- Preserved docs-only scope and explicitly excluded runtime, schema, config,
+  CLI, generated report, adapter, live-data, methodology implementation,
+  manifest implementation, financial logic, model behavior, report wording,
+  advice, price target, trading, and portfolio changes.
+
 ## Durable Files Added Or Updated
 
-This candidate summarizes docs/governance changes to:
+v1.1.6 adds or updates these durable docs/governance files:
 
 - `README.md`
 - `docs/ARCHITECTURE_GOVERNANCE_INDEX.md`
@@ -78,7 +86,7 @@ This candidate summarizes docs/governance changes to:
 
 The local unit suite contains 229 tests.
 
-Preflight and release-note candidate validation command:
+Preflight and release validation command:
 
 ```bash
 python -m unittest discover -s tests
@@ -152,5 +160,4 @@ v1.1.6 does not add or change:
 
 Generated artifact manifest implementation, adapter/live-data implementation,
 methodology configuration implementation, MCP/A2A, web UI, new financial logic,
-and new companies remain future work and are not part of this release-note
-candidate.
+and new companies remain future work and are not part of v1.1.6.
