@@ -106,7 +106,9 @@ def main() -> int:
             "DCF, fair value per share, model rating, model confidence, model signal, "
             "fact report, structured summary, and audit log generation. Outputs are "
             "deterministic demo artifacts written under --reports-dir, which should be "
-            "an ignored reports/ path and not committed."
+            "an ignored reports/ path and not committed. The demo never fetches live "
+            "data and does not produce price targets, recommendations, investment "
+            "advice, or trading actions."
         ),
     )
     parser.add_argument(
