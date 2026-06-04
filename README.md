@@ -44,6 +44,7 @@ Validation and guardrails:
 
 - `AGENTS.md` - mandatory rules for agents and contributors.
 - `docs/GUARDRAIL_SECURITY_TEST_PLAN.md` - guardrail and security checklist for core and future adapter work.
+- `docs/METHODOLOGY_CONFIGURATION_BOUNDARY_ASSESSMENT.md` - docs-only assessment of future methodology configuration boundaries and prerequisites.
 - `docs/V1_0_TEST_PLAN.md` - v1.0 manual validation checklist.
 
 Data contracts and schemas:
