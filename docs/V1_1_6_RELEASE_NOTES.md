@@ -7,7 +7,7 @@ Aktienanalyse-Agent core. It finalizes the post-v1.1.5 roadmap/status cleanup,
 adapter boundary, methodology configuration boundary, and release-note
 preparation block.
 
-This release covers PR #106 through PR #110. It does not add
+This release covers PR #106 through PR #111. It does not add
 runtime code, schemas, CLI behavior, config changes, generated reports,
 adapters, live data, methodology configuration implementation, generated
 artifact manifest implementation, financial logic, valuation formula changes,
@@ -69,6 +69,14 @@ or portfolio automation.
   CLI, generated report, adapter, live-data, methodology implementation,
   manifest implementation, financial logic, model behavior, report wording,
   advice, price target, trading, and portfolio changes.
+
+### PR #111: Finalize v1.1.6 Release Notes
+
+- Promoted the release notes from candidate wording to final release wording.
+- Added PR #110 to the release summary.
+- Updated the README documentation map entry from release-note candidate to
+  release notes.
+- Preserved docs-only scope before tagging and publishing v1.1.6.
 
 ## Durable Files Added Or Updated
 
