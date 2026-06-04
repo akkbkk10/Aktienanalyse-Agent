@@ -17,7 +17,7 @@ Use `docs/GENERATED_OUTPUT_SCHEMA_ASSESSMENT.md` for current generated-output
 contract and deferral status. Use this document only as historical context for
 why the v1.1.x generated-output sequence started with model rating.
 
-## Current v1.1.0 Baseline
+## Historical v1.1.0 Baseline
 
 The deterministic core supports NVDA, AMD, and TSMC with source validation,
 company context generation, research gap detection, ratios, valuation
@@ -33,12 +33,15 @@ protection for:
 - fair value per share outputs:
   `config/fair_value_per_share_output_schema.json`
 
-Model rating, model confidence, model signal, audit log, analysis summary, and
-fact report schema hardening remain future work. The next block should continue
-the narrow generated-output contract sequence without changing financial logic
-or model behavior.
+At the time of this historical plan, model rating, model confidence, model
+signal, audit log, analysis summary, and fact report schema hardening remained
+future work. Those statuses have since been superseded by later v1.1.x contract,
+expectations, governance, and deferral documents.
 
-## Candidate Blocks
+## Historical Candidate Blocks
+
+The timing column below preserves the original recommendation context. It is not
+current implementation guidance.
 
 | Candidate | Benefit | Risk | Affected files | Likely tests | Timing |
 | --- | --- | --- | --- | --- | --- |
