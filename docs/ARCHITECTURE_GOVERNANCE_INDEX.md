@@ -35,6 +35,7 @@ requirements.
 | Check secret hygiene before public contribution | `docs/SECRET_HYGIENE_CHECKLIST.md` | Lists files, tokens, generated artifacts, and private data that must not be posted or committed. |
 | Confirm guardrails for core or adapter work | `docs/GUARDRAIL_SECURITY_TEST_PLAN.md` | Defines prohibited behaviors, allowed behaviors, module/test mappings, and security review prompts. |
 | Clarify the future Market Data Agent and adapter boundary | `docs/ADAPTER_MARKET_DATA_BOUNDARY_RFC.md` | Defines the stable-core-first boundary, snapshot expectations, implementation prerequisites, and why live fetching stays out of core modules. |
+| Assess whether adapter implementation is ready | `docs/ADAPTER_IMPLEMENTATION_READINESS_ASSESSMENT.md` | Reviews post-v1.1.8 readiness and recommends only mock/offline adapter planning until a concrete need justifies implementation. |
 | Propose a future adapter or framework evaluation | `docs/ADAPTER_PROPOSAL_CHECKLIST.md` | Frames adapter boundaries, required questions, tests, and review artifacts before implementation. |
 | Review field-level data contract expectations | `docs/DATA_CONTRACT_REVIEW_CHECKLIST.md` | Covers required metadata, separation of facts/assumptions/calculations, snapshot expectations, and prohibited shortcuts. |
 | Propose a schema, source-schema, snapshot, or adapter contract change | `.github/ISSUE_TEMPLATE/schema_change_proposal.md` | Captures the proposal before implementation, including affected stages, metadata, audit impact, and required tests. |
