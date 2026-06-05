@@ -108,6 +108,40 @@ class RunAnalysisTests(unittest.TestCase):
             self.assertEqual(record["ticker"], "NVDA")
             self.assertTrue(record["ratio_outputs"])
 
+    def test_audit_log_preserves_source_files_and_ratio_source_references(self) -> None:
+        with temp_analysis_workspace() as paths:
+            run_analysis.run_analysis(
+                ticker="NVDA",
+                source_data_path=paths["source_data"],
+                context_root=paths["context_root"],
+                markdown_queue_path=paths["markdown_queue"],
+                json_queue_path=paths["json_queue"],
+                audit_log_path=paths["audit_log"],
+                reports_dir=paths["reports_dir"],
+                today=DETERMINISTIC_TODAY,
+            )
+
+            record = json.loads(paths["audit_log"].read_text(encoding="utf-8").splitlines()[0])
+
+            self.assertEqual(record["source_files_used"], [str(paths["source_data"])])
+            self.assertTrue(record["data_context_path"].endswith(str(Path("NVDA") / "context.json")))
+            self.assertTrue(record["validation_status"]["valid"])
+            for ratio in record["ratio_outputs"]:
+                self.assertTrue(ratio["source_metric_references"])
+                for source_reference in ratio["source_metric_references"]:
+                    for field in [
+                        "metric_id",
+                        "metric_name",
+                        "period",
+                        "source_url",
+                        "source_type",
+                        "source_date",
+                        "last_verified",
+                        "confidence",
+                    ]:
+                        self.assertIn(field, source_reference)
+                        self.assertNotIn(source_reference[field], (None, ""))
+
     def test_orchestrator_report_generation(self) -> None:
         with temp_analysis_workspace() as paths:
             result = run_analysis.run_analysis(
