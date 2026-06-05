@@ -1,15 +1,15 @@
-# v1.1.7 Release Notes Candidate
+# v1.1.7 Release Notes
 
 ## Status
 
-v1.1.7 is a release-notes candidate for the post-v1.1.6 guardrail, test, and
-CLI-help hardening block. It has not been tagged or published yet.
+v1.1.7 is a guardrail, test, and CLI-help hardening release for the
+deterministic Aktienanalyse-Agent core.
 
-This candidate covers PR #113 and PR #114. It does not add financial logic,
-runtime analysis behavior changes, schemas, config changes, generated reports,
-adapters, live data, methodology configuration implementation, generated
-artifact manifest implementation, MCP/A2A integration, web UI, advice, price
-targets, trading, or portfolio automation.
+This release covers PR #113 through PR #115. It does not add financial logic,
+runtime analysis behavior changes beyond CLI help wording, schemas, config
+changes, generated reports, adapters, live data, methodology configuration
+implementation, generated artifact manifest implementation, MCP/A2A integration,
+web UI, advice, price targets, trading, or portfolio automation.
 
 ## Release Summary
 
@@ -38,9 +38,19 @@ targets, trading, or portfolio automation.
 - Preserved existing CLI options, command behavior, generated artifacts,
   financial logic, and model behavior.
 
+### PR #115: v1.1.7 Release Notes Candidate
+
+- Added `docs/V1_1_7_RELEASE_NOTES.md`.
+- Summarized the post-v1.1.6 hardening block from PR #113 and PR #114.
+- Added the v1.1.7 release-note entry to the README documentation map.
+- Preserved docs-only scope and explicitly excluded runtime analysis behavior
+  changes, financial logic, schemas, config changes, generated reports,
+  adapters, live data, methodology implementation, manifest implementation,
+  advice, price targets, trading, and portfolio automation.
+
 ## Durable Files Added Or Updated
 
-v1.1.7 would add or update these durable files:
+v1.1.7 adds or updates these durable files:
 
 - `docs/GUARDRAIL_SECURITY_TEST_PLAN.md`
 - `docs/V1_1_7_RELEASE_NOTES.md`
@@ -115,9 +125,6 @@ v1.1.7 does not add or change:
 - web UI
 - methodology configuration implementation
 - generated artifact manifest implementation
-- release tag
-- GitHub Release
-- publishing
 - buy/sell/hold advice
 - price targets
 - trading logic
@@ -126,4 +133,4 @@ v1.1.7 does not add or change:
 
 Generated artifact manifest implementation, adapter/live-data implementation,
 methodology configuration implementation, MCP/A2A, web UI, new financial logic,
-and new companies remain future work and are not part of this v1.1.7 candidate.
+and new companies remain future work and are not part of v1.1.7.
