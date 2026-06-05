@@ -5,7 +5,7 @@
 v1.1.7 is a guardrail, test, and CLI-help hardening release for the
 deterministic Aktienanalyse-Agent core.
 
-This release covers PR #113 through PR #115. It does not add financial logic,
+This release covers PR #113 through PR #116. It does not add financial logic,
 runtime analysis behavior changes beyond CLI help wording, schemas, config
 changes, generated reports, adapters, live data, methodology configuration
 implementation, generated artifact manifest implementation, MCP/A2A integration,
@@ -38,7 +38,7 @@ web UI, advice, price targets, trading, or portfolio automation.
 - Preserved existing CLI options, command behavior, generated artifacts,
   financial logic, and model behavior.
 
-### PR #115: v1.1.7 Release Notes Candidate
+### PR #115: v1.1.7 Release Notes Preparation
 
 - Added `docs/V1_1_7_RELEASE_NOTES.md`.
 - Summarized the post-v1.1.6 hardening block from PR #113 and PR #114.
@@ -47,6 +47,14 @@ web UI, advice, price targets, trading, or portfolio automation.
   changes, financial logic, schemas, config changes, generated reports,
   adapters, live data, methodology implementation, manifest implementation,
   advice, price targets, trading, and portfolio automation.
+
+### PR #116: Finalize v1.1.7 Release Notes
+
+- Promoted the release notes from preparation wording to final release wording.
+- Added PR #115 to the release summary.
+- Updated the README documentation map entry from preparation wording to release
+  notes.
+- Preserved docs-only scope before tagging and publishing v1.1.7.
 
 ## Durable Files Added Or Updated
 
