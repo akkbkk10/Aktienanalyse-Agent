@@ -81,6 +81,9 @@ envelope already has direct validator coverage and tests:
   append-only behavior, and missing-field failures.
 - `tests/test_run_v1_0_demo.py` verifies that the v1.0 demo writes the shared
   audit log at the configured reports directory root.
+- `tests/test_run_analysis.py` verifies that orchestrator audit records
+  preserve source files, the data context path, source validation status, and
+  nested ratio source-reference evidence fields.
 
 Adding a separate schema now would mostly duplicate existing validation while
 risking over-constraint of diagnostic payloads that should evolve with source

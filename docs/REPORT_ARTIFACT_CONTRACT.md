@@ -109,6 +109,9 @@ with temporary reports directories and verifying:
   rating output, model confidence output, and model signal output exist for each
   ticker
 - generated artifact paths stay inside the configured reports directory
+- generated JSON artifacts preserve current source-reference evidence fields in
+  DCF, fair value per share, model rating, model confidence, and analysis
+  summary outputs
 
 If this contract changes, update this document and the related tests in the
 same PR. Do not change artifact names or locations through an unrelated feature

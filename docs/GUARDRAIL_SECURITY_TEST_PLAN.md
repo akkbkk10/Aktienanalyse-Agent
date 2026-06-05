@@ -53,13 +53,14 @@ The system may produce:
 | Required source metadata for every financial number | `scripts/validate_sources.py`, `config/financial_metric_schema.json`, `config/source_rules.json` | `tests/test_validate_sources.py`, `tests/test_validate_company_onboarding.py` | validation JSON, research queue entries |
 | No invented or unsourced financial figures | `scripts/validate_sources.py`, `scripts/build_company_context.py` | `tests/test_validate_sources.py`, `tests/test_build_company_context.py` | company context JSON |
 | GAAP, Non-GAAP, IFRS, and Other basis separation | `scripts/validate_sources.py`, `config/financial_metric_schema.json` | `tests/test_validate_sources.py` | validation JSON, context metrics |
-| Market price snapshots only, no live fetching in core | `config/market_price_snapshot_schema.json`, `scripts/model_rating.py` | `tests/test_market_price_snapshot.py`, `tests/test_model_rating.py` | model rating JSON |
+| Market price snapshots only, no live fetching in core | `config/market_price_snapshot_schema.json`, `scripts/validate_sources.py`, `scripts/model_rating.py` | `tests/test_validate_sources.py`, `tests/test_model_rating.py` | source validation, model rating JSON |
+| Generated source-reference evidence fields stay visible | `scripts/run_v1_0_demo.py`, generated output scripts, summary generation | `tests/test_run_v1_0_demo.py` | DCF, fair value per share, model rating, model confidence, analysis summary JSON |
 | Example/manual-review assumptions reduce confidence | `scripts/model_confidence.py`, `config/model_confidence_rules.json` | `tests/test_model_confidence.py`, `tests/test_run_v1_0_demo.py` | model confidence JSON |
 | Example/manual-review assumptions block active signals | `scripts/model_signal.py`, `scripts/model_confidence.py` | `tests/test_model_signal.py`, `tests/test_run_v1_0_demo.py` | model signal JSON, reports, summaries |
 | No price targets or recommendation language | `scripts/generate_report.py`, `scripts/generate_analysis_summary.py`, model output scripts | `tests/test_generate_report.py`, `tests/test_generate_analysis_summary.py`, `tests/test_run_analysis.py`, `tests/test_end_to_end_analysis.py` | reports, summaries, model outputs |
 | Generated user-facing artifacts avoid forbidden output phrases | `scripts/run_v1_0_demo.py`, report/summary/model output scripts | `tests/test_forbidden_output_regression.py` | reports, summaries, model rating/confidence/signal outputs |
 | DCF only after readiness passes | `scripts/check_valuation_readiness.py`, `scripts/dcf_model.py`, `scripts/run_analysis.py` | `tests/test_check_valuation_readiness.py`, `tests/test_dcf_model.py`, `tests/test_workflow_order.py` | readiness JSON, DCF JSON |
-| Audit log after workflow artifacts | `scripts/run_analysis.py`, `scripts/write_audit_log.py` | `tests/test_write_audit_log.py`, `tests/test_workflow_order.py`, `tests/test_run_v1_0_demo.py` | audit log JSONL |
+| Audit log after workflow artifacts and preserving evidence context | `scripts/run_analysis.py`, `scripts/write_audit_log.py` | `tests/test_write_audit_log.py`, `tests/test_workflow_order.py`, `tests/test_run_v1_0_demo.py`, `tests/test_run_analysis.py` | audit log JSONL |
 | Ticker independence in batch runs | `scripts/run_batch_analysis.py` | `tests/test_run_batch_analysis.py` | batch JSON output |
 
 ## Required Validation Commands
@@ -77,6 +78,13 @@ directory and scans generated reports, summaries, DCF outputs, fair value per
 share outputs, model rating outputs, model confidence outputs, and model signal
 outputs for explicit recommendation, advice, live-data, order, trading,
 portfolio-automation, fabricated-data, or invented-source phrases.
+
+The v1.0 demo and orchestrator tests also protect source-reference and audit
+evidence visibility: generated DCF, fair value per share, model rating, model
+confidence, and analysis summary artifacts must preserve current evidence
+fields, and audit records must preserve source files, context paths, validation
+status, and nested ratio source references.
+
 Use `docs/GENERATED_OUTPUT_REVIEW_GUIDE.md` for manual review of generated
 artifact diffs.
 

@@ -30,6 +30,7 @@ change runtime logic, add tests, or change CI.
 - `scripts/model_rating.py`
 - `scripts/write_audit_log.py`
 - `tests/test_run_v1_0_demo.py`
+- `tests/test_run_analysis.py`
 
 ## Current Generated Output Baseline
 
@@ -199,8 +200,9 @@ of over-constraining append-only audit records.
 The assessment recommends documenting audit log expectations without standalone
 schema enforcement for now. The current top-level audit envelope already has
 direct validation in `scripts/write_audit_log.py`, focused tests in
-`tests/test_write_audit_log.py`, and demo layout coverage in
-`tests/test_run_v1_0_demo.py`. Nested `validation_status`, `ratio_outputs`, and
+`tests/test_write_audit_log.py`, demo layout coverage in
+`tests/test_run_v1_0_demo.py`, and orchestrator evidence coverage in
+`tests/test_run_analysis.py`. Nested `validation_status`, `ratio_outputs`, and
 `research_gaps_detected` should remain flexible unless a concrete future
 consumer requires stricter machine-readable validation.
 
@@ -238,6 +240,9 @@ generated analysis summary artifact:
   nullable optional upstream outputs.
 - v1.0 demo tests validate generated NVDA, AMD, and TSMC analysis summary
   artifacts against the contract.
+- v1.0 demo tests also verify that generated analysis summary source-reference
+  sections preserve current evidence fields for ratio, DCF, fair value per
+  share, model rating, and model confidence references.
 
 This covers the analysis summary report-facing envelope and broad section field
 types only. It does not duplicate the nested DCF, fair value per share, model
