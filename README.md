@@ -74,6 +74,7 @@ Adapter and architecture governance:
 - `docs/ARCHITECTURE_GOVERNANCE_INDEX.md` - navigation index for architecture-governance docs and templates.
 - `docs/ADAPTER_MARKET_DATA_BOUNDARY_RFC.md` - docs-only RFC for the future Market Data Agent and adapter boundary around the deterministic core.
 - `docs/ADAPTER_IMPLEMENTATION_READINESS_ASSESSMENT.md` - docs-only assessment of whether future adapter work is ready and why only mock/offline adapter planning is currently appropriate.
+- `docs/MOCK_OFFLINE_ADAPTER_CONSUMER_DECISION.md` - docs-only decision that no concrete first mock/offline adapter consumer exists yet.
 - `docs/ADAPTER_PROPOSAL_CHECKLIST.md` - pre-implementation checklist for future adapter and framework proposals.
 - `docs/ADAPTER_RISK_REGISTER_TEMPLATE.md` - risk register template for future adapter proposals.
 - `docs/ADAPTER_DECISION_RECORD_TEMPLATE.md` - decision record template for accepted, rejected, or deferred adapter proposals.
