@@ -202,6 +202,158 @@ class RunV10DemoTests(unittest.TestCase):
 
                     self.assertEqual(analysis_summary.validate_analysis_summary_output(summary_output), [])
 
+    def test_demo_preserves_source_reference_evidence_fields(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            result = run_v1_0_demo.run_demo(reports_dir=Path(temp_dir) / "reports")
+            output_paths = result["generated_file_paths"]["output_paths_by_ticker"]
+
+            for ticker in ["NVDA", "AMD", "TSMC"]:
+                with self.subTest(ticker=ticker):
+                    dcf_output = json.loads(Path(output_paths[ticker]["dcf_output_path"]).read_text(encoding="utf-8"))
+                    fair_value_output = json.loads(
+                        Path(output_paths[ticker]["fair_value_per_share_output_path"]).read_text(encoding="utf-8")
+                    )
+                    model_rating_output = json.loads(
+                        Path(output_paths[ticker]["model_rating_output_path"]).read_text(encoding="utf-8")
+                    )
+                    model_confidence_output = json.loads(
+                        Path(output_paths[ticker]["model_confidence_output_path"]).read_text(encoding="utf-8")
+                    )
+                    summary_output = json.loads(Path(output_paths[ticker]["analysis_summary_path"]).read_text(encoding="utf-8"))
+
+                    _assert_source_references_include_fields(
+                        self,
+                        dcf_output["source_references"],
+                        {"metric_id", "metric_name", "period", "source_url", "source_date", "confidence"},
+                    )
+                    _assert_source_references_include_fields(
+                        self,
+                        fair_value_output["source_references"],
+                        {
+                            "metric_id",
+                            "metric_name",
+                            "period",
+                            "unit",
+                            "source_url",
+                            "source_type",
+                            "source_date",
+                            "last_verified",
+                            "confidence",
+                        },
+                    )
+                    _assert_source_references_include_fields(
+                        self,
+                        fair_value_output["scenarios"][0]["source_references"],
+                        {
+                            "metric_id",
+                            "metric_name",
+                            "period",
+                            "unit",
+                            "source_url",
+                            "source_type",
+                            "source_date",
+                            "last_verified",
+                            "confidence",
+                        },
+                    )
+                    _assert_source_references_include_fields(
+                        self,
+                        model_rating_output["source_references"],
+                        {
+                            "metric_id",
+                            "metric_name",
+                            "period",
+                            "unit",
+                            "currency",
+                            "as_of_datetime",
+                            "fetched_at",
+                            "provider",
+                            "retrieval_method",
+                            "source_url",
+                            "source_type",
+                            "source_date",
+                            "last_verified",
+                            "confidence",
+                        },
+                    )
+                    _assert_source_references_include_fields(
+                        self,
+                        model_confidence_output["source_references"],
+                        {
+                            "metric_id",
+                            "metric_name",
+                            "period",
+                            "unit",
+                            "source_url",
+                            "source_type",
+                            "source_date",
+                            "last_verified",
+                            "confidence",
+                        },
+                    )
+
+                    facts = summary_output["facts"]
+                    summary_reference_fields = {
+                        "ratio_source_references": {
+                            "metric_id",
+                            "metric_name",
+                            "period",
+                            "source_url",
+                            "source_type",
+                            "source_date",
+                            "last_verified",
+                            "confidence",
+                        },
+                        "dcf_source_references": {
+                            "metric_id",
+                            "metric_name",
+                            "period",
+                            "source_url",
+                            "source_date",
+                            "confidence",
+                        },
+                        "fair_value_per_share_source_references": {
+                            "metric_id",
+                            "metric_name",
+                            "period",
+                            "unit",
+                            "source_url",
+                            "source_type",
+                            "source_date",
+                            "last_verified",
+                            "confidence",
+                        },
+                        "model_rating_source_references": {
+                            "metric_id",
+                            "metric_name",
+                            "period",
+                            "unit",
+                            "currency",
+                            "as_of_datetime",
+                            "fetched_at",
+                            "provider",
+                            "retrieval_method",
+                            "source_url",
+                            "source_type",
+                            "source_date",
+                            "last_verified",
+                            "confidence",
+                        },
+                        "model_confidence_source_references": {
+                            "metric_id",
+                            "metric_name",
+                            "period",
+                            "unit",
+                            "source_url",
+                            "source_type",
+                            "source_date",
+                            "last_verified",
+                            "confidence",
+                        },
+                    }
+                    for section, required_fields in summary_reference_fields.items():
+                        _assert_source_references_include_fields(self, facts[section], required_fields)
+
     def test_demo_points_to_manual_review_checklist(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             result = run_v1_0_demo.run_demo(reports_dir=Path(temp_dir) / "reports")
@@ -209,6 +361,18 @@ class RunV10DemoTests(unittest.TestCase):
             checklist = Path(result["manual_review_checklist"])
             self.assertTrue(checklist.exists())
             self.assertEqual(checklist.name, "V1_0_TEST_PLAN.md")
+
+
+def _assert_source_references_include_fields(
+    test_case: unittest.TestCase,
+    source_references: list[dict],
+    required_fields: set[str],
+) -> None:
+    test_case.assertTrue(source_references)
+    for source_reference in source_references:
+        for field in required_fields:
+            test_case.assertIn(field, source_reference)
+            test_case.assertNotIn(source_reference[field], (None, ""))
 
 
 if __name__ == "__main__":
