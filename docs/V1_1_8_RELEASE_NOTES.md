@@ -1,16 +1,11 @@
-# v1.1.8 Release Notes Candidate
+# v1.1.8 Release Notes
 
 ## Status
 
-v1.1.8 release notes are prepared, but v1.1.8 has not been tagged or
-published yet. The latest published release remains v1.1.7 until maintainers
-tag and publish v1.1.8 after final validation.
-
 v1.1.8 is an evidence, source-reference, audit-log, and guardrail
-documentation hardening candidate for the deterministic Aktienanalyse-Agent
-core.
+documentation hardening release for the deterministic Aktienanalyse-Agent core.
 
-This candidate covers PR #118 through PR #120. It does not add runtime code,
+This release covers PR #118 through PR #122. It does not add runtime code,
 financial logic, valuation formula changes, model behavior changes, schemas,
 config changes, generated reports, adapters, live data, methodology
 configuration implementation, generated artifact manifest implementation,
@@ -55,6 +50,25 @@ automation.
   generated artifact manifests, methodology configuration behavior, schemas, or
   runtime changes.
 - Preserved docs-only scope.
+
+### PR #121: v1.1.8 Release Notes Preparation
+
+- Added `docs/V1_1_8_RELEASE_NOTES.md`.
+- Summarized the post-v1.1.7 evidence/source-reference/audit-log hardening
+  block from PR #118 through PR #120.
+- Added the v1.1.8 release-note entry to the README documentation map.
+- Preserved docs-only scope and explicitly excluded runtime, schema, config,
+  generated report, adapter, live-data, methodology implementation, manifest
+  implementation, financial logic, model behavior, report wording, advice,
+  price target, trading, and portfolio changes.
+
+### PR #122: Finalize v1.1.8 Release Notes
+
+- Promoted the release notes from candidate wording to final release wording.
+- Added PR #121 to the release summary.
+- Updated the README documentation map entry from release-note candidate to
+  release notes.
+- Preserved docs-only scope before tagging and publishing v1.1.8.
 
 ## Durable Files Added Or Updated
 
