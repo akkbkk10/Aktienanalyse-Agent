@@ -1,15 +1,11 @@
-# v1.1.9 Release Notes Candidate
+# v1.1.9 Release Notes
 
 ## Status
 
-v1.1.9 release notes are prepared, but v1.1.9 has not been tagged or
-published yet. The latest published release remains v1.1.8 until maintainers
-tag and publish v1.1.9 after final validation.
-
-v1.1.9 is an adapter-governance and readiness documentation candidate for the
+v1.1.9 is an adapter-governance and readiness documentation release for the
 deterministic Aktienanalyse-Agent core.
 
-This candidate covers PR #123 and PR #124. It does not add adapter
+This release covers PR #123 through PR #126. It does not add adapter
 implementation, live data, provider APIs, MCP/A2A runtime integration, web UI,
 dependencies, runtime analysis behavior changes, financial logic changes,
 schema changes, config changes, generated reports, advice, price targets,
@@ -48,6 +44,24 @@ trading, or portfolio automation.
 - Preserved docs-only scope and did not add adapter implementation, live data,
   provider APIs, external credentials, MCP/A2A, web UI, runtime changes,
   schemas, config changes, financial logic, or generated reports.
+
+### PR #125: v1.1.9 Release Notes Preparation
+
+- Added `docs/V1_1_9_RELEASE_NOTES.md`.
+- Summarized the adapter-governance decision block from PR #123 and PR #124.
+- Added the v1.1.9 release-note entry to the README documentation map.
+- Preserved docs-only scope and explicitly excluded adapter implementation,
+  live data, provider APIs, MCP/A2A runtime integration, web UI, dependencies,
+  runtime analysis behavior changes, financial logic, schemas, configs,
+  generated reports, advice, price targets, trading, and portfolio automation.
+
+### PR #126: Finalize v1.1.9 Release Notes
+
+- Promoted the release notes from candidate wording to final release wording.
+- Added PR #125 to the release summary.
+- Updated the README documentation map entry from release-note candidate to
+  release notes.
+- Preserved docs-only scope before tagging and publishing v1.1.9.
 
 ## Adapter Governance Decision
 
