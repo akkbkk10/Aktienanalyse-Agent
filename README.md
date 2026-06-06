@@ -42,6 +42,7 @@ Getting started / current baseline:
 - `docs/LOCAL_USER_ACCEPTANCE_TEST.md` - local CLI acceptance guide for tests, demo artifacts, and no-advice/no-live-data guardrails.
 - `docs/OFFLINE_COMPANY_DATA_TRIAL_PLAN.md` - readiness and checklist for a manual offline company-data trial using explicit local files.
 - `docs/ASML_OFFLINE_TRIAL_SOURCE_PACKAGE_PLAN.md` - ASML-specific offline source-package planning before any ASML data is added.
+- `docs/ASML_SOURCE_MATERIAL_HANDOFF_CHECKLIST.md` - manual official-source handoff checklist required before ASML data files can be created.
 
 Validation and guardrails:
 
