@@ -1,12 +1,11 @@
-# v1.1.10 Release Notes Candidate
+# v1.1.10 Release Notes
 
 ## Status
 
-v1.1.10 is not tagged or published yet. These release notes are prepared as a
-candidate for the post-v1.1.9 architecture visualization and local user-guidance
-documentation block.
+v1.1.10 is an architecture visualization and local user-guidance documentation
+release for the deterministic Aktienanalyse-Agent core.
 
-This candidate covers PR #127 through PR #129. It does not add runtime behavior
+This release covers PR #127 through PR #130. It does not add runtime behavior
 changes, test changes, schema changes, config changes, generated reports,
 adapter implementation, live data, provider APIs, MCP/A2A runtime integration,
 web UI, desktop app behavior, methodology implementation, generated artifact
@@ -56,11 +55,26 @@ advice, price targets, trading, or portfolio automation.
   UI, desktop app, adapter runtime, live data workflow, provider API workflow,
   MCP/A2A runtime integration, or financial automation.
 
+### PR #130: v1.1.10 Release Notes Preparation
+
+- Added `docs/V1_1_10_RELEASE_NOTES.md`.
+- Summarized the architecture visualization and local user-guidance
+  documentation block from PR #127 through PR #129.
+- Added the v1.1.10 release-note candidate entry to the README documentation
+  map.
+- Preserved docs-only scope and explicitly excluded runtime behavior changes,
+  test changes, schema or config changes, generated reports, adapters, live
+  data, provider APIs, MCP/A2A runtime integration, web UI, desktop app
+  behavior, methodology implementation, generated artifact manifest
+  implementation, financial logic, report wording changes, advice, price
+  targets, trading, and portfolio automation.
+
 ## Documentation Block Decision
 
-v1.1.10 is a documentation and user-guidance candidate. It bundles the
-architecture visualization work with the local CLI acceptance guide so reviewers
-can understand both the system shape and the current local validation path.
+v1.1.10 is a documentation and user-guidance release. It bundles the
+architecture visualization work with the local CLI acceptance guide so
+reviewers can understand both the system shape and the current local validation
+path.
 
 The block remains intentionally narrow:
 
@@ -73,7 +87,7 @@ The block remains intentionally narrow:
 
 ## Durable Files Added Or Updated
 
-v1.1.10 would add or update these durable documentation files:
+v1.1.10 adds or updates these durable documentation files:
 
 - `docs/ARCHITECTURE_VISUAL_OVERVIEW.md`
 - `docs/LOCAL_USER_ACCEPTANCE_TEST.md`
@@ -162,4 +176,4 @@ v1.1.10 does not add or change:
 Adapter implementation, live data, provider APIs, external credentials,
 MCP/A2A, web UI, desktop app behavior, generated artifact manifest
 implementation, methodology implementation, new financial logic, and new
-companies remain future work and are not part of this candidate.
+companies remain future work and are not part of v1.1.10.
