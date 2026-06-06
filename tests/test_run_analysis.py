@@ -338,6 +338,37 @@ class RunAnalysisTests(unittest.TestCase):
             self.assertIsNone(result["model_rating_output_path"])
             self.assertTrue(any("high-priority research gap" in warning for warning in result["dcf_warnings"]))
 
+    def test_blocked_dcf_report_uses_guardrail_safe_warning(self) -> None:
+        with temp_analysis_workspace() as paths:
+            records = json.loads(paths["source_data"].read_text(encoding="utf-8"))
+            records = [record for record in records if record.get("metric_id") != "nvda_revenue_fy2024"]
+            paths["source_data"].write_text(json.dumps(records), encoding="utf-8")
+
+            result = run_analysis.run_analysis(
+                ticker="NVDA",
+                source_data_path=paths["source_data"],
+                context_root=paths["context_root"],
+                markdown_queue_path=paths["markdown_queue"],
+                json_queue_path=paths["json_queue"],
+                audit_log_path=paths["audit_log"],
+                reports_dir=paths["reports_dir"],
+                today=DETERMINISTIC_TODAY,
+                generate_fact_report=True,
+                run_dcf=True,
+                dcf_assumptions_path=paths["dcf_assumptions"],
+            )
+
+            self.assertFalse(result["dcf_run"])
+            self.assertEqual(result["warnings"], ["DCF readiness gate blocked DCF run."])
+            self.assertIn("Missing required ratios: revenue_growth.", result["dcf_warnings"])
+
+            report = Path(result["report_path"]).read_text(encoding="utf-8")
+            self.assertIn("DCF readiness gate blocked DCF run.", report)
+            self.assertNotIn("valuation", report.lower().replace("not investment advice", ""))
+
+            with self.assertRaises(ValueError):
+                run_analysis.generate_report.assert_no_prohibited_language("This includes a price target.")
+
     def test_dcf_output_file_created(self) -> None:
         with temp_analysis_workspace() as paths:
             result = run_analysis.run_analysis(

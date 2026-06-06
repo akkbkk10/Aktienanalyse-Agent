@@ -198,7 +198,7 @@ def run_analysis(
             else:
                 dcf_warnings = dcf_result.get("blocking_reasons", [])
         else:
-            warnings.append("Valuation readiness gate blocked DCF run.")
+            warnings.append("DCF readiness gate blocked DCF run.")
             dcf_warnings = readiness_result["blocking_reasons"]
 
     model_confidence_result = model_confidence.calculate_model_confidence(
