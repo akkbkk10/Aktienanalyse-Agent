@@ -114,11 +114,12 @@ are acceptable during an offline trial when they are explicit and visible.
 
 Market price snapshots remain stored inputs, not live data. Under current
 behavior, a validated `market_price` snapshot is required for full model rating
-and downstream model signal availability. A future PR may decide whether
-`market_price` should be optional for source-only onboarding, ratio-only runs,
-or DCF-only trials, with model rating and signal explicitly unavailable when no
-validated snapshot is present. See
-`docs/MARKET_PRICE_BOUNDARY_DECISION.md` for the docs-only boundary decision.
+and downstream model signal availability. For source-only or DCF-ready trial
+validation without a market-price snapshot, use
+`validate_company_onboarding.py --support-tier source_only` or
+`validate_company_onboarding.py --support-tier dcf_ready`. Model rating and
+signal remain explicitly unavailable when no validated snapshot is present. See
+`docs/MARKET_PRICE_BOUNDARY_DECISION.md` for the boundary decision.
 
 ## Manual Inspection Checklist
 

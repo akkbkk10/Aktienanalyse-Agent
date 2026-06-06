@@ -20,22 +20,23 @@ The deterministic core must not fetch, refresh, infer, or silently update market
 prices. The core may consume only explicit market-price snapshot records that
 are static, timestamped, provider-labeled, sourceable, and manually verifiable.
 
-Current behavior remains unchanged:
+Current default behavior remains protected:
 
+- `market_price` is required for full onboarding readiness.
 - `market_price` is required for full model rating availability.
 - `market_price` is required for downstream model signal availability whenever
   model signal depends on model rating.
-- The current onboarding validator still checks for a market-price snapshot.
+- The onboarding validator reports model readiness separately from source-only
+  and DCF-ready support tiers.
 
-Future behavior may be changed only by a separate PR:
+Optional-market-price behavior is limited to lower readiness tiers:
 
-- `market_price` may become optional for source-only onboarding, ratio-only
-  workflows, and DCF-only trials.
-- If optional-market-price behavior is implemented, model rating and downstream
-  model signal must remain unavailable when no validated market-price snapshot
-  is present.
-- That future PR must preserve no-live-data, no-advice, no-price-target, and
-  no-trading guardrails.
+- `market_price` may be omitted for `source_only` onboarding checks.
+- `market_price` may be omitted for `dcf_ready` onboarding checks.
+- Model rating and downstream model signal remain unavailable when no validated
+  market-price snapshot is present.
+- No-live-data, no-advice, no-price-target, and no-trading guardrails still
+  apply.
 
 ## Data Classes
 
@@ -84,20 +85,18 @@ evidence for financial facts or market-price snapshots.
 Source-only onboarding means a company source package can pass source validation
 for financial statement facts and required evidence fields.
 
-Current behavior: the onboarding validator checks for `market_price`.
-
-Future possible behavior: source-only onboarding may become valid without
-`market_price` if a later PR separates source-package readiness from full model
-artifact readiness.
+Use the onboarding validator's `source_only` support tier for this check.
+`market_price` is not required for this tier, but model rating and model signal
+readiness remain false without a validated market-price snapshot.
 
 ### Ratio-Ready
 
 Ratio-ready means the project has enough validated financial statement facts to
 build company context and calculate supported ratios.
 
-Market price should not be conceptually required for ratio-only workflows,
-because ratios are calculated from source financial facts. Current runtime
-behavior is not changed by this decision.
+Market price is not conceptually required for ratio-only workflows, because
+ratios are calculated from source financial facts. Use source validation and the
+`source_only` onboarding tier to validate this lower readiness layer.
 
 ### DCF-Ready
 
@@ -105,9 +104,9 @@ DCF-ready means the project has validated source facts, required ratios, valid
 methodology configuration, explicit DCF assumptions, and readiness-gate approval
 for deterministic DCF scenarios.
 
-Market price should not be conceptually required for DCF-only trials, because
-DCF scenarios run from explicit assumptions and source facts. Current runtime
-behavior is not changed by this decision.
+Market price is not conceptually required for DCF-only trials, because DCF
+scenarios run from explicit assumptions and source facts. Use the onboarding
+validator's `dcf_ready` support tier to validate this layer.
 
 ### Model-Rating-Ready
 
@@ -169,21 +168,17 @@ model rating and model signal unavailable instead of committing the snapshot.
 
 Current behavior:
 
-- `validate_company_onboarding.py` checks for a market-price snapshot.
+- `validate_company_onboarding.py` defaults to `full`, which requires a
+  market-price snapshot.
+- `validate_company_onboarding.py --support-tier source_only` can pass without
+  a market-price snapshot when lower-tier source checks pass.
+- `validate_company_onboarding.py --support-tier dcf_ready` can pass without a
+  market-price snapshot when DCF-ready checks pass.
 - `model_rating.py` requires a current market-price record and blocks model
   rating when it is missing, invalid, or stale.
 - `model_signal.py` returns `unavailable` when model rating is unavailable or
   when market-price freshness checks fail.
 - Core modules do not fetch live market data.
-
-Future possible behavior:
-
-- A future PR may split readiness tiers so source-only onboarding, ratio-only
-  runs, and DCF-only trials can proceed without `market_price`.
-- In that future behavior, model rating and model signal must remain explicitly
-  unavailable until a validated market-price snapshot exists.
-- Any such PR must include focused tests and must not add live data fetching or
-  adapter implementation.
 
 ## ASML Implication
 
@@ -198,8 +193,7 @@ verifiable.
 
 If ASML source facts are otherwise ready but market-price evidence is not
 repo-safe, a future ASML PR should either defer ASML promotion or explicitly
-scope ASML to source-only, ratio-only, or DCF-only readiness after optional
-market-price behavior is implemented.
+scope ASML to source-only, ratio-only, or DCF-only readiness.
 
 ## Explicit Non-Goals
 
