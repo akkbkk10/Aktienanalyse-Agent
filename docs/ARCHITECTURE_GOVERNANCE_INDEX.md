@@ -12,6 +12,7 @@ requirements.
 | See the current architecture visually | `docs/ARCHITECTURE_VISUAL_OVERVIEW.md` | Uses Mermaid diagrams to show the stable core, evidence flow, active layers, and deferred adapter/interface layers. |
 | Run a local CLI acceptance check | `docs/LOCAL_USER_ACCEPTANCE_TEST.md` | Shows how to run tests, run the deterministic demo, inspect generated artifacts, and verify no-advice/no-live-data guardrails. |
 | Plan a manual offline company-data trial | `docs/OFFLINE_COMPANY_DATA_TRIAL_PLAN.md` | Maps local UAT evidence checks to a future explicit-file company trial without adding live data, adapters, or new financial behavior. |
+| Plan the ASML offline source package | `docs/ASML_OFFLINE_TRIAL_SOURCE_PACKAGE_PLAN.md` | Applies the offline trial boundary to ASML before any ASML source data, config, or generated artifacts are added. |
 | Check current data fields and output structures | `docs/SCHEMA_FIELD_REFERENCE.md` | Lists current schema fields and observed output structures. |
 | Check generated artifact paths and required files | `docs/REPORT_ARTIFACT_CONTRACT.md` | Documents the current reports directory layout, shared audit log, and required per-ticker v1.0 demo artifacts. |
 | Check generated JSON schema status | `docs/GENERATED_OUTPUT_SCHEMA_ASSESSMENT.md` | Tracks implemented generated-output contracts, expectations-only artifacts, and deferred artifact work. |

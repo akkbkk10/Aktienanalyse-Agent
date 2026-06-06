@@ -66,6 +66,9 @@ and explicit files only. Before running the workflow, prepare:
 Use `docs/COMPANY_ONBOARDING_GUIDE.md` as the source checklist for required
 metrics, DCF assumptions, watchlist fields, and validation commands.
 
+For the first planned ASML trial, use
+`docs/ASML_OFFLINE_TRIAL_SOURCE_PACKAGE_PLAN.md` before adding any ASML data.
+
 Every financial metric must include source metadata required by `AGENTS.md`,
 `docs/DATA_CONTRACT_REVIEW_CHECKLIST.md`, and
 `docs/SCHEMA_FIELD_REFERENCE.md`, including:
