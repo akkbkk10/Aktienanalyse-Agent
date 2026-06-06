@@ -72,6 +72,7 @@ Generated-output review:
 Adapter and architecture governance:
 
 - `docs/ARCHITECTURE_GOVERNANCE_INDEX.md` - navigation index for architecture-governance docs and templates.
+- `docs/ARCHITECTURE_VISUAL_OVERVIEW.md` - Mermaid-based visual overview of the current deterministic core, artifact flow, active layers, and deferred adapter/interface layers.
 - `docs/ADAPTER_MARKET_DATA_BOUNDARY_RFC.md` - docs-only RFC for the future Market Data Agent and adapter boundary around the deterministic core.
 - `docs/ADAPTER_IMPLEMENTATION_READINESS_ASSESSMENT.md` - docs-only assessment of whether future adapter work is ready and why only mock/offline adapter planning is currently appropriate.
 - `docs/MOCK_OFFLINE_ADAPTER_CONSUMER_DECISION.md` - docs-only decision that no concrete first mock/offline adapter consumer exists yet.
