@@ -117,7 +117,8 @@ behavior, a validated `market_price` snapshot is required for full model rating
 and downstream model signal availability. A future PR may decide whether
 `market_price` should be optional for source-only onboarding, ratio-only runs,
 or DCF-only trials, with model rating and signal explicitly unavailable when no
-validated snapshot is present.
+validated snapshot is present. See
+`docs/MARKET_PRICE_BOUNDARY_DECISION.md` for the docs-only boundary decision.
 
 ## Manual Inspection Checklist
 

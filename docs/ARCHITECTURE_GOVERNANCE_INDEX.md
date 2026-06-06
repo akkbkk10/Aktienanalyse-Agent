@@ -28,6 +28,7 @@ requirements.
 | Assess model signal output schema readiness | `docs/MODEL_SIGNAL_OUTPUT_SCHEMA_ASSESSMENT.md` | Reviews actual model signal artifacts, no-advice guardrails, and recommends a narrow future contract scope. |
 | Review historical v1.1.x planning | `docs/V1_1_X_NEXT_CANDIDATE_PLAN.md` | Preserves the post-v1.1.0 planning assessment that was superseded by later v1.1.x contract and governance work. |
 | Assess data-contract hardening priorities | `docs/DATA_CONTRACT_SCHEMA_HARDENING_ASSESSMENT.md` | Reviews current schema protections and identifies the next small data-contract hardening candidate. |
+| Decide when market price is required | `docs/MARKET_PRICE_BOUNDARY_DECISION.md` | Defines market-price snapshots as a separate stored boundary, maps readiness tiers, and records that optional-market-price behavior needs a future PR. |
 | Validate company context contract expectations | `config/company_context_schema.json` | Defines the standalone contract for persistent `data/companies/<TICKER>/context.json` files. |
 | Validate DCF output contract expectations | `config/dcf_output_schema.json` | Defines the standalone contract for generated `*_dcf_output.json` artifacts. |
 | Validate fair value per share output contract expectations | `config/fair_value_per_share_output_schema.json` | Defines the standalone contract for generated `*_fair_value_per_share_output.json` artifacts. |

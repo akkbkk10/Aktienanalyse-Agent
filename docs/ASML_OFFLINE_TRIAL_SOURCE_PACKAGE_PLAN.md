@@ -191,7 +191,9 @@ Market price snapshot records must also include:
 
 The market price snapshot must be a manually recorded snapshot or reviewed file
 import. It must not be fetched inside `run_analysis.py`, `model_rating.py`, DCF
-logic, report generation, or any core module.
+logic, report generation, or any core module. See
+`docs/MARKET_PRICE_BOUNDARY_DECISION.md` for the project-level decision on
+market-price evidence and readiness tiers.
 
 ## Preferred Source Candidates
 
