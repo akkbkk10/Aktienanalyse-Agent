@@ -49,6 +49,7 @@ requirements.
 | Record an adapter decision | `docs/ADAPTER_DECISION_RECORD_TEMPLATE.md` | Records accepted, rejected, deferred, or superseded adapter proposals and their rationale. |
 | Govern public releases and tags | `docs/RELEASE_AND_TAG_GOVERNANCE.md` | Documents release-note PR rules, tag timing, tag naming, generated-artifact exclusions, and manual GitHub setting checks. |
 | Prepare a v1.0.x patch release | `docs/V1_0_X_PATCH_RELEASE_CHECKLIST.md` | Provides release validation, generated-artifact, tag, GitHub Release, and troubleshooting steps. |
+| Review the post-ASML-trial project status | `docs/V1_1_11_RELEASE_NOTES.md` | Summarizes PR #131 through PR #137, ASML local trial status, safer local trial paths, and the pending market-price boundary decision. |
 
 ## Future Adapter Work Order
 

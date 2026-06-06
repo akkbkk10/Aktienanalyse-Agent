@@ -46,7 +46,7 @@ python -m unittest discover -s tests
 Expected result:
 
 - The suite passes.
-- At the time this guide was added, the suite contains 231 tests.
+- At the time of the v1.1.11 status update, the suite contains 235 tests.
 
 If tests fail before local acceptance review, stop and investigate the failure
 before inspecting generated artifacts.
