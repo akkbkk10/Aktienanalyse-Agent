@@ -224,6 +224,11 @@ assumptions, watchlist entry, and company context generation. It does not fetch
 live data and does not create recommendations, price targets, personal investment
 advice, or trading logic.
 
+By default, the validator uses the `full` support tier and requires a validated
+market price snapshot. Use `--support-tier source_only` or
+`--support-tier dcf_ready` only for lower-tier local readiness checks where
+model rating and model signal should remain unavailable without market price.
+
 ## Setup
 
 ```powershell

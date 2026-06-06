@@ -167,6 +167,57 @@ class ValidateCompanyOnboardingTests(unittest.TestCase):
             self.assertFalse(result["ready"])
             self.assertFalse(check_by_name(result, "share_count")["passed"])
 
+    def test_missing_market_price_blocks_full_onboarding(self) -> None:
+        records = [record for record in complete_metrics() if record.get("metric_category") != "market_price"]
+
+        with onboarding_workspace(metrics=records) as paths:
+            result = validate_company_onboarding.validate_onboarding_package(
+                ticker="EXM",
+                metrics_path=paths["metrics"],
+                dcf_assumptions_path=paths["assumptions"],
+                watchlist_path=paths["watchlist"],
+            )
+
+            self.assertFalse(result["ready"])
+            self.assertFalse(check_by_name(result, "market_price_snapshot")["passed"])
+            self.assertIn("Market price snapshot record is missing.", result["model_readiness"]["blocking_reasons"])
+
+    def test_missing_market_price_does_not_block_dcf_ready_tier(self) -> None:
+        records = [record for record in complete_metrics() if record.get("metric_category") != "market_price"]
+
+        with onboarding_workspace(metrics=records) as paths:
+            result = validate_company_onboarding.validate_onboarding_package(
+                ticker="EXM",
+                metrics_path=paths["metrics"],
+                dcf_assumptions_path=paths["assumptions"],
+                watchlist_path=paths["watchlist"],
+                support_tier="dcf_ready",
+            )
+
+            self.assertTrue(result["ready"])
+            self.assertEqual(result["support_tier"], "dcf_ready")
+            self.assertFalse(check_by_name(result, "market_price_snapshot")["passed"])
+            self.assertEqual(result["blocking_reasons"], [])
+            self.assertFalse(result["model_readiness"]["model_rating_ready"])
+
+    def test_missing_market_price_does_not_block_source_only_tier(self) -> None:
+        records = [record for record in complete_metrics() if record.get("metric_category") != "market_price"]
+
+        with onboarding_workspace(metrics=records, write_assumptions=False) as paths:
+            result = validate_company_onboarding.validate_onboarding_package(
+                ticker="EXM",
+                metrics_path=paths["metrics"],
+                dcf_assumptions_path=paths["assumptions"],
+                watchlist_path=paths["watchlist"],
+                support_tier="source_only",
+            )
+
+            self.assertTrue(result["ready"])
+            self.assertEqual(result["support_tier"], "source_only")
+            self.assertFalse(check_by_name(result, "market_price_snapshot")["passed"])
+            self.assertFalse(check_by_name(result, "dcf_assumptions")["passed"])
+            self.assertEqual(result["blocking_reasons"], [])
+
     def test_missing_dcf_assumptions(self) -> None:
         with onboarding_workspace(write_assumptions=False) as paths:
             result = validate_company_onboarding.validate_onboarding_package(
@@ -178,6 +229,17 @@ class ValidateCompanyOnboardingTests(unittest.TestCase):
 
             self.assertFalse(result["ready"])
             self.assertFalse(check_by_name(result, "dcf_assumptions")["passed"])
+
+    def test_invalid_support_tier_fails_closed(self) -> None:
+        with onboarding_workspace() as paths:
+            with self.assertRaisesRegex(ValueError, "Unsupported support_tier"):
+                validate_company_onboarding.validate_onboarding_package(
+                    ticker="EXM",
+                    metrics_path=paths["metrics"],
+                    dcf_assumptions_path=paths["assumptions"],
+                    watchlist_path=paths["watchlist"],
+                    support_tier="unknown",
+                )
 
 
 def check_by_name(result: dict, name: str) -> dict:

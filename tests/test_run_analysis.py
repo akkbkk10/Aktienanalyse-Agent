@@ -525,6 +525,39 @@ class RunAnalysisTests(unittest.TestCase):
             self.assertEqual(summary["missing_data"]["model_signal_status"], "included")
             self.assertEqual(summary["calculated_outputs"]["model_signal"]["model_signal"], "unavailable")
 
+    def test_missing_market_price_does_not_block_dcf_but_blocks_rating_and_signal(self) -> None:
+        with temp_analysis_workspace() as paths:
+            records = json.loads(paths["source_data"].read_text(encoding="utf-8"))
+            records = [record for record in records if record.get("metric_category") != "market_price"]
+            paths["source_data"].write_text(json.dumps(records), encoding="utf-8")
+
+            result = run_analysis.run_analysis(
+                ticker="NVDA",
+                source_data_path=paths["source_data"],
+                context_root=paths["context_root"],
+                markdown_queue_path=paths["markdown_queue"],
+                json_queue_path=paths["json_queue"],
+                audit_log_path=paths["audit_log"],
+                reports_dir=paths["reports_dir"],
+                today=DETERMINISTIC_TODAY,
+                generate_fact_report=True,
+                generate_summary=True,
+                run_dcf=True,
+                dcf_assumptions_path=paths["dcf_assumptions"],
+            )
+
+            self.assertTrue(result["validation_status"]["valid"])
+            self.assertTrue(result["dcf_run"])
+            self.assertIsNotNone(result["dcf_output_path"])
+            self.assertIsNotNone(result["fair_value_per_share_output_path"])
+            self.assertEqual(result["model_rating_status"], "unavailable")
+            self.assertIsNone(result["model_rating_output_path"])
+            self.assertTrue(any("current_market_price" in reason for reason in result["model_rating_unavailable_reasons"]))
+
+            signal = json.loads(Path(result["model_signal_output_path"]).read_text(encoding="utf-8"))
+            self.assertEqual(signal["model_signal"], "unavailable")
+            self.assertIn("Model rating is unavailable.", signal["blocking_reasons"])
+
     def test_dcf_output_has_no_price_target_or_recommendation_language(self) -> None:
         with temp_analysis_workspace() as paths:
             result = run_analysis.run_analysis(

@@ -20,6 +20,44 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_WATCHLIST_PATH = REPO_ROOT / "config" / "watchlist.json"
 DEFAULT_DCF_SCHEMA_PATH = REPO_ROOT / "config" / "dcf_assumptions_schema.json"
 REQUIRED_FINANCIAL_METRICS = ["Revenue", "Net income", "Free cash flow"]
+SUPPORT_TIERS = {
+    "source_only": [
+        "metrics_file",
+        "source_validation",
+        "ticker_consistency",
+        "required_financial_metrics",
+        "metric_id_presence",
+        "source_metadata",
+        "share_count",
+        "company_context_generation",
+        "watchlist_entry",
+    ],
+    "dcf_ready": [
+        "metrics_file",
+        "source_validation",
+        "ticker_consistency",
+        "required_financial_metrics",
+        "metric_id_presence",
+        "source_metadata",
+        "share_count",
+        "company_context_generation",
+        "dcf_assumptions",
+        "watchlist_entry",
+    ],
+    "full": [
+        "metrics_file",
+        "source_validation",
+        "ticker_consistency",
+        "required_financial_metrics",
+        "metric_id_presence",
+        "source_metadata",
+        "market_price_snapshot",
+        "share_count",
+        "company_context_generation",
+        "dcf_assumptions",
+        "watchlist_entry",
+    ],
+}
 MARKET_PRICE_SNAPSHOT_FIELDS = [
     "currency",
     "exchange",
@@ -41,8 +79,12 @@ def validate_onboarding_package(
     metrics_path: Path,
     dcf_assumptions_path: Path,
     watchlist_path: Path = DEFAULT_WATCHLIST_PATH,
+    support_tier: str = "full",
 ) -> dict[str, Any]:
     normalized_ticker = ticker.upper()
+    if support_tier not in SUPPORT_TIERS:
+        raise ValueError(f"Unsupported support_tier: {support_tier}.")
+
     checks: list[dict[str, Any]] = []
     records: list[dict[str, Any]] = []
 
@@ -84,12 +126,17 @@ def validate_onboarding_package(
 
     _check_dcf_assumptions(dcf_assumptions_path, normalized_ticker, checks)
     _check_watchlist(normalized_ticker, watchlist_path, checks)
+    required_check_names = set(SUPPORT_TIERS[support_tier])
+    required_checks = [check for check in checks if check["name"] in required_check_names]
+    model_readiness = _model_readiness(checks)
 
     return {
         "ticker": normalized_ticker,
-        "ready": all(check["passed"] for check in checks),
+        "support_tier": support_tier,
+        "ready": all(check["passed"] for check in required_checks),
         "checks": checks,
-        "blocking_reasons": [check["message"] for check in checks if not check["passed"]],
+        "blocking_reasons": [check["message"] for check in required_checks if not check["passed"]],
+        "model_readiness": model_readiness,
     }
 
 
@@ -266,12 +313,38 @@ def _add_check(
     checks.append(check)
 
 
+def _model_readiness(checks: list[dict[str, Any]]) -> dict[str, Any]:
+    market_price_check = _find_check(checks, "market_price_snapshot")
+    market_price_ready = bool(market_price_check and market_price_check["passed"])
+    blocking_reasons = []
+    if not market_price_ready and market_price_check:
+        blocking_reasons.append(market_price_check["message"])
+    return {
+        "model_rating_ready": market_price_ready,
+        "model_signal_ready": market_price_ready,
+        "blocking_reasons": blocking_reasons,
+    }
+
+
+def _find_check(checks: list[dict[str, Any]], name: str) -> dict[str, Any] | None:
+    for check in checks:
+        if check["name"] == name:
+            return check
+    return None
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Validate a new company onboarding package.")
     parser.add_argument("ticker")
     parser.add_argument("--metrics-path", type=Path, required=True)
     parser.add_argument("--dcf-assumptions-path", type=Path, required=True)
     parser.add_argument("--watchlist-path", type=Path, default=DEFAULT_WATCHLIST_PATH)
+    parser.add_argument(
+        "--support-tier",
+        choices=sorted(SUPPORT_TIERS),
+        default="full",
+        help="Readiness tier to validate: full requires market price; dcf_ready and source_only do not.",
+    )
     args = parser.parse_args()
 
     result = validate_onboarding_package(
@@ -279,6 +352,7 @@ def main() -> int:
         metrics_path=args.metrics_path,
         dcf_assumptions_path=args.dcf_assumptions_path,
         watchlist_path=args.watchlist_path,
+        support_tier=args.support_tier,
     )
     print(json.dumps(result, indent=2))
     return 0 if result["ready"] else 1
