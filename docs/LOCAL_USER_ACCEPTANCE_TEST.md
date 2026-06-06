@@ -94,6 +94,12 @@ Expected per-ticker artifacts under `NVDA/`, `AMD/`, and `TSMC/`:
 Use `docs/REPORT_ARTIFACT_CONTRACT.md` for the durable artifact layout and
 `docs/ARCHITECTURE_VISUAL_OVERVIEW.md` for the current architecture map.
 
+For a future manual trial with a new explicit local company-data package, use
+`docs/OFFLINE_COMPANY_DATA_TRIAL_PLAN.md`. The local UAT guide validates the
+current supported demo path; the offline trial plan documents the additional
+input-package and manual-review checks needed before a new company can be
+considered for onboarding.
+
 ## Review Output Boundaries
 
 For each ticker, inspect the fact report and structured summary:
