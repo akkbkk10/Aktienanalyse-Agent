@@ -156,6 +156,11 @@ metrics:
 - a `share_count` metric
 - a `market_price` snapshot metric
 
+If the trial should exercise the full DCF path, include prior-period revenue so
+the existing `revenue_growth` readiness requirement can be calculated. A
+single-year package can be useful for source validation, but it is not enough
+for the current full DCF readiness gate.
+
 Additional metrics such as gross profit, operating income, or segment metrics
 may be added only when official source evidence is clear and every field is
 validated.

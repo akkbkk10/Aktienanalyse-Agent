@@ -13,3 +13,4 @@ reports/*.json
 reports/*.jsonl
 reports/**
 !reports/.gitkeep
+source_material/

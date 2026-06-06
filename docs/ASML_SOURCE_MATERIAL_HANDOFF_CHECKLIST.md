@@ -32,6 +32,16 @@ or explicitly identify official source material for manual review:
 - static market-price snapshot source URL or reviewed file, only if model
   rating is intended to be available
 
+Place local review copies under:
+
+```text
+source_material/ASML/
+```
+
+This folder is local-only source material and must not be committed. Commit only
+reviewed source-data records under `data/` after the values are traced to
+official sources and validation passes.
+
 Unofficial data providers, summaries, search snippets, copied tables, and
 unreviewed local files are not enough for the first ASML package.
 
@@ -86,6 +96,16 @@ traced to official evidence:
 
 Gross profit, operating income, segment metrics, or extra fields may be added
 later only if the same evidence standard is satisfied.
+
+If the ASML trial is expected to run the full DCF path, include the prior-period
+revenue needed for the existing `revenue_growth` readiness check. A single-year
+ASML package may pass source/onboarding validation but still fail the full
+DCF/readiness path because `revenue_growth` cannot be calculated.
+
+Do not use a ChatGPT answer, finance homepage, search result, or unstamped quote
+as the market-price source. If a static market snapshot cannot be reproduced
+with source, timestamp, instrument, exchange, currency, and confidence, leave
+model rating unavailable instead of committing the snapshot.
 
 ## DCF Assumption Boundary
 
