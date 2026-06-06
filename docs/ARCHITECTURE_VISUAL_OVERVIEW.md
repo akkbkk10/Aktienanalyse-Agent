@@ -48,7 +48,7 @@ flowchart TB
         Contracts["Output schemas and expectations"]
     end
 
-    Deferred -. "future only" .-> Governance
+    Deferred -.-> Governance
     Governance --> Core
     Core --> Artifacts
 ```
@@ -131,7 +131,7 @@ flowchart TB
     end
 
     Active --> Stable["Stable core first"]
-    Deferred -. "requires RFC and review" .-> Stable
+    Deferred -.-> Stable
 ```
 
 | Layer or capability | Current status | Boundary |
