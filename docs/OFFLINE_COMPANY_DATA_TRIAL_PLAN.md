@@ -103,9 +103,21 @@ python scripts/run_analysis.py TICKER --source-data-path data/ticker_sample_metr
 Use a `reports/tmp_*` directory so generated artifacts stay ignored and can be
 removed after review.
 
+The explicit `--audit-log-path`, `--markdown-queue-path`, `--json-queue-path`,
+`--reports-dir`, and `--context-root` arguments keep local trial side effects
+out of root `audit_log.jsonl`, `research_queue.md`, `research_queue.json`, and
+source-controlled company context paths.
+
 If the company has no reviewed DCF assumptions yet, run without `--run-dcf` and
 without the DCF assumptions argument. Missing or unavailable valuation outputs
 are acceptable during an offline trial when they are explicit and visible.
+
+Market price snapshots remain stored inputs, not live data. Under current
+behavior, a validated `market_price` snapshot is required for full model rating
+and downstream model signal availability. A future PR may decide whether
+`market_price` should be optional for source-only onboarding, ratio-only runs,
+or DCF-only trials, with model rating and signal explicitly unavailable when no
+validated snapshot is present.
 
 ## Manual Inspection Checklist
 
