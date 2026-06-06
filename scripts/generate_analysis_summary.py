@@ -2,12 +2,19 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+
+import prohibited_language
+
 DEFAULT_REPORTS_DIR = REPO_ROOT / "reports"
 DEFAULT_OUTPUT_SCHEMA_PATH = REPO_ROOT / "config" / "analysis_summary_output_schema.json"
 PROHIBITED_TERMS = [
@@ -17,7 +24,9 @@ PROHIBITED_TERMS = [
     "hold",
     "recommendation",
     "investment advice",
+    "trading",
     "automated trading",
+    "portfolio automation",
 ]
 
 
@@ -155,8 +164,8 @@ def build_analysis_summary(
 
 
 def assert_no_prohibited_language(summary: dict[str, Any]) -> None:
-    serialized = json.dumps(summary).lower().replace("not investment advice", "")
-    found = [term for term in PROHIBITED_TERMS if term in serialized]
+    serialized = json.dumps(summary)
+    found = prohibited_language.find_prohibited_terms(serialized, PROHIBITED_TERMS)
     if found:
         raise ValueError(f"Analysis summary contains prohibited language: {', '.join(found)}.")
 

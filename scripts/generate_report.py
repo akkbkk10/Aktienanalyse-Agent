@@ -2,12 +2,19 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+
+import prohibited_language
+
 DEFAULT_REPORTS_DIR = REPO_ROOT / "reports"
 PROHIBITED_TERMS = [
     "valuation",
@@ -18,6 +25,8 @@ PROHIBITED_TERMS = [
     "hold",
     "recommendation",
     "investment advice",
+    "trading",
+    "portfolio automation",
 ]
 
 
@@ -157,8 +166,7 @@ def render_report(
 
 
 def assert_no_prohibited_language(report: str) -> None:
-    normalized_report = report.lower().replace("not investment advice", "")
-    found = [term for term in PROHIBITED_TERMS if term in normalized_report]
+    found = prohibited_language.find_prohibited_terms(report, PROHIBITED_TERMS)
     if found:
         raise ValueError(f"Report contains prohibited language: {', '.join(found)}.")
 

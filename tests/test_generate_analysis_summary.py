@@ -446,6 +446,32 @@ class GenerateAnalysisSummaryTests(unittest.TestCase):
         generate_analysis_summary.assert_no_prohibited_language(summary)
         self.assertNotIn("investment advice", json.dumps(summary).lower())
 
+    def test_company_name_holding_does_not_trigger_hold_guardrail(self) -> None:
+        summary = generate_analysis_summary.build_analysis_summary(
+            ticker="ASML",
+            validation_status={"valid": True, "errors": []},
+            research_gaps=[
+                {
+                    "gap_type": "company_context",
+                    "metric_name": "company_name",
+                    "message": "Official company name is ASML Holding N.V.",
+                }
+            ],
+            ratio_outputs=[],
+            audit_log_reference="audit_log.jsonl:1",
+            generated_at="2026-06-06T12:00:00Z",
+        )
+
+        generate_analysis_summary.assert_no_prohibited_language(summary)
+
+    def test_standalone_hold_is_rejected(self) -> None:
+        with self.assertRaisesRegex(ValueError, "hold"):
+            generate_analysis_summary.assert_no_prohibited_language({"summary": "The output says hold."})
+
+    def test_price_target_phrase_is_rejected(self) -> None:
+        with self.assertRaisesRegex(ValueError, "price target"):
+            generate_analysis_summary.assert_no_prohibited_language({"summary": "This includes a price target."})
+
 
 if __name__ == "__main__":
     unittest.main()
