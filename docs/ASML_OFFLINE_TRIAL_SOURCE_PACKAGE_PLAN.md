@@ -10,6 +10,10 @@ The trial type is **manual offline source package only**. Any ASML figures,
 source URLs, source dates, market price snapshots, share counts, assumptions,
 or generated outputs must be added later through a separate reviewed PR.
 
+Use `docs/ASML_SOURCE_MATERIAL_HANDOFF_CHECKLIST.md` before creating that PR.
+It lists the official source materials and metadata that must be manually
+provided before ASML data files can be prepared.
+
 ## Purpose
 
 The ASML trial should prove that a manually prepared ASML source package can
