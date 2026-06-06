@@ -9,6 +9,9 @@ model outputs separate. It does not provide investment advice, price targets,
 buy/sell/hold recommendations, trading logic, portfolio automation, hidden live
 data fetching, or adapter runtime behavior.
 
+For the prose workflow overview, use `docs/ARCHITECTURE_OVERVIEW.md`. For a
+local CLI acceptance check, use `docs/LOCAL_USER_ACCEPTANCE_TEST.md`.
+
 ## High-Level Layered Architecture
 
 ```mermaid

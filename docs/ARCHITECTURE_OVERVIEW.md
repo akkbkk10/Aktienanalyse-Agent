@@ -3,6 +3,10 @@
 The v1.0.0 system is a deterministic, evidence-first stock analysis workflow. It
 separates facts, assumptions, calculations, reports, summaries, and audit records.
 
+For a visual map of the current architecture, use
+`docs/ARCHITECTURE_VISUAL_OVERVIEW.md`. For a local CLI acceptance check, use
+`docs/LOCAL_USER_ACCEPTANCE_TEST.md`.
+
 The architecture uses Hub-and-Spoke coordination: the orchestrator/supervisor
 coordinates specialized worker scripts, while the deterministic Python core
 remains framework-independent.

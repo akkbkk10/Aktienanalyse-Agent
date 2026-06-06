@@ -39,6 +39,7 @@ Getting started / current baseline:
 - `docs/ARCHITECTURE_OVERVIEW.md` - current deterministic workflow overview.
 - `docs/CORE_BASELINE_INVENTORY.md` - technical baseline inventory and v1.1 readiness assessment.
 - `docs/COMPANY_ONBOARDING_GUIDE.md` - safe workflow for adding a new supported ticker.
+- `docs/LOCAL_USER_ACCEPTANCE_TEST.md` - local CLI acceptance guide for tests, demo artifacts, and no-advice/no-live-data guardrails.
 
 Validation and guardrails:
 
