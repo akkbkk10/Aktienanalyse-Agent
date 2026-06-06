@@ -9,6 +9,7 @@ requirements.
 | If you want to... | Use this document or template | Why |
 | --- | --- | --- |
 | Understand the current deterministic core baseline | `docs/CORE_BASELINE_INVENTORY.md` | Maps workflow stages, modules, tests, artifacts, guardrails, and v1.1 readiness gaps. |
+| See the current architecture visually | `docs/ARCHITECTURE_VISUAL_OVERVIEW.md` | Uses Mermaid diagrams to show the stable core, evidence flow, active layers, and deferred adapter/interface layers. |
 | Check current data fields and output structures | `docs/SCHEMA_FIELD_REFERENCE.md` | Lists current schema fields and observed output structures. |
 | Check generated artifact paths and required files | `docs/REPORT_ARTIFACT_CONTRACT.md` | Documents the current reports directory layout, shared audit log, and required per-ticker v1.0 demo artifacts. |
 | Check generated JSON schema status | `docs/GENERATED_OUTPUT_SCHEMA_ASSESSMENT.md` | Tracks implemented generated-output contracts, expectations-only artifacts, and deferred artifact work. |
