@@ -56,6 +56,7 @@ Data contracts and schemas:
 - `docs/SCHEMA_FIELD_REFERENCE.md` - field reference for current deterministic core data contracts.
 - `docs/DATA_CONTRACT_REVIEW_CHECKLIST.md` - field-level traceability checklist for future schemas and adapter outputs.
 - `docs/DATA_CONTRACT_SCHEMA_HARDENING_ASSESSMENT.md` - v1.0.9/v1.1 assessment of current data-contract protections and the next schema hardening candidate.
+- `docs/MARKET_PRICE_BOUNDARY_DECISION.md` - decision record for market-price snapshot evidence, support tiers, and current versus possible future readiness behavior.
 - `.github/ISSUE_TEMPLATE/schema_change_proposal.md` - issue template for proposed schema or data-contract changes.
 
 Generated-output review:

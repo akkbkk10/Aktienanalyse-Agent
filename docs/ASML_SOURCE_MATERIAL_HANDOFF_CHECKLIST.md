@@ -105,7 +105,9 @@ DCF/readiness path because `revenue_growth` cannot be calculated.
 Do not use a ChatGPT answer, finance homepage, search result, or unstamped quote
 as the market-price source. If a static market snapshot cannot be reproduced
 with source, timestamp, instrument, exchange, currency, and confidence, leave
-model rating unavailable instead of committing the snapshot.
+model rating unavailable instead of committing the snapshot. See
+`docs/MARKET_PRICE_BOUNDARY_DECISION.md` for the project-level market-price
+snapshot boundary.
 
 ## DCF Assumption Boundary
 
