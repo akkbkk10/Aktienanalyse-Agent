@@ -111,6 +111,7 @@ Maintainer and release workflow:
 - `docs/V1_1_9_RELEASE_NOTES.md` - v1.1.9 release notes.
 - `docs/V1_1_10_RELEASE_NOTES.md` - v1.1.10 release notes.
 - `docs/V1_1_11_RELEASE_NOTES.md` - v1.1.11 post-ASML-trial project status and release-note candidate.
+- `docs/V1_1_12_RELEASE_NOTES.md` - v1.1.12 market-price boundary, optional-readiness tier, and ASML local UAT status.
 
 Open-source contribution and security:
 
