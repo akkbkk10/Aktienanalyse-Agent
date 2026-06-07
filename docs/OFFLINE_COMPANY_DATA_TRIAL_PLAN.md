@@ -121,6 +121,15 @@ validation without a market-price snapshot, use
 signal remain explicitly unavailable when no validated snapshot is present. See
 `docs/MARKET_PRICE_BOUNDARY_DECISION.md` for the boundary decision.
 
+## ASML UAT Status After PR #140
+
+The local ASML UAT after PR #140 validated the optional market-price readiness
+boundary without committing ASML data. `source_only` and `dcf_ready` validation
+passed with a temporary no-market-price metrics copy, `full` validation without
+market price correctly failed, and `run_analysis.py` still ran DCF while keeping
+model rating and model signal unavailable. All generated outputs were directed
+to ignored `reports/tmp_asml_after_pr140/` paths.
+
 ## Manual Inspection Checklist
 
 Inspect the generated output and confirm:

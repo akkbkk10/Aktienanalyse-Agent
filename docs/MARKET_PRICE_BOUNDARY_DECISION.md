@@ -4,8 +4,8 @@
 
 This document records the project boundary for `market_price` records in the
 deterministic Aktienanalyse-Agent core. It clarifies when market-price evidence
-is required, when it may be optional in a future PR, and what evidence is
-required before any market-price snapshot can be accepted.
+is required, when it may be omitted for lower readiness tiers, and what
+evidence is required before any market-price snapshot can be accepted.
 
 This is a documentation decision only. It does not change runtime behavior,
 schemas, tests, source data, model rating, model signal, DCF logic, adapters,
@@ -184,6 +184,11 @@ Current behavior:
 
 ASML can remain a successful local offline trial when local metrics,
 assumptions, and watchlist entries are present and validation passes.
+
+After PR #140, local ASML UAT confirmed that `source_only` and `dcf_ready`
+onboarding can pass without `market_price`, while `full` readiness, model
+rating, and downstream model signal remain protected by the market-price
+snapshot requirement.
 
 ASML should not be committed as repo sample data until the official source
 review standard is satisfied. If model rating or model signal availability is
